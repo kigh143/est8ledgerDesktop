@@ -1,9 +1,10 @@
 
 type LayoutProps = {
     children: any;
+    showBackBtn?: boolean
 }
 
-const AuthLayout = ({ children }: LayoutProps) => {
+const AuthLayout = ({ children, showBackBtn = false }: LayoutProps) => {
     return (
         <div
             className="w-full h-screen bg-white overflow-hidden  grid grid-cols-1 lg:grid-cols-2"
@@ -20,22 +21,18 @@ const AuthLayout = ({ children }: LayoutProps) => {
                 <div className="absolute inset-0 bg-black/10"></div>
 
                 <div className="absolute top-10 left-10 flex items-center gap-4 z-10">
-
-
-                    <h1 className="text-3xl font-semibold text-white">
+                    <h1 className="text-2xl font-semibold text-white">
                         est8Ledger
                     </h1>
                 </div>
 
                 <div className="absolute bottom-20 left-14 text-white z-10">
                     <h2 className="text-5xl font-bold leading-tight max-w-md">
-                        Find your sweet home
+                        Digital Property Management
                     </h2>
 
                     <p className="mt-5 text-lg text-white/90">
-                        Schedule visit in just a few clicks
-                        <br />
-                        visits in just a few clicks
+                        Create, sign, and store digital agreements securely. Track maintenance requests, manage repairs, and keep all property documentation in one accessible place.
                     </p>
 
                     <div className="flex items-center gap-2 mt-8">

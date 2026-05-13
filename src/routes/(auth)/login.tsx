@@ -7,7 +7,8 @@ import type { AuthData, Country } from '../../types';
 import configurationService from '../../services/config';
 import { useState } from 'react';
 import { checkUserExisits } from '../../services/auth';
-import { phoneNumberWithCountryCode } from '../../utils';
+import { getNetworkError, phoneNumberWithCountryCode } from '../../utils';
+import { toast } from 'react-toastify';
 
 export const Route = createFileRoute('/(auth)/login')({
   component: RouteComponent,
@@ -52,7 +53,8 @@ function RouteComponent() {
         }
       } catch (error) {
         setLoading(false);
-
+        const errorMessage = getNetworkError(error)
+        toast.error(errorMessage)
       }
   }
 
