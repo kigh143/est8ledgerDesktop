@@ -2,8 +2,8 @@ import axios from "axios";
 import { useAppStore } from "../store";
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.API_URL,
-  timeout: 10000,
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 10000
 });
 
 // Request interceptor to add auth token
