@@ -1,12 +1,15 @@
 export type User = {
-  id: "";
-  name: "";
-  role: "";
+  id: number;
+  name: string;
+  role: string;
+  email: string;
+  isActive: boolean;
+  userType: string;
 };
 
-export type TActiveProperty = {
-  id: "";
-};
+type FlexibleValue = string | boolean | number | Record<string, any>;
+
+export type TActiveProperty = Record<string, FlexibleValue>;
 
 export type RootRouteContext = {
   user: User | null;
