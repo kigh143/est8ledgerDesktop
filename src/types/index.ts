@@ -1,18 +1,20 @@
 export type User = {
-    id: '',
-    name: '',
-    role: '',
-}
+  id: "";
+  name: "";
+  role: "";
+};
 
 export type TActiveProperty = {
-    id:''
-}
+  id: "";
+};
 
 export type RootRouteContext = {
-    user: User | null,
-    activeProperty: TActiveProperty | null,
-    loggedIn:boolean,
-    login: (user: User) => void,
-    logout: () => void,
-    setActiveProperty: (property: TActiveProperty) => void
-}
+  user: User | null;
+  token: string | null;
+  activeProperty: TActiveProperty | null;
+  loggedIn: boolean;
+  login: (user: User) => void;
+  logout: () => void;
+  setActiveProperty: (property: TActiveProperty) => void;
+  setToken: (token: string) => void;
+};

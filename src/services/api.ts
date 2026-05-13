@@ -9,9 +9,9 @@ const apiClient = axios.create({
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
-    const { user } = useAppStore.getState();
-    if (user) {
-      config.headers.Authorization = `Bearer ${user}`;
+    const { token } = useAppStore.getState();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
