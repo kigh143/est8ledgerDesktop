@@ -18,3 +18,5 @@ export type RootRouteContext = {
   setActiveProperty: (property: TActiveProperty) => void;
   setToken: (token: string) => void;
 };
+
+export type RegisterPayload = {};

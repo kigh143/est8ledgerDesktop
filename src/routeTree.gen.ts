@@ -16,6 +16,7 @@ import { Route as PropertiesAddRouteImport } from './routes/properties/add'
 import { Route as DashboardHomeRouteImport } from './routes/dashboard/home'
 import { Route as authVerifyRouteImport } from './routes/(auth)/verify'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
+import { Route as authPinRouteImport } from './routes/(auth)/pin'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as PropertiesPropertyIdEditRouteImport } from './routes/properties/$propertyId.edit'
 
@@ -54,6 +55,11 @@ const authRegisterRoute = authRegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authPinRoute = authPinRouteImport.update({
+  id: '/(auth)/pin',
+  path: '/pin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const authLoginRoute = authLoginRouteImport.update({
   id: '/(auth)/login',
   path: '/login',
@@ -69,6 +75,7 @@ const PropertiesPropertyIdEditRoute =
 export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof authLoginRoute
+  '/pin': typeof authPinRoute
   '/register': typeof authRegisterRoute
   '/verify': typeof authVerifyRoute
   '/dashboard/home': typeof DashboardHomeRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof authLoginRoute
+  '/pin': typeof authPinRoute
   '/register': typeof authRegisterRoute
   '/verify': typeof authVerifyRoute
   '/dashboard/home': typeof DashboardHomeRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
+  '/(auth)/pin': typeof authPinRoute
   '/(auth)/register': typeof authRegisterRoute
   '/(auth)/verify': typeof authVerifyRoute
   '/dashboard/home': typeof DashboardHomeRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/dashboard'
     | '/login'
+    | '/pin'
     | '/register'
     | '/verify'
     | '/dashboard/home'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
   to:
     | '/dashboard'
     | '/login'
+    | '/pin'
     | '/register'
     | '/verify'
     | '/dashboard/home'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/dashboard'
     | '/(auth)/login'
+    | '/(auth)/pin'
     | '/(auth)/register'
     | '/(auth)/verify'
     | '/dashboard/home'
@@ -139,6 +151,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   authLoginRoute: typeof authLoginRoute
+  authPinRoute: typeof authPinRoute
   authRegisterRoute: typeof authRegisterRoute
   authVerifyRoute: typeof authVerifyRoute
   PropertiesAddRoute: typeof PropertiesAddRoute
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authRegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/pin': {
+      id: '/(auth)/pin'
+      path: '/pin'
+      fullPath: '/pin'
+      preLoaderRoute: typeof authPinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(auth)/login': {
       id: '/(auth)/login'
       path: '/login'
@@ -230,6 +250,7 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   authLoginRoute: authLoginRoute,
+  authPinRoute: authPinRoute,
   authRegisterRoute: authRegisterRoute,
   authVerifyRoute: authVerifyRoute,
   PropertiesAddRoute: PropertiesAddRoute,
