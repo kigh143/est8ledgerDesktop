@@ -35,9 +35,9 @@ const authIndexRoute = authIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const PropertiesAddRoute = PropertiesAddRouteImport.update({
-  id: '/add',
-  path: '/add',
-  getParentRoute: () => PropertiesRouteRoute,
+  id: '/properties/add',
+  path: '/properties/add',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardHomeRoute = DashboardHomeRouteImport.update({
   id: '/home',
@@ -61,9 +61,9 @@ const authLoginRoute = authLoginRouteImport.update({
 } as any)
 const PropertiesPropertyIdEditRoute =
   PropertiesPropertyIdEditRouteImport.update({
-    id: '/$propertyId/edit',
-    path: '/$propertyId/edit',
-    getParentRoute: () => PropertiesRouteRoute,
+    id: '/properties/$propertyId/edit',
+    path: '/properties/$propertyId/edit',
+    getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -141,8 +141,10 @@ export interface RootRouteChildren {
   authLoginRoute: typeof authLoginRoute
   authRegisterRoute: typeof authRegisterRoute
   authVerifyRoute: typeof authVerifyRoute
+  PropertiesAddRoute: typeof PropertiesAddRoute
   authIndexRoute: typeof authIndexRoute
   PropertiesIndexRoute: typeof PropertiesIndexRoute
+  PropertiesPropertyIdEditRoute: typeof PropertiesPropertyIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -170,10 +172,10 @@ declare module '@tanstack/react-router' {
     }
     '/properties/add': {
       id: '/properties/add'
-      path: '/add'
+      path: '/properties/add'
       fullPath: '/properties/add'
       preLoaderRoute: typeof PropertiesAddRouteImport
-      parentRoute: typeof PropertiesRouteRoute
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/home': {
       id: '/dashboard/home'
@@ -205,10 +207,10 @@ declare module '@tanstack/react-router' {
     }
     '/properties/$propertyId/edit': {
       id: '/properties/$propertyId/edit'
-      path: '/$propertyId/edit'
+      path: '/properties/$propertyId/edit'
       fullPath: '/properties/$propertyId/edit'
       preLoaderRoute: typeof PropertiesPropertyIdEditRouteImport
-      parentRoute: typeof PropertiesRouteRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -230,8 +232,10 @@ const rootRouteChildren: RootRouteChildren = {
   authLoginRoute: authLoginRoute,
   authRegisterRoute: authRegisterRoute,
   authVerifyRoute: authVerifyRoute,
+  PropertiesAddRoute: PropertiesAddRoute,
   authIndexRoute: authIndexRoute,
   PropertiesIndexRoute: PropertiesIndexRoute,
+  PropertiesPropertyIdEditRoute: PropertiesPropertyIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
