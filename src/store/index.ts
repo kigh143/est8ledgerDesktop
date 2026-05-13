@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import type { RootRouteContext, TActiveProperty, User } from "../types";
+import type {
+  AuthData,
+  RootRouteContext,
+  TActiveProperty,
+  User,
+} from "../types";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 export const useAppStore = create<RootRouteContext>()(
@@ -9,6 +14,12 @@ export const useAppStore = create<RootRouteContext>()(
       token: null,
       activeProperty: null,
       loggedIn: false,
+      authData: {
+        loginWith: "email",
+        country: null,
+        phoneNumber: null,
+        email: null,
+      },
       login: (user: User) => {
         set({ user });
       },
@@ -23,6 +34,9 @@ export const useAppStore = create<RootRouteContext>()(
       },
       setToken: (token: string) => {
         set({ token });
+      },
+      setAuthData: (data: AuthData) => {
+        set({ authData: data });
       },
     }),
     {

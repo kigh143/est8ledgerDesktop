@@ -11,11 +11,11 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
 
   const checkLoggedIn = () => {
-    if (!state.user) {
+    if (!state.token) {
       state.logout();
       navigate({ to: '/login' })
     } else {
-      navigate({ to: '/properties' })
+      navigate({ to: '/pin' })
     }
   }
 
