@@ -92,7 +92,7 @@ function RouteComponent() {
             <>
               <Select
                 label="Select Country"
-                options={countries.map((country: Country) => ({ label: `${country.flag}-${country.name}`, value: country.id }))}
+                options={countries.map((country: Country) => ({ label: `${country.flag} (+${country.dialingCode}) ${country.name}`, value: country.id }))}
                 value={authData?.country?.id || null}
                 onChange={(countryId) => setAuthData({ ...authData, country: countries.find((country: Country) => country.id === +countryId) })}
                 placeholder="Select Country"

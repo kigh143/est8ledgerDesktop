@@ -24,7 +24,7 @@ export const Select = ({
             <select
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition-all focus:border-black focus:ring-2 focus:ring-black/10"
+                className="w-full mt-2 rounded-md border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition-all focus:border-black focus:ring-2 focus:ring-black/10"
             >
                 <option value="">{placeholder}</option>
 

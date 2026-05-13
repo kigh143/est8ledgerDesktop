@@ -22,7 +22,7 @@ function RouteComponent() {
   useEffect(() => {
     const timer = setTimeout(() => {
       checkLoggedIn();
-    }, 3000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [])
