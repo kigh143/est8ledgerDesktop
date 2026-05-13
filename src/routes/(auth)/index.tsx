@@ -15,7 +15,7 @@ function RouteComponent() {
       state.logout();
       navigate({ to: '/login' })
     } else {
-      navigate({ to: '/properties' })
+      navigate({ to: '/pin' })
     }
   }
 

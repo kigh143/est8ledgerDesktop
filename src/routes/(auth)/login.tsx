@@ -14,17 +14,14 @@ export const Route = createFileRoute('/(auth)/login')({
   beforeLoad: () => {
     const { token } = useAppStore.getState();
     if (token) {
-      throw redirect({ to: '/properties' });
+      throw redirect({ to: '/pin' });
     }
   },
   loader: async () => {
-
     const countries = await configurationService.getCountries();
-    // console.log({ countries })
     return {
       countries
     }
-
   }
 })
 

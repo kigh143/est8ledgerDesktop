@@ -7,7 +7,7 @@ export const Route = createFileRoute('/(auth)/register')({
   beforeLoad: () => {
     const { token } = useAppStore.getState();
     if (token) {
-      throw redirect({ to: '/properties' });
+      throw redirect({ to: '/pin' });
     }
   }
 })
