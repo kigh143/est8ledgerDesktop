@@ -3,8 +3,9 @@ import { useAppStore } from '../../store';
 import AuthLayout from '../../componennts/AuthLayout';
 import { useEffect, useState } from 'react';
 import { Input } from '../../componennts/forms/Input';
-import { phoneNumberWithCountryCode } from '../../utils';
+import { getNetworkError, phoneNumberWithCountryCode } from '../../utils';
 import { checkUserExisits, verifyOTP } from '../../services/auth';
+import { toast } from 'react-toastify';
 
 export const Route = createFileRoute('/(auth)/verify')({
   component: RouteComponent,
@@ -18,7 +19,7 @@ export const Route = createFileRoute('/(auth)/verify')({
 
 function RouteComponent() {
 
-  const { authData,login, setToken  } = useAppStore();
+  const { authData, login, setToken } = useAppStore();
   const [loading, setLoading] = useState(false);
   const [Resending, setResendig] = useState(false);
   const [timer, setTimer] = useState(120)
@@ -36,12 +37,12 @@ function RouteComponent() {
           phoneNumber: cleanPhone
         };
       const response = await checkUserExisits(payload);
-      console.log(response);
       setResendig(false);
       setTimer(120);
     } catch (error) {
       setResendig(false);
-
+      const errorMessage = getNetworkError(error)
+      toast.error(errorMessage)
     }
 
   }
@@ -56,16 +57,18 @@ function RouteComponent() {
 
       const response = await verifyOTP(payload);
 
-      if(response.user.role==='MGT'){
+      if (response.user.role === 'MGT') {
         login(response);
         setToken(response.accessToken)
-        navigate({to:'/pin'})
+        navigate({ to: '/pin' })
         console.log(response);
-      }else{
-          console.log("Only MGT can sign i here ")
+      } else {
+        toast.warn('Only management can sign here. Please note that this platform is only for landlords and property managers. Please download the Est8Ledger application.')
       }
     } catch (error) {
       setLoading(false);
+      const errorMessage = getNetworkError(error)
+      toast.error(errorMessage)
     }
   }
 
@@ -77,7 +80,7 @@ function RouteComponent() {
     return () => clearInterval(timer);
   }, [])
 
-  return <AuthLayout>
+  return <AuthLayout showBackBtn={true}>
     <div className="w-full max-w-md">
       <h2
         className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#181f5c] leading-tight"

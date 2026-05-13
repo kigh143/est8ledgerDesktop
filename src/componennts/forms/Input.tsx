@@ -32,7 +32,7 @@ export const Input = ({
 
             <div className="relative flex flex-row mt-2">
                 {
-                    countryCode && <div className="flex justify-center items-center px-5 rounded-xl border border-gray-300 bg-white ">
+                    countryCode && <div className="flex justify-center items-center px-5 rounded-md border border-gray-300 bg-white ">
                         +{countryCode}
                     </div>
                 }
@@ -60,7 +60,7 @@ export const Input = ({
                             onChange(e.target.value);
                         }
                     }}
-                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition-all focus:border-black focus:ring-2 focus:ring-black/10"
+                    className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition-all focus:border-black focus:ring-2 focus:ring-black/10"
                 />
 
                 {isPassword && (

@@ -43,11 +43,11 @@ function RouteComponent() {
             if (response.status) {
                 navigate({ to: '/properties' });
             } else {
-                toast("Wrong Pin, please try again");
+                toast.warn("Wrong Pin, please try again");
             }
         } catch (error) {
             setLoading(false);
-            toast(getNetworkError(error));
+            toast.error(getNetworkError(error));
         }
     }
 
@@ -79,13 +79,13 @@ function RouteComponent() {
                     onClick={handleVerifyPin}
                     className="w-full h-14 bg-[#1b1b1b] text-white rounded-xl text-base font-semibold hover:bg-black transition"
                 >
-                    {loading ? 'Verifying ... ' : 'Verify Pin'}
+                    {loading ? 'Verifying ... ' : 'Verify'}
                 </button>
             </form>
 
             <p className="text-center text-gray-400 text-sm mt-12">
                 I forgot my pin ?{' '}
-                <a href="#" className="text-blue-600 font-medium">
+                <a href="mailto:info@est8ledger.com" target='_blank' className="text-blue-600 font-medium">
                     Contact est8Ledger
                 </a> |  <button onClick={handleLogout} className="text-red-600 font-medium cursor-pointer">
                     Logout

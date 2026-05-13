@@ -7,7 +7,8 @@ import type { AuthData, Country } from '../../types';
 import configurationService from '../../services/config';
 import { useState } from 'react';
 import { checkUserExisits } from '../../services/auth';
-import { phoneNumberWithCountryCode } from '../../utils';
+import { getNetworkError, phoneNumberWithCountryCode } from '../../utils';
+import { toast } from 'react-toastify';
 
 export const Route = createFileRoute('/(auth)/login')({
   component: RouteComponent,
@@ -52,7 +53,8 @@ function RouteComponent() {
         }
       } catch (error) {
         setLoading(false);
-
+        const errorMessage = getNetworkError(error)
+        toast.error(errorMessage)
       }
   }
 
@@ -90,7 +92,7 @@ function RouteComponent() {
             <>
               <Select
                 label="Select Country"
-                options={countries.map((country: Country) => ({ label: `${country.flag}-${country.name}`, value: country.id }))}
+                options={countries.map((country: Country) => ({ label: `${country.flag} (+${country.dialingCode}) ${country.name}`, value: country.id }))}
                 value={authData?.country?.id || null}
                 onChange={(countryId) => setAuthData({ ...authData, country: countries.find((country: Country) => country.id === +countryId) })}
                 placeholder="Select Country"
