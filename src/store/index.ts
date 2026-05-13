@@ -6,6 +6,7 @@ export const useAppStore = create<RootRouteContext>()(
   persist(
     (set) => ({
       user: null,
+      token: null,
       activeProperty: null,
       loggedIn: false,
       login: (user: User) => {
@@ -15,10 +16,13 @@ export const useAppStore = create<RootRouteContext>()(
         set({ loggedIn: true });
       },
       logout: () => {
-        set({ user: null, activeProperty: null, loggedIn: false });
+        set({ user: null, activeProperty: null, loggedIn: false, token: null });
       },
       setActiveProperty: (activeProperty: TActiveProperty) => {
         set({ activeProperty });
+      },
+      setToken: (token: string) => {
+        set({ token });
       },
     }),
     {
