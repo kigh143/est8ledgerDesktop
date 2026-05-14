@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import PropertiesLayout from '../../componennts/PropertiesLayout'
 
-export const Route = createFileRoute('/properties/$propertyId/edit')({
+export const Route = createFileRoute('/properties/subscription')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <PropertiesLayout pageTitle='page' subTitle='sub'>
+  return <PropertiesLayout pageTitle='Subscription' subTitle='sub'>
     <></>
   </PropertiesLayout>
 }

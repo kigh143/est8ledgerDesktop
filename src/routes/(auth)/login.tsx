@@ -61,13 +61,13 @@ function RouteComponent() {
   return <AuthLayout>
     <div className="w-full max-w-md">
       <h2
-        className="text-2xl sm:text-4xl md:text-5xl font-bold text-[#181f5c] leading-tight"
+        className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 to-[#3f0ee3] bg-clip-text text-transparent leading-tight"
       >
-        Welcome Back to est8Ledger!
+        Welcome Back!
       </h2>
 
-      <p className="mt-3 text-gray-400 text-sm sm:text-base">
-        Sign in your account
+      <p className="mt-3 text-slate-600 text-sm sm:text-base font-medium">
+        Sign in to your account to continue
       </p>
 
       <form className="mt-10 space-y-6">
@@ -109,22 +109,20 @@ function RouteComponent() {
           )
         }
 
-
-
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full h-14 bg-[#1b1b1b] text-white rounded-xl text-base font-semibold hover:bg-black transition"
+          className="w-full h-14 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 text-white rounded-xl text-base font-semibold shadow-lg shadow-[#3f0ee3]/40 hover:shadow-[#3f0ee3]/60 transition-all hover:from-[#3f0ee3] hover:to-[#3f0ee3] disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {loading? 'Loading ... ' :'Login'}
         </button>
       </form>
 
-      <p className="text-center text-gray-400 text-sm mt-12">
-        Don't have any account?
+      <p className="text-center text-slate-600 text-sm mt-12">
+        Don't have an account?
         <Link to='/register'>
-          <span className="text-blue-600 font-medium">
-            {' '}Register
+          <span className="ml-1 text-[#3f0ee3] font-semibold hover:text-[#3f0ee3]/80 transition-colors">
+            Register
           </span>
         </Link>
       </p>

@@ -49,7 +49,6 @@ function RouteComponent() {
 
   const handleVerifyOtp = async () => {
     try {
-      // setLoading(true);
       const cleanPhone = phoneNumberWithCountryCode(authData?.phoneNumber ?? '', authData?.phoneNumber ?? '');
       const payload = authData.loginWith === 'email'
         ? { otp, email: authData.email }
@@ -58,10 +57,9 @@ function RouteComponent() {
       const response = await verifyOTP(payload);
 
       if (response.user.role === 'MGT') {
-        login(response);
+        login(response.user);
         setToken(response.accessToken)
         navigate({ to: '/pin' })
-        console.log(response);
       } else {
         toast.warn('Only management can sign here. Please note that this platform is only for landlords and property managers. Please download the Est8Ledger application.')
       }
@@ -83,13 +81,13 @@ function RouteComponent() {
   return <AuthLayout showBackBtn={true}>
     <div className="w-full max-w-md">
       <h2
-        className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#181f5c] leading-tight"
+        className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 to-[#3f0ee3] bg-clip-text text-transparent leading-tight"
       >
-        Verification
+        Verify Code
       </h2>
 
-      <p className="mt-3 text-gray-400 text-sm sm:text-base">
-        Please enter the 6 digit code wesent to your <b>{authData.loginWith === 'email' ? authData.email : `+${authData.country?.dialingCode}${authData.phoneNumber}`}</b>
+      <p className="mt-4 text-slate-600 text-sm sm:text-base font-medium">
+        We sent a 6-digit code to <span className="font-semibold text-slate-900">{authData.loginWith === 'email' ? authData.email : `+${authData.country?.dialingCode}${authData.phoneNumber}`}</span>
       </p>
 
       <div className="mt-10 space-y-6">
@@ -98,28 +96,29 @@ function RouteComponent() {
           type='text'
           value={otp}
           onChange={(otp) => setOtp(otp)}
-          placeholder='Enter Otp'
-          label=''
+          placeholder='Enter 6-digit code'
+          label='Verification Code'
         />
 
         <button
           onClick={handleVerifyOtp}
           disabled={loading}
-          className="w-full h-14 bg-[#1b1b1b] text-white rounded-xl text-base font-semibold hover:bg-black transition"
+          className="w-full h-14 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 text-white rounded-xl text-base font-semibold shadow-lg shadow-[#3f0ee3]/40 hover:shadow-[#3f0ee3]/60 transition-all hover:from-[#3f0ee3] hover:to-[#3f0ee3] disabled:opacity-70 disabled:cursor-not-allowed"
         >
-          {loading ? 'Loading ...' : 'Verify'}
+          {loading ? 'Verifying ...' : 'Verify Code'}
         </button>
       </div>
+
       {
         timer > 0 ?
-          <p className="text-center text-gray-400 text-sm mt-12">
-            {Resending ? ' Resending code ...' : `The OTP will expire in ${timer} mins`}
+          <p className="text-center text-slate-600 text-sm mt-10 font-medium">
+            {Resending ? '⏳ Resending code ...' : `⏱️ Code expires in ${timer}s`}
           </p>
           :
-          <p className="text-center text-gray-400 text-sm mt-12">
-            I didt receive the code{' '}
-            <button onClick={handleResendCode} className="text-blue-600 font-medium">
-              {' '} Resend Code
+          <p className="text-center text-slate-600 text-sm mt-10">
+            Didn't receive the code?{' '}
+            <button onClick={handleResendCode} className="text-[#3f0ee3] font-semibold hover:text-[#3f0ee3]/80 transition-colors">
+              Resend Code
             </button>
           </p>
       }

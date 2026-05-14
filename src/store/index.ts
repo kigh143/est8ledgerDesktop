@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import type {
   AuthData,
+  PropertyAgreement,
   RootRouteContext,
-  TActiveProperty,
   User,
 } from "../types";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -27,9 +27,20 @@ export const useAppStore = create<RootRouteContext>()(
         set({ loggedIn: true });
       },
       logout: () => {
-        set({ user: null, activeProperty: null, loggedIn: false, token: null });
+        set({
+          user: null,
+          activeProperty: null,
+          loggedIn: false,
+          token: null,
+          authData: {
+            loginWith: "email",
+            country: null,
+            phoneNumber: null,
+            email: null,
+          },
+        });
       },
-      setActiveProperty: (activeProperty: TActiveProperty) => {
+      setActiveProperty: (activeProperty: PropertyAgreement) => {
         set({ activeProperty });
       },
       setToken: (token: string) => {
