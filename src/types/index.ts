@@ -387,3 +387,94 @@ export type TenancyAgreement = {
 };
 
 export type TenancyAgreementResponse = TenancyAgreement[];
+
+// Security Deposits
+export interface SecurityDepositRecord {
+  id: string;
+  tenancyId: string;
+  amount: number;
+  status: "PENDING" | "PAID" | "REFUNDED" | "DISPUTED";
+  paymentMethod: string;
+  reference?: string;
+  createdAt: string;
+  updatedAt: string;
+  currency: string;
+  investedAt: string | null;
+  tenantOptedIntoInvestmentAt: string | null;
+  mgtOptedIntoInvestmentAt: string | null;
+  depositFees: string | null;
+  tenantShare: string | null;
+  mgtShare: string | null;
+  tenancy?: {
+    id: number;
+    tenant: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+    unitName: string;
+  };
+}
+
+export type SecurityDepositResponse = SecurityDepositRecord[];
+
+// Rent Payments / Rent Tracking
+export interface RentPayment {
+  id: string;
+  monthPaidFor: number;
+  yearPaidFor: number;
+  amount: number;
+  currency: string;
+  tenancyId: string;
+  propertyAgreementId: string;
+  paymentReference: string;
+  status: "PENDING" | "CONFIRMED" | "DISPUTED" | "CANCELLED";
+  createdAt: string;
+  updatedAt: string;
+  tenancy?: {
+    id: number;
+    tenant: {
+      firstName: string;
+      lastName: string;
+    };
+    unitName: string;
+    rentAmount: string;
+  };
+}
+
+export type RentTrackingResponse = RentPayment[];
+
+export interface RentPaymentAccount {
+  id: string;
+  accountNumber: string;
+  accountType: string;
+  accountName: string;
+  instructions?: string;
+  propertyAgreementId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Inspections
+export interface InspectionItem {
+  id: number;
+  tenancyId: number;
+  propertyAgreementId: number;
+  type: "MOVE_IN" | "MOVE_OUT";
+  status?: "PENDING" | "COMPLETED" | "APPROVED";
+  tenantApprovedAt?: string | null;
+  managerApprovedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  tenancy?: {
+    id: number;
+    unitName: string;
+    tenant: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+  };
+}
+
+export type InspectionResponse = InspectionItem[];

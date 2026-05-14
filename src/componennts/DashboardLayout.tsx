@@ -171,7 +171,7 @@ export default function DashboardLayout({ children}: LayoutProps) {
                   <Menu size={24} />
                 </button>
                 <div className="min-w-0 flex-1">
-                  <h1 className="truncate text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent sm:text-3xl">
+                  <h1 className="truncate text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent sm:text-3xl">
                     {state.activeProperty?.propertyName}
                   </h1>
                   <p className="mt-2 truncate text-sm text-slate-500 font-medium">
@@ -180,10 +180,6 @@ export default function DashboardLayout({ children}: LayoutProps) {
                 </div>
               </div>
 
-              <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3f0ee3]/40 transition-all hover:shadow-[#3f0ee3]/60 hover:from-[#3f0ee3] hover:to-[#3f0ee3] active:scale-95 md:rounded-xl md:px-6 md:py-3 md:text-base">
-                <Bell size={20} />
-                <span>Notifications</span>
-              </button>
             </div>
           </div>
 
