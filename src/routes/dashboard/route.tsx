@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { useAppStore } from '../../store';
+import DashboardLayout from '../../componennts/DashboardLayout';
 
 export const Route = createFileRoute('/dashboard')({
   component: RouteComponent,
@@ -9,14 +10,15 @@ export const Route = createFileRoute('/dashboard')({
       throw redirect({ to: '/login' });
     }
 
-    if(!activeProperty){
+    if (!activeProperty) {
       throw redirect({ to: '/properties' });
     }
   }
 })
 
 function RouteComponent() {
-  return <div>Hello "/(dashboard)/"!
+  return <DashboardLayout pageTitle='' subTitle=''>
     <Outlet />
-  </div>
+  </DashboardLayout>
+
 }

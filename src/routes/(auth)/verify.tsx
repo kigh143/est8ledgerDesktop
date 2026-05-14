@@ -49,7 +49,6 @@ function RouteComponent() {
 
   const handleVerifyOtp = async () => {
     try {
-      // setLoading(true);
       const cleanPhone = phoneNumberWithCountryCode(authData?.phoneNumber ?? '', authData?.phoneNumber ?? '');
       const payload = authData.loginWith === 'email'
         ? { otp, email: authData.email }
@@ -58,10 +57,9 @@ function RouteComponent() {
       const response = await verifyOTP(payload);
 
       if (response.user.role === 'MGT') {
-        login(response);
+        login(response.user);
         setToken(response.accessToken)
         navigate({ to: '/pin' })
-        console.log(response);
       } else {
         toast.warn('Only management can sign here. Please note that this platform is only for landlords and property managers. Please download the Est8Ledger application.')
       }

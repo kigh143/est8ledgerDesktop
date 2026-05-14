@@ -60,7 +60,7 @@ function RouteComponent() {
             </h2>
 
             <p className="mt-3 text-gray-400 text-sm sm:text-base">
-                Please {user?.user?.email ?? ''}  enter your pin to continue
+                Please {user?.email ?? ''}  enter your pin to continue
             </p>
 
             <form className="mt-10 space-y-6">

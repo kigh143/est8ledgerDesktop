@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as PropertiesIndexRouteImport } from './routes/properties/index'
 import { Route as authIndexRouteImport } from './routes/(auth)/index'
+import { Route as PropertiesSubscriptionRouteImport } from './routes/properties/subscription'
+import { Route as PropertiesSettingsRouteImport } from './routes/properties/settings'
+import { Route as PropertiesHelpRouteImport } from './routes/properties/help'
 import { Route as PropertiesAddRouteImport } from './routes/properties/add'
 import { Route as DashboardHomeRouteImport } from './routes/dashboard/home'
 import { Route as authVerifyRouteImport } from './routes/(auth)/verify'
@@ -33,6 +36,21 @@ const PropertiesIndexRoute = PropertiesIndexRouteImport.update({
 const authIndexRoute = authIndexRouteImport.update({
   id: '/(auth)/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesSubscriptionRoute = PropertiesSubscriptionRouteImport.update({
+  id: '/properties/subscription',
+  path: '/properties/subscription',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesSettingsRoute = PropertiesSettingsRouteImport.update({
+  id: '/properties/settings',
+  path: '/properties/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesHelpRoute = PropertiesHelpRouteImport.update({
+  id: '/properties/help',
+  path: '/properties/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PropertiesAddRoute = PropertiesAddRouteImport.update({
@@ -80,6 +98,9 @@ export interface FileRoutesByFullPath {
   '/verify': typeof authVerifyRoute
   '/dashboard/home': typeof DashboardHomeRoute
   '/properties/add': typeof PropertiesAddRoute
+  '/properties/help': typeof PropertiesHelpRoute
+  '/properties/settings': typeof PropertiesSettingsRoute
+  '/properties/subscription': typeof PropertiesSubscriptionRoute
   '/': typeof authIndexRoute
   '/properties/': typeof PropertiesIndexRoute
   '/properties/$propertyId/edit': typeof PropertiesPropertyIdEditRoute
@@ -92,6 +113,9 @@ export interface FileRoutesByTo {
   '/verify': typeof authVerifyRoute
   '/dashboard/home': typeof DashboardHomeRoute
   '/properties/add': typeof PropertiesAddRoute
+  '/properties/help': typeof PropertiesHelpRoute
+  '/properties/settings': typeof PropertiesSettingsRoute
+  '/properties/subscription': typeof PropertiesSubscriptionRoute
   '/': typeof authIndexRoute
   '/properties': typeof PropertiesIndexRoute
   '/properties/$propertyId/edit': typeof PropertiesPropertyIdEditRoute
@@ -105,6 +129,9 @@ export interface FileRoutesById {
   '/(auth)/verify': typeof authVerifyRoute
   '/dashboard/home': typeof DashboardHomeRoute
   '/properties/add': typeof PropertiesAddRoute
+  '/properties/help': typeof PropertiesHelpRoute
+  '/properties/settings': typeof PropertiesSettingsRoute
+  '/properties/subscription': typeof PropertiesSubscriptionRoute
   '/(auth)/': typeof authIndexRoute
   '/properties/': typeof PropertiesIndexRoute
   '/properties/$propertyId/edit': typeof PropertiesPropertyIdEditRoute
@@ -119,6 +146,9 @@ export interface FileRouteTypes {
     | '/verify'
     | '/dashboard/home'
     | '/properties/add'
+    | '/properties/help'
+    | '/properties/settings'
+    | '/properties/subscription'
     | '/'
     | '/properties/'
     | '/properties/$propertyId/edit'
@@ -131,6 +161,9 @@ export interface FileRouteTypes {
     | '/verify'
     | '/dashboard/home'
     | '/properties/add'
+    | '/properties/help'
+    | '/properties/settings'
+    | '/properties/subscription'
     | '/'
     | '/properties'
     | '/properties/$propertyId/edit'
@@ -143,6 +176,9 @@ export interface FileRouteTypes {
     | '/(auth)/verify'
     | '/dashboard/home'
     | '/properties/add'
+    | '/properties/help'
+    | '/properties/settings'
+    | '/properties/subscription'
     | '/(auth)/'
     | '/properties/'
     | '/properties/$propertyId/edit'
@@ -155,6 +191,9 @@ export interface RootRouteChildren {
   authRegisterRoute: typeof authRegisterRoute
   authVerifyRoute: typeof authVerifyRoute
   PropertiesAddRoute: typeof PropertiesAddRoute
+  PropertiesHelpRoute: typeof PropertiesHelpRoute
+  PropertiesSettingsRoute: typeof PropertiesSettingsRoute
+  PropertiesSubscriptionRoute: typeof PropertiesSubscriptionRoute
   authIndexRoute: typeof authIndexRoute
   PropertiesIndexRoute: typeof PropertiesIndexRoute
   PropertiesPropertyIdEditRoute: typeof PropertiesPropertyIdEditRoute
@@ -181,6 +220,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof authIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/subscription': {
+      id: '/properties/subscription'
+      path: '/properties/subscription'
+      fullPath: '/properties/subscription'
+      preLoaderRoute: typeof PropertiesSubscriptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/settings': {
+      id: '/properties/settings'
+      path: '/properties/settings'
+      fullPath: '/properties/settings'
+      preLoaderRoute: typeof PropertiesSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/help': {
+      id: '/properties/help'
+      path: '/properties/help'
+      fullPath: '/properties/help'
+      preLoaderRoute: typeof PropertiesHelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/properties/add': {
@@ -254,6 +314,9 @@ const rootRouteChildren: RootRouteChildren = {
   authRegisterRoute: authRegisterRoute,
   authVerifyRoute: authVerifyRoute,
   PropertiesAddRoute: PropertiesAddRoute,
+  PropertiesHelpRoute: PropertiesHelpRoute,
+  PropertiesSettingsRoute: PropertiesSettingsRoute,
+  PropertiesSubscriptionRoute: PropertiesSubscriptionRoute,
   authIndexRoute: authIndexRoute,
   PropertiesIndexRoute: PropertiesIndexRoute,
   PropertiesPropertyIdEditRoute: PropertiesPropertyIdEditRoute,
