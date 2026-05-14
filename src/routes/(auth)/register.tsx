@@ -1,6 +1,8 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { useAppStore } from '../../store';
 import AuthLayout from '../../componennts/AuthLayout';
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/(auth)/register')({
   component: RouteComponent,
@@ -13,109 +15,97 @@ export const Route = createFileRoute('/(auth)/register')({
 })
 
 function RouteComponent() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return <AuthLayout>
     <div className="w-full max-w-md">
       <h2
-        className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#181f5c] leading-tight"
+        className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 to-[#3f0ee3] bg-clip-text text-transparent leading-tight"
       >
-        Welcome Back to Realnest!
+        Create Account
       </h2>
 
-      <p className="mt-3 text-gray-400 text-sm sm:text-base">
-        Sign in your account
+      <p className="mt-4 text-slate-600 text-sm sm:text-base font-medium">
+        Join est8Ledger to manage your properties
       </p>
 
-      <form className="mt-10 space-y-6">
+      <form className="mt-10 space-y-5">
 
         <div>
           <label
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-semibold text-slate-900 mb-2"
           >
-            Your Email
+            Email Address
           </label>
 
           <input
             type="email"
-            value="info.madhu786@gmail.com"
-            className="w-full h-14 border border-gray-300 rounded-xl px-5 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-black"
+            placeholder="you@example.com"
+            className="w-full h-12 border border-slate-200 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#3f0ee3]/40 focus:border-[#3f0ee3] transition-colors"
           />
         </div>
 
         <div>
           <label
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-semibold text-slate-900 mb-2"
           >
             Password
           </label>
 
           <div className="relative">
             <input
-              type="password"
-              value="password"
-              className="w-full h-14 border border-gray-300 rounded-xl px-5 pr-14 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-black"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Enter your password"
+              className="w-full h-12 border border-slate-200 rounded-lg px-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-[#3f0ee3]/40 focus:border-[#3f0ee3] transition-colors"
             />
 
             <button
               type="button"
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
         </div>
 
-        <div
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-        >
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              className="rounded border-gray-300"
-            />
-            Remember Me
+        <div>
+          <label
+            className="block text-sm font-semibold text-slate-900 mb-2"
+          >
+            Confirm Password
           </label>
 
-          <a
-            href="#"
-            className="text-sm text-gray-400 hover:text-black"
-          >
-            Forgot Password?
-          </a>
+          <input
+            type="password"
+            placeholder="Confirm your password"
+            className="w-full h-12 border border-slate-200 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#3f0ee3]/40 focus:border-[#3f0ee3] transition-colors"
+          />
         </div>
 
+        <label className="flex items-center gap-3 pt-2">
+          <input
+            type="checkbox"
+            className="w-4 h-4 border border-slate-300 rounded accent-[#3f0ee3] cursor-pointer"
+          />
+          <span className="text-sm text-slate-600">
+            I agree to the <a href="#" className="text-[#3f0ee3] hover:text-[#3f0ee3]/80 font-semibold transition-colors">Terms of Service</a>
+          </span>
+        </label>
+
         <button
-          className="w-full h-14 bg-[#1b1b1b] text-white rounded-xl text-base font-semibold hover:bg-black transition"
+          type="button"
+          className="w-full h-14 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 text-white rounded-lg text-base font-semibold shadow-lg shadow-[#3f0ee3]/40 hover:shadow-[#3f0ee3]/60 transition-all hover:from-[#3f0ee3] hover:to-[#3f0ee3] mt-6"
         >
-          Login
+          Create Account
         </button>
       </form>
 
-
-
-      <p className="text-center text-gray-400 text-sm mt-12">
-        Do you already have an account ?
+      <p className="text-center text-slate-600 text-sm mt-10">
+        Already have an account?
         <Link to='/login'>
-          <span className="text-blue-600 font-medium">
-            {' '}Login
+          <span className="ml-1 text-[#3f0ee3] font-semibold hover:text-[#3f0ee3]/80 transition-colors">
+            Login
           </span>
         </Link>
       </p>

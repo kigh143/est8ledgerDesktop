@@ -94,7 +94,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
       {/* Logo */}
       <div className="mb-10 mt-8 md:mt-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3f0ee3] to-[#3f0ee3]/80 flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-lg">E8</span>
           </div>
           <h1 className="text-xl font-bold text-white">est8Ledger</h1>
@@ -120,7 +120,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
             to={item.route}
             onClick={onClose}
             className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-all hover:bg-slate-700/50 hover:text-white active:bg-slate-700 md:rounded-xl"
-            activeProps={{ className: "bg-blue-600/20 text-blue-400 border-l-2 border-blue-500" }}
+            activeProps={{ className: "bg-[#3f0ee3]/20 text-[#7fe502] border-l-2 border-[#3f0ee3]" }}
           >
             {item.icon}
             <span>{item.label}</span>
@@ -180,7 +180,7 @@ export default function DashboardLayout({ children}: LayoutProps) {
                 </div>
               </div>
 
-              <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-blue-500/50 hover:from-blue-700 hover:to-blue-800 active:scale-95 md:rounded-xl md:px-6 md:py-3 md:text-base">
+              <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3f0ee3]/40 transition-all hover:shadow-[#3f0ee3]/60 hover:from-[#3f0ee3] hover:to-[#3f0ee3] active:scale-95 md:rounded-xl md:px-6 md:py-3 md:text-base">
                 <Bell size={20} />
                 <span>Notifications</span>
               </button>
@@ -188,7 +188,7 @@ export default function DashboardLayout({ children}: LayoutProps) {
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 via-slate-50 to-blue-50/30 px-4 py-8 sm:px-6 md:px-8 md:py-10">
+          <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 via-slate-50 to-[#3f0ee3]/5 px-4 py-8 sm:px-6 md:px-8 md:py-10">
             {children}
           </div>
         </main>

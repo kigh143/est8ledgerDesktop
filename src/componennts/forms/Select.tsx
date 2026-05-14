@@ -2,8 +2,8 @@
 type SelectProps = {
     label: string;
     options: any[];
-    value: string;
-    onChange: (text: string) => void;
+    value: string | number | null;
+    onChange: (text: string | number) => void;
     placeholder: string,
 }
 
@@ -17,14 +17,14 @@ export const Select = ({
     return (
         <div className="w-full space-y-2">
             {label && (
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-semibold text-slate-900">
                     {label}
                 </label>
             )}
             <select
-                value={value}
+                value={value ?? ''}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full mt-2 rounded-md border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition-all focus:border-black focus:ring-2 focus:ring-black/10"
+                className="w-full mt-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-[#3f0ee3] focus:ring-2 focus:ring-[#3f0ee3]/20 cursor-pointer"
             >
                 <option value="">{placeholder}</option>
 

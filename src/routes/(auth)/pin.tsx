@@ -54,13 +54,13 @@ function RouteComponent() {
     return <AuthLayout>
         <div className="w-full max-w-md">
             <h2
-                className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#181f5c] leading-tight"
+                className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 to-[#3f0ee3] bg-clip-text text-transparent leading-tight"
             >
-                Welcome back
+                Welcome Back
             </h2>
 
-            <p className="mt-3 text-gray-400 text-sm sm:text-base">
-                Please {user?.email ?? ''}  enter your pin to continue
+            <p className="mt-4 text-slate-600 text-sm sm:text-base font-medium">
+                Enter your PIN to access your account
             </p>
 
             <form className="mt-10 space-y-6">
@@ -69,28 +69,32 @@ function RouteComponent() {
                     type='pin'
                     value={pin}
                     onChange={(pin) => setPin(pin)}
-                    placeholder='Enter PIN'
-                    label=''
+                    placeholder='Enter 4-digit PIN'
+                    label='Security PIN'
                 />
-
 
                 <button
                     disabled={loading}
                     onClick={handleVerifyPin}
-                    className="w-full h-14 bg-[#1b1b1b] text-white rounded-xl text-base font-semibold hover:bg-black transition"
+                    className="w-full h-14 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 text-white rounded-xl text-base font-semibold shadow-lg shadow-[#3f0ee3]/40 hover:shadow-[#3f0ee3]/60 transition-all hover:from-[#3f0ee3] hover:to-[#3f0ee3] disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                    {loading ? 'Verifying ... ' : 'Verify'}
+                    {loading ? 'Verifying ...' : 'Verify PIN'}
                 </button>
             </form>
 
-            <p className="text-center text-gray-400 text-sm mt-12">
-                I forgot my pin ?{' '}
-                <a href="mailto:info@est8ledger.com" target='_blank' className="text-blue-600 font-medium">
-                    Contact est8Ledger
-                </a> |  <button onClick={handleLogout} className="text-red-600 font-medium cursor-pointer">
+            <div className="flex flex-col gap-3 mt-10 pt-6 border-t border-slate-200">
+                <p className="text-center text-slate-600 text-sm">
+                    <a href="mailto:info@est8ledger.com" target='_blank' className="text-[#3f0ee3] hover:text-[#3f0ee3]/80 font-semibold transition-colors">
+                        Reset PIN
+                    </a>
+                </p>
+                <button
+                    onClick={handleLogout}
+                    className="text-center text-slate-600 text-sm hover:text-slate-900 font-semibold transition-colors cursor-pointer"
+                >
                     Logout
                 </button>
-            </p>
+            </div>
         </div>
     </AuthLayout>
 }

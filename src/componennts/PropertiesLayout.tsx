@@ -7,10 +7,11 @@ import {
   MessageCircleQuestionMark,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  LogOut
 } from "lucide-react";
 import { useAppStore } from "../store";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 type LayoutProps = {
@@ -65,7 +66,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
       {/* Logo */}
       <div className="mb-10 mt-8 md:mt-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3f0ee3] to-[#3f0ee3]/80 flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-lg">E8</span>
           </div>
           <h1 className="text-xl font-bold text-white">est8Ledger</h1>
@@ -80,7 +81,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
             key={item.label}
             onClick={onClose}
             className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-all hover:bg-slate-700/50 hover:text-white active:bg-slate-700 md:rounded-xl group"
-            activeProps={{ className: "bg-blue-600/20 text-blue-400 border-l-2 border-blue-500" }}
+            activeProps={{ className: "bg-[#3f0ee3]/20 text-[#7fe502] border-l-2 border-[#3f0ee3]" }}
           >
             <div className="flex items-center gap-3">
               {item.icon}
@@ -105,6 +106,13 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
 
 export default function PropertiesLayout({ children, pageTitle, subTitle, action = null }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { logout } = useAppStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate({ to: '/login' });
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -141,16 +149,25 @@ export default function PropertiesLayout({ children, pageTitle, subTitle, action
                 </div>
               </div>
 
-              {action && (
-                <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 transition-all hover:shadow-emerald-500/50 hover:from-emerald-700 hover:to-emerald-800 active:scale-95 md:rounded-xl md:px-6 md:py-3 md:text-base whitespace-nowrap">
-                  Mark all as completed
+              <div className="flex items-center gap-3 md:gap-4">
+                {action && (
+                  <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#7fe502] to-[#7fe502]/90 px-5 py-2.5 text-sm font-semibold text-slate-900 shadow-lg shadow-[#7fe502]/40 transition-all hover:shadow-[#7fe502]/60 hover:from-[#7fe502] hover:to-[#7fe502] active:scale-95 md:rounded-xl md:px-6 md:py-3 md:text-base whitespace-nowrap font-bold">
+                    Mark all as completed
+                  </button>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-100 text-slate-700 px-4 py-2.5 text-sm font-semibold hover:bg-slate-200 transition-colors md:rounded-xl md:px-5 md:py-3 md:text-base shrink-0"
+                >
+                  <LogOut size={18} />
+                  <span className="hidden sm:inline">Logout</span>
                 </button>
-              )}
+              </div>
             </div>
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 via-slate-50 to-blue-50/30 px-4 py-8 sm:px-6 md:px-8 md:py-10">
+          <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 via-slate-50 to-[#3f0ee3]/5 px-4 py-8 sm:px-6 md:px-8 md:py-10">
             {children}
           </div>
         </main>
