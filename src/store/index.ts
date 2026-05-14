@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type {
   AuthData,
-  PropertyListing,
+  PropertyAgreement,
   RootRouteContext,
   User,
 } from "../types";
@@ -27,9 +27,20 @@ export const useAppStore = create<RootRouteContext>()(
         set({ loggedIn: true });
       },
       logout: () => {
-        set({ user: null, activeProperty: null, loggedIn: false, token: null });
+        set({
+          user: null,
+          activeProperty: null,
+          loggedIn: false,
+          token: null,
+          authData: {
+            loginWith: "email",
+            country: null,
+            phoneNumber: null,
+            email: null,
+          },
+        });
       },
-      setActiveProperty: (activeProperty: PropertyListing) => {
+      setActiveProperty: (activeProperty: PropertyAgreement) => {
         set({ activeProperty });
       },
       setToken: (token: string) => {

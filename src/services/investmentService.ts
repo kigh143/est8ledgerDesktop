@@ -29,10 +29,7 @@ export const investmentServices = {
     return response.data;
   },
 
-  /**
-   * Get investment profit history for a specific security deposit
-   * GET /investment-profit/security-deposit/:id
-   */
+
   getSecurityDepositProfitHistory: async (
     securityDepositId: string
   ): Promise<ApiResponse<InvestmentProfitEntry[]>> => {
