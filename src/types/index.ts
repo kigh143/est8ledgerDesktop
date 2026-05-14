@@ -307,3 +307,83 @@ export interface PropertyAgreement {
   notifications: any[];
   PropertyListing: any[];
 }
+
+
+export type TenancyAgreement = {
+  id: number;
+  propertyAgreementId: number;
+  tenantId: number;
+  managerId: number;
+  rentAmount: string;
+  unitName: string;
+  yakaMeter: string;
+  waterMeter: string;
+  late_payment_fee: string | null;
+  late_paymeny_percentage: string | null;
+  wasteHandledBy: "TENANT" | "LANDLORD";
+  securityDeposit: string;
+  securityDepositPaidAt: string | null;
+  mgtSignedAt: string;
+  tenantSignedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  terminatedAt: string | null;
+  terminationApprovedByTenantAt: string | null;
+  tenantRequestedAt: string | null;
+  mgtRequestedAt: string | null;
+  days_of_late_payment: number | null;
+  paymentDueDay: number | null;
+  lastPaymentDate: string | null;
+  outstandingBalance: string;
+  gracePeriodDays: number;
+  lateFeeType: string | null;
+
+  tenant: {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+  };
+
+  manager: {
+    id: number;
+    email: string;
+    firstName: string | null;
+    lastName: string | null;
+  };
+
+  propertyAgreement: {
+    id: number;
+    propertyName: string;
+    propertyAddress: string;
+    city: string;
+    district: string;
+    currency: string;
+    countryId: number;
+    ownerId: number;
+    propertyImage: string | null;
+    propertyType: string;
+    numberOfUnits: number;
+    evictionProcess: string;
+    terminationNoticeDays: number;
+    maxSecurityDepositMonths: number | null;
+    securityDepositMonths: number;
+    rentIncreaseNoticeDays: number;
+    initialAdvanceMonths: number;
+    isActive: boolean;
+    securityDepositRequired: boolean;
+    isDeleted: boolean;
+    customClauses: any[];
+    createdAt: string;
+    updatedAt: string;
+    added_by: string | null;
+    trackRentCollection: boolean;
+  };
+
+  securityDeposits: any[];
+  inspections: any[];
+  repairBreakdowns: any[];
+};
+
+export type TenancyAgreementResponse = TenancyAgreement[];
