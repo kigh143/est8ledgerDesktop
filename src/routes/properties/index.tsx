@@ -3,6 +3,7 @@ import { useAppStore } from '../../store';
 import PropertiesLayout from '../../componennts/PropertiesLayout';
 import type { PropertyAgreement } from '../../types';
 import agreementService from '../../services/agreementService';
+import placeholder from "../../assets/placeholder.jpeg"
 
 export const Route = createFileRoute('/properties/')({
   component: RouteComponent,
@@ -31,7 +32,7 @@ function RouteComponent() {
     navigate({ to: '/dashboard' });
   }
 
-  return <PropertiesLayout pageTitle='My Properties' subTitle='sub'>
+  return <PropertiesLayout pageTitle={`${properties.length} Properties`} subTitle='All properties with agreement details'>
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
       {properties.map((property: PropertyAgreement) => (
         <div
@@ -41,7 +42,7 @@ function RouteComponent() {
           {/* Image */}
           <div className="relative h-52 w-full overflow-hidden">
             <img
-              src={"/images/placeholder.jpeg"}
+              src={placeholder}
               alt={property.propertyName}
               className="w-full h-full object-cover"
             />

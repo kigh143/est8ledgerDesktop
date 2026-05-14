@@ -17,7 +17,7 @@ export const Route = createFileRoute('/dashboard')({
 })
 
 function RouteComponent() {
-  return <DashboardLayout pageTitle='' subTitle=''>
+  return <DashboardLayout>
     <Outlet />
   </DashboardLayout>
 

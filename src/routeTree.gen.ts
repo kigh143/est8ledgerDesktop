@@ -16,7 +16,15 @@ import { Route as PropertiesSubscriptionRouteImport } from './routes/properties/
 import { Route as PropertiesSettingsRouteImport } from './routes/properties/settings'
 import { Route as PropertiesHelpRouteImport } from './routes/properties/help'
 import { Route as PropertiesAddRouteImport } from './routes/properties/add'
+import { Route as DashboardTenantsRouteImport } from './routes/dashboard/tenants'
+import { Route as DashboardSecuritydepositsRouteImport } from './routes/dashboard/securitydeposits'
+import { Route as DashboardRepairsRouteImport } from './routes/dashboard/repairs'
+import { Route as DashboardRenttrackingRouteImport } from './routes/dashboard/renttracking'
+import { Route as DashboardInspectionsRouteImport } from './routes/dashboard/inspections'
 import { Route as DashboardHomeRouteImport } from './routes/dashboard/home'
+import { Route as DashboardExpensesRouteImport } from './routes/dashboard/expenses'
+import { Route as DashboardAgreementRouteImport } from './routes/dashboard/agreement'
+import { Route as DashboardAdvertiseRouteImport } from './routes/dashboard/advertise'
 import { Route as authVerifyRouteImport } from './routes/(auth)/verify'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authPinRouteImport } from './routes/(auth)/pin'
@@ -58,9 +66,50 @@ const PropertiesAddRoute = PropertiesAddRouteImport.update({
   path: '/properties/add',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardTenantsRoute = DashboardTenantsRouteImport.update({
+  id: '/tenants',
+  path: '/tenants',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardSecuritydepositsRoute =
+  DashboardSecuritydepositsRouteImport.update({
+    id: '/securitydeposits',
+    path: '/securitydeposits',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardRepairsRoute = DashboardRepairsRouteImport.update({
+  id: '/repairs',
+  path: '/repairs',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardRenttrackingRoute = DashboardRenttrackingRouteImport.update({
+  id: '/renttracking',
+  path: '/renttracking',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardInspectionsRoute = DashboardInspectionsRouteImport.update({
+  id: '/inspections',
+  path: '/inspections',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const DashboardHomeRoute = DashboardHomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardExpensesRoute = DashboardExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardAgreementRoute = DashboardAgreementRouteImport.update({
+  id: '/agreement',
+  path: '/agreement',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardAdvertiseRoute = DashboardAdvertiseRouteImport.update({
+  id: '/advertise',
+  path: '/advertise',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 const authVerifyRoute = authVerifyRouteImport.update({
@@ -96,7 +145,15 @@ export interface FileRoutesByFullPath {
   '/pin': typeof authPinRoute
   '/register': typeof authRegisterRoute
   '/verify': typeof authVerifyRoute
+  '/dashboard/advertise': typeof DashboardAdvertiseRoute
+  '/dashboard/agreement': typeof DashboardAgreementRoute
+  '/dashboard/expenses': typeof DashboardExpensesRoute
   '/dashboard/home': typeof DashboardHomeRoute
+  '/dashboard/inspections': typeof DashboardInspectionsRoute
+  '/dashboard/renttracking': typeof DashboardRenttrackingRoute
+  '/dashboard/repairs': typeof DashboardRepairsRoute
+  '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
+  '/dashboard/tenants': typeof DashboardTenantsRoute
   '/properties/add': typeof PropertiesAddRoute
   '/properties/help': typeof PropertiesHelpRoute
   '/properties/settings': typeof PropertiesSettingsRoute
@@ -111,7 +168,15 @@ export interface FileRoutesByTo {
   '/pin': typeof authPinRoute
   '/register': typeof authRegisterRoute
   '/verify': typeof authVerifyRoute
+  '/dashboard/advertise': typeof DashboardAdvertiseRoute
+  '/dashboard/agreement': typeof DashboardAgreementRoute
+  '/dashboard/expenses': typeof DashboardExpensesRoute
   '/dashboard/home': typeof DashboardHomeRoute
+  '/dashboard/inspections': typeof DashboardInspectionsRoute
+  '/dashboard/renttracking': typeof DashboardRenttrackingRoute
+  '/dashboard/repairs': typeof DashboardRepairsRoute
+  '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
+  '/dashboard/tenants': typeof DashboardTenantsRoute
   '/properties/add': typeof PropertiesAddRoute
   '/properties/help': typeof PropertiesHelpRoute
   '/properties/settings': typeof PropertiesSettingsRoute
@@ -127,7 +192,15 @@ export interface FileRoutesById {
   '/(auth)/pin': typeof authPinRoute
   '/(auth)/register': typeof authRegisterRoute
   '/(auth)/verify': typeof authVerifyRoute
+  '/dashboard/advertise': typeof DashboardAdvertiseRoute
+  '/dashboard/agreement': typeof DashboardAgreementRoute
+  '/dashboard/expenses': typeof DashboardExpensesRoute
   '/dashboard/home': typeof DashboardHomeRoute
+  '/dashboard/inspections': typeof DashboardInspectionsRoute
+  '/dashboard/renttracking': typeof DashboardRenttrackingRoute
+  '/dashboard/repairs': typeof DashboardRepairsRoute
+  '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
+  '/dashboard/tenants': typeof DashboardTenantsRoute
   '/properties/add': typeof PropertiesAddRoute
   '/properties/help': typeof PropertiesHelpRoute
   '/properties/settings': typeof PropertiesSettingsRoute
@@ -144,7 +217,15 @@ export interface FileRouteTypes {
     | '/pin'
     | '/register'
     | '/verify'
+    | '/dashboard/advertise'
+    | '/dashboard/agreement'
+    | '/dashboard/expenses'
     | '/dashboard/home'
+    | '/dashboard/inspections'
+    | '/dashboard/renttracking'
+    | '/dashboard/repairs'
+    | '/dashboard/securitydeposits'
+    | '/dashboard/tenants'
     | '/properties/add'
     | '/properties/help'
     | '/properties/settings'
@@ -159,7 +240,15 @@ export interface FileRouteTypes {
     | '/pin'
     | '/register'
     | '/verify'
+    | '/dashboard/advertise'
+    | '/dashboard/agreement'
+    | '/dashboard/expenses'
     | '/dashboard/home'
+    | '/dashboard/inspections'
+    | '/dashboard/renttracking'
+    | '/dashboard/repairs'
+    | '/dashboard/securitydeposits'
+    | '/dashboard/tenants'
     | '/properties/add'
     | '/properties/help'
     | '/properties/settings'
@@ -174,7 +263,15 @@ export interface FileRouteTypes {
     | '/(auth)/pin'
     | '/(auth)/register'
     | '/(auth)/verify'
+    | '/dashboard/advertise'
+    | '/dashboard/agreement'
+    | '/dashboard/expenses'
     | '/dashboard/home'
+    | '/dashboard/inspections'
+    | '/dashboard/renttracking'
+    | '/dashboard/repairs'
+    | '/dashboard/securitydeposits'
+    | '/dashboard/tenants'
     | '/properties/add'
     | '/properties/help'
     | '/properties/settings'
@@ -250,11 +347,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PropertiesAddRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/tenants': {
+      id: '/dashboard/tenants'
+      path: '/tenants'
+      fullPath: '/dashboard/tenants'
+      preLoaderRoute: typeof DashboardTenantsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/securitydeposits': {
+      id: '/dashboard/securitydeposits'
+      path: '/securitydeposits'
+      fullPath: '/dashboard/securitydeposits'
+      preLoaderRoute: typeof DashboardSecuritydepositsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/repairs': {
+      id: '/dashboard/repairs'
+      path: '/repairs'
+      fullPath: '/dashboard/repairs'
+      preLoaderRoute: typeof DashboardRepairsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/renttracking': {
+      id: '/dashboard/renttracking'
+      path: '/renttracking'
+      fullPath: '/dashboard/renttracking'
+      preLoaderRoute: typeof DashboardRenttrackingRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/inspections': {
+      id: '/dashboard/inspections'
+      path: '/inspections'
+      fullPath: '/dashboard/inspections'
+      preLoaderRoute: typeof DashboardInspectionsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/dashboard/home': {
       id: '/dashboard/home'
       path: '/home'
       fullPath: '/dashboard/home'
       preLoaderRoute: typeof DashboardHomeRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/expenses': {
+      id: '/dashboard/expenses'
+      path: '/expenses'
+      fullPath: '/dashboard/expenses'
+      preLoaderRoute: typeof DashboardExpensesRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/agreement': {
+      id: '/dashboard/agreement'
+      path: '/agreement'
+      fullPath: '/dashboard/agreement'
+      preLoaderRoute: typeof DashboardAgreementRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/advertise': {
+      id: '/dashboard/advertise'
+      path: '/advertise'
+      fullPath: '/dashboard/advertise'
+      preLoaderRoute: typeof DashboardAdvertiseRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
     '/(auth)/verify': {
@@ -296,11 +449,27 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteRouteChildren {
+  DashboardAdvertiseRoute: typeof DashboardAdvertiseRoute
+  DashboardAgreementRoute: typeof DashboardAgreementRoute
+  DashboardExpensesRoute: typeof DashboardExpensesRoute
   DashboardHomeRoute: typeof DashboardHomeRoute
+  DashboardInspectionsRoute: typeof DashboardInspectionsRoute
+  DashboardRenttrackingRoute: typeof DashboardRenttrackingRoute
+  DashboardRepairsRoute: typeof DashboardRepairsRoute
+  DashboardSecuritydepositsRoute: typeof DashboardSecuritydepositsRoute
+  DashboardTenantsRoute: typeof DashboardTenantsRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardAdvertiseRoute: DashboardAdvertiseRoute,
+  DashboardAgreementRoute: DashboardAgreementRoute,
+  DashboardExpensesRoute: DashboardExpensesRoute,
   DashboardHomeRoute: DashboardHomeRoute,
+  DashboardInspectionsRoute: DashboardInspectionsRoute,
+  DashboardRenttrackingRoute: DashboardRenttrackingRoute,
+  DashboardRepairsRoute: DashboardRepairsRoute,
+  DashboardSecuritydepositsRoute: DashboardSecuritydepositsRoute,
+  DashboardTenantsRoute: DashboardTenantsRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
