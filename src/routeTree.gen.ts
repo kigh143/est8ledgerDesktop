@@ -16,7 +16,6 @@ import { Route as PropertiesSubscriptionRouteImport } from './routes/properties/
 import { Route as PropertiesSettingsRouteImport } from './routes/properties/settings'
 import { Route as PropertiesHelpRouteImport } from './routes/properties/help'
 import { Route as PropertiesAddRouteImport } from './routes/properties/add'
-import { Route as DashboardTenantsRouteImport } from './routes/dashboard/tenants'
 import { Route as DashboardSecuritydepositsRouteImport } from './routes/dashboard/securitydeposits'
 import { Route as DashboardRepairsRouteImport } from './routes/dashboard/repairs'
 import { Route as DashboardRenttrackingRouteImport } from './routes/dashboard/renttracking'
@@ -28,10 +27,16 @@ import { Route as authVerifyRouteImport } from './routes/(auth)/verify'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authPinRouteImport } from './routes/(auth)/pin'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
+import { Route as DashboardTenantsRouteRouteImport } from './routes/dashboard/tenants/route'
 import { Route as DashboardExpensesRouteRouteImport } from './routes/dashboard/expenses/route'
+import { Route as DashboardTenantsIndexRouteImport } from './routes/dashboard/tenants/index'
 import { Route as DashboardExpensesIndexRouteImport } from './routes/dashboard/expenses/index'
 import { Route as PropertiesPropertyIdEditRouteImport } from './routes/properties/$propertyId.edit'
+import { Route as DashboardTenantsAddRouteImport } from './routes/dashboard/tenants/add'
+import { Route as DashboardTenantsTenantIdRouteImport } from './routes/dashboard/tenants/$tenantId'
 import { Route as DashboardExpensesAddRouteImport } from './routes/dashboard/expenses/add'
+import { Route as DashboardTenantsEditRouteRouteImport } from './routes/dashboard/tenants/edit/route'
+import { Route as DashboardTenantsEditTenantIdRouteImport } from './routes/dashboard/tenants/edit/$tenantId'
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
@@ -67,11 +72,6 @@ const PropertiesAddRoute = PropertiesAddRouteImport.update({
   id: '/properties/add',
   path: '/properties/add',
   getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardTenantsRoute = DashboardTenantsRouteImport.update({
-  id: '/tenants',
-  path: '/tenants',
-  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardSecuritydepositsRoute =
   DashboardSecuritydepositsRouteImport.update({
@@ -129,10 +129,20 @@ const authLoginRoute = authLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardTenantsRouteRoute = DashboardTenantsRouteRouteImport.update({
+  id: '/tenants',
+  path: '/tenants',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const DashboardExpensesRouteRoute = DashboardExpensesRouteRouteImport.update({
   id: '/expenses',
   path: '/expenses',
   getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardTenantsIndexRoute = DashboardTenantsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardTenantsRouteRoute,
 } as any)
 const DashboardExpensesIndexRoute = DashboardExpensesIndexRouteImport.update({
   id: '/',
@@ -145,15 +155,39 @@ const PropertiesPropertyIdEditRoute =
     path: '/properties/$propertyId/edit',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DashboardTenantsAddRoute = DashboardTenantsAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => DashboardTenantsRouteRoute,
+} as any)
+const DashboardTenantsTenantIdRoute =
+  DashboardTenantsTenantIdRouteImport.update({
+    id: '/$tenantId',
+    path: '/$tenantId',
+    getParentRoute: () => DashboardTenantsRouteRoute,
+  } as any)
 const DashboardExpensesAddRoute = DashboardExpensesAddRouteImport.update({
   id: '/add',
   path: '/add',
   getParentRoute: () => DashboardExpensesRouteRoute,
 } as any)
+const DashboardTenantsEditRouteRoute =
+  DashboardTenantsEditRouteRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => DashboardTenantsRouteRoute,
+  } as any)
+const DashboardTenantsEditTenantIdRoute =
+  DashboardTenantsEditTenantIdRouteImport.update({
+    id: '/$tenantId',
+    path: '/$tenantId',
+    getParentRoute: () => DashboardTenantsEditRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/dashboard/expenses': typeof DashboardExpensesRouteRouteWithChildren
+  '/dashboard/tenants': typeof DashboardTenantsRouteRouteWithChildren
   '/login': typeof authLoginRoute
   '/pin': typeof authPinRoute
   '/register': typeof authRegisterRoute
@@ -165,16 +199,20 @@ export interface FileRoutesByFullPath {
   '/dashboard/renttracking': typeof DashboardRenttrackingRoute
   '/dashboard/repairs': typeof DashboardRepairsRoute
   '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
-  '/dashboard/tenants': typeof DashboardTenantsRoute
   '/properties/add': typeof PropertiesAddRoute
   '/properties/help': typeof PropertiesHelpRoute
   '/properties/settings': typeof PropertiesSettingsRoute
   '/properties/subscription': typeof PropertiesSubscriptionRoute
   '/': typeof authIndexRoute
   '/properties/': typeof PropertiesIndexRoute
+  '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
   '/dashboard/expenses/add': typeof DashboardExpensesAddRoute
+  '/dashboard/tenants/$tenantId': typeof DashboardTenantsTenantIdRoute
+  '/dashboard/tenants/add': typeof DashboardTenantsAddRoute
   '/properties/$propertyId/edit': typeof PropertiesPropertyIdEditRoute
   '/dashboard/expenses/': typeof DashboardExpensesIndexRoute
+  '/dashboard/tenants/': typeof DashboardTenantsIndexRoute
+  '/dashboard/tenants/edit/$tenantId': typeof DashboardTenantsEditTenantIdRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRouteRouteWithChildren
@@ -189,21 +227,26 @@ export interface FileRoutesByTo {
   '/dashboard/renttracking': typeof DashboardRenttrackingRoute
   '/dashboard/repairs': typeof DashboardRepairsRoute
   '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
-  '/dashboard/tenants': typeof DashboardTenantsRoute
   '/properties/add': typeof PropertiesAddRoute
   '/properties/help': typeof PropertiesHelpRoute
   '/properties/settings': typeof PropertiesSettingsRoute
   '/properties/subscription': typeof PropertiesSubscriptionRoute
   '/': typeof authIndexRoute
   '/properties': typeof PropertiesIndexRoute
+  '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
   '/dashboard/expenses/add': typeof DashboardExpensesAddRoute
+  '/dashboard/tenants/$tenantId': typeof DashboardTenantsTenantIdRoute
+  '/dashboard/tenants/add': typeof DashboardTenantsAddRoute
   '/properties/$propertyId/edit': typeof PropertiesPropertyIdEditRoute
   '/dashboard/expenses': typeof DashboardExpensesIndexRoute
+  '/dashboard/tenants': typeof DashboardTenantsIndexRoute
+  '/dashboard/tenants/edit/$tenantId': typeof DashboardTenantsEditTenantIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/dashboard/expenses': typeof DashboardExpensesRouteRouteWithChildren
+  '/dashboard/tenants': typeof DashboardTenantsRouteRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/pin': typeof authPinRoute
   '/(auth)/register': typeof authRegisterRoute
@@ -215,22 +258,27 @@ export interface FileRoutesById {
   '/dashboard/renttracking': typeof DashboardRenttrackingRoute
   '/dashboard/repairs': typeof DashboardRepairsRoute
   '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
-  '/dashboard/tenants': typeof DashboardTenantsRoute
   '/properties/add': typeof PropertiesAddRoute
   '/properties/help': typeof PropertiesHelpRoute
   '/properties/settings': typeof PropertiesSettingsRoute
   '/properties/subscription': typeof PropertiesSubscriptionRoute
   '/(auth)/': typeof authIndexRoute
   '/properties/': typeof PropertiesIndexRoute
+  '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
   '/dashboard/expenses/add': typeof DashboardExpensesAddRoute
+  '/dashboard/tenants/$tenantId': typeof DashboardTenantsTenantIdRoute
+  '/dashboard/tenants/add': typeof DashboardTenantsAddRoute
   '/properties/$propertyId/edit': typeof PropertiesPropertyIdEditRoute
   '/dashboard/expenses/': typeof DashboardExpensesIndexRoute
+  '/dashboard/tenants/': typeof DashboardTenantsIndexRoute
+  '/dashboard/tenants/edit/$tenantId': typeof DashboardTenantsEditTenantIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/dashboard'
     | '/dashboard/expenses'
+    | '/dashboard/tenants'
     | '/login'
     | '/pin'
     | '/register'
@@ -242,16 +290,20 @@ export interface FileRouteTypes {
     | '/dashboard/renttracking'
     | '/dashboard/repairs'
     | '/dashboard/securitydeposits'
-    | '/dashboard/tenants'
     | '/properties/add'
     | '/properties/help'
     | '/properties/settings'
     | '/properties/subscription'
     | '/'
     | '/properties/'
+    | '/dashboard/tenants/edit'
     | '/dashboard/expenses/add'
+    | '/dashboard/tenants/$tenantId'
+    | '/dashboard/tenants/add'
     | '/properties/$propertyId/edit'
     | '/dashboard/expenses/'
+    | '/dashboard/tenants/'
+    | '/dashboard/tenants/edit/$tenantId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/dashboard'
@@ -266,20 +318,25 @@ export interface FileRouteTypes {
     | '/dashboard/renttracking'
     | '/dashboard/repairs'
     | '/dashboard/securitydeposits'
-    | '/dashboard/tenants'
     | '/properties/add'
     | '/properties/help'
     | '/properties/settings'
     | '/properties/subscription'
     | '/'
     | '/properties'
+    | '/dashboard/tenants/edit'
     | '/dashboard/expenses/add'
+    | '/dashboard/tenants/$tenantId'
+    | '/dashboard/tenants/add'
     | '/properties/$propertyId/edit'
     | '/dashboard/expenses'
+    | '/dashboard/tenants'
+    | '/dashboard/tenants/edit/$tenantId'
   id:
     | '__root__'
     | '/dashboard'
     | '/dashboard/expenses'
+    | '/dashboard/tenants'
     | '/(auth)/login'
     | '/(auth)/pin'
     | '/(auth)/register'
@@ -291,16 +348,20 @@ export interface FileRouteTypes {
     | '/dashboard/renttracking'
     | '/dashboard/repairs'
     | '/dashboard/securitydeposits'
-    | '/dashboard/tenants'
     | '/properties/add'
     | '/properties/help'
     | '/properties/settings'
     | '/properties/subscription'
     | '/(auth)/'
     | '/properties/'
+    | '/dashboard/tenants/edit'
     | '/dashboard/expenses/add'
+    | '/dashboard/tenants/$tenantId'
+    | '/dashboard/tenants/add'
     | '/properties/$propertyId/edit'
     | '/dashboard/expenses/'
+    | '/dashboard/tenants/'
+    | '/dashboard/tenants/edit/$tenantId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -368,13 +429,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/properties/add'
       preLoaderRoute: typeof PropertiesAddRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/dashboard/tenants': {
-      id: '/dashboard/tenants'
-      path: '/tenants'
-      fullPath: '/dashboard/tenants'
-      preLoaderRoute: typeof DashboardTenantsRouteImport
-      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/securitydeposits': {
       id: '/dashboard/securitydeposits'
@@ -453,12 +507,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/tenants': {
+      id: '/dashboard/tenants'
+      path: '/tenants'
+      fullPath: '/dashboard/tenants'
+      preLoaderRoute: typeof DashboardTenantsRouteRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/dashboard/expenses': {
       id: '/dashboard/expenses'
       path: '/expenses'
       fullPath: '/dashboard/expenses'
       preLoaderRoute: typeof DashboardExpensesRouteRouteImport
       parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/tenants/': {
+      id: '/dashboard/tenants/'
+      path: '/'
+      fullPath: '/dashboard/tenants/'
+      preLoaderRoute: typeof DashboardTenantsIndexRouteImport
+      parentRoute: typeof DashboardTenantsRouteRoute
     }
     '/dashboard/expenses/': {
       id: '/dashboard/expenses/'
@@ -474,12 +542,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PropertiesPropertyIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/tenants/add': {
+      id: '/dashboard/tenants/add'
+      path: '/add'
+      fullPath: '/dashboard/tenants/add'
+      preLoaderRoute: typeof DashboardTenantsAddRouteImport
+      parentRoute: typeof DashboardTenantsRouteRoute
+    }
+    '/dashboard/tenants/$tenantId': {
+      id: '/dashboard/tenants/$tenantId'
+      path: '/$tenantId'
+      fullPath: '/dashboard/tenants/$tenantId'
+      preLoaderRoute: typeof DashboardTenantsTenantIdRouteImport
+      parentRoute: typeof DashboardTenantsRouteRoute
+    }
     '/dashboard/expenses/add': {
       id: '/dashboard/expenses/add'
       path: '/add'
       fullPath: '/dashboard/expenses/add'
       preLoaderRoute: typeof DashboardExpensesAddRouteImport
       parentRoute: typeof DashboardExpensesRouteRoute
+    }
+    '/dashboard/tenants/edit': {
+      id: '/dashboard/tenants/edit'
+      path: '/edit'
+      fullPath: '/dashboard/tenants/edit'
+      preLoaderRoute: typeof DashboardTenantsEditRouteRouteImport
+      parentRoute: typeof DashboardTenantsRouteRoute
+    }
+    '/dashboard/tenants/edit/$tenantId': {
+      id: '/dashboard/tenants/edit/$tenantId'
+      path: '/$tenantId'
+      fullPath: '/dashboard/tenants/edit/$tenantId'
+      preLoaderRoute: typeof DashboardTenantsEditTenantIdRouteImport
+      parentRoute: typeof DashboardTenantsEditRouteRoute
     }
   }
 }
@@ -500,8 +596,42 @@ const DashboardExpensesRouteRouteWithChildren =
     DashboardExpensesRouteRouteChildren,
   )
 
+interface DashboardTenantsEditRouteRouteChildren {
+  DashboardTenantsEditTenantIdRoute: typeof DashboardTenantsEditTenantIdRoute
+}
+
+const DashboardTenantsEditRouteRouteChildren: DashboardTenantsEditRouteRouteChildren =
+  {
+    DashboardTenantsEditTenantIdRoute: DashboardTenantsEditTenantIdRoute,
+  }
+
+const DashboardTenantsEditRouteRouteWithChildren =
+  DashboardTenantsEditRouteRoute._addFileChildren(
+    DashboardTenantsEditRouteRouteChildren,
+  )
+
+interface DashboardTenantsRouteRouteChildren {
+  DashboardTenantsEditRouteRoute: typeof DashboardTenantsEditRouteRouteWithChildren
+  DashboardTenantsTenantIdRoute: typeof DashboardTenantsTenantIdRoute
+  DashboardTenantsAddRoute: typeof DashboardTenantsAddRoute
+  DashboardTenantsIndexRoute: typeof DashboardTenantsIndexRoute
+}
+
+const DashboardTenantsRouteRouteChildren: DashboardTenantsRouteRouteChildren = {
+  DashboardTenantsEditRouteRoute: DashboardTenantsEditRouteRouteWithChildren,
+  DashboardTenantsTenantIdRoute: DashboardTenantsTenantIdRoute,
+  DashboardTenantsAddRoute: DashboardTenantsAddRoute,
+  DashboardTenantsIndexRoute: DashboardTenantsIndexRoute,
+}
+
+const DashboardTenantsRouteRouteWithChildren =
+  DashboardTenantsRouteRoute._addFileChildren(
+    DashboardTenantsRouteRouteChildren,
+  )
+
 interface DashboardRouteRouteChildren {
   DashboardExpensesRouteRoute: typeof DashboardExpensesRouteRouteWithChildren
+  DashboardTenantsRouteRoute: typeof DashboardTenantsRouteRouteWithChildren
   DashboardAdvertiseRoute: typeof DashboardAdvertiseRoute
   DashboardAgreementRoute: typeof DashboardAgreementRoute
   DashboardHomeRoute: typeof DashboardHomeRoute
@@ -509,11 +639,11 @@ interface DashboardRouteRouteChildren {
   DashboardRenttrackingRoute: typeof DashboardRenttrackingRoute
   DashboardRepairsRoute: typeof DashboardRepairsRoute
   DashboardSecuritydepositsRoute: typeof DashboardSecuritydepositsRoute
-  DashboardTenantsRoute: typeof DashboardTenantsRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardExpensesRouteRoute: DashboardExpensesRouteRouteWithChildren,
+  DashboardTenantsRouteRoute: DashboardTenantsRouteRouteWithChildren,
   DashboardAdvertiseRoute: DashboardAdvertiseRoute,
   DashboardAgreementRoute: DashboardAgreementRoute,
   DashboardHomeRoute: DashboardHomeRoute,
@@ -521,7 +651,6 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardRenttrackingRoute: DashboardRenttrackingRoute,
   DashboardRepairsRoute: DashboardRepairsRoute,
   DashboardSecuritydepositsRoute: DashboardSecuritydepositsRoute,
-  DashboardTenantsRoute: DashboardTenantsRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(

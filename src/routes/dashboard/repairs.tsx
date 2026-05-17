@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Eye, X, Wrench } from "lucide-react";
 import { repairService } from "../../services/repairService";
-import { useAppStore } from "../../store";
 import { toast } from "react-toastify";
 import type { RepairRequest, RepairStatus } from "../../types";
 

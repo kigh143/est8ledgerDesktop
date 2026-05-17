@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Eye, X, Plus, DollarSign } from "lucide-react";
 import { expenseService } from "../../../services/expenseService";
-import { useAppStore } from "../../../store";
 import { toast } from "react-toastify";
 import type { Expense, ExpenseStatus } from "../../../types";
 
