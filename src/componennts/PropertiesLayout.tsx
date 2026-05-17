@@ -42,11 +42,6 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
       icon: <CreditCard size={20} />,
       label: "Subscriptions",
       route: '/properties/subscription'
-    },
-    {
-      icon: <MessageCircleQuestionMark size={20} />,
-      label: "Help & Support",
-      route: '/properties/help'
     }
   ];
 

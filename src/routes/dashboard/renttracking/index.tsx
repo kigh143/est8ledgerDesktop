@@ -1,11 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, X } from "lucide-react";
-import { rentPaymentsService } from "../../services/rentPaymentsService";
-import { useAppStore } from "../../store";
-import type { RentPaymentRecord } from "../../services/rentPaymentsService";
+import { Eye, X, Plus, Settings, Check } from "lucide-react";
+import { rentPaymentsService } from "../../../services/rentPaymentsService";
+import { useAppStore } from "../../../store";
+import { toast } from "react-toastify";
+import type { RentPaymentRecord } from "../../../services/rentPaymentsService";
 
-export const Route = createFileRoute("/dashboard/renttracking")({
+export const Route = createFileRoute("/dashboard/renttracking/")({
   loader: async () => {
     const { activeProperty } = useAppStore.getState();
     if (!activeProperty) {
@@ -20,9 +21,11 @@ export const Route = createFileRoute("/dashboard/renttracking")({
 });
 
 function RentTrackingPage() {
+  const navigate = useNavigate();
   const { rentPayments } = Route.useLoaderData();
   const [selectedPayment, setSelectedPayment] = useState<RentPaymentRecord | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
 
   const totalRent = rentPayments.reduce((sum: number, p: RentPaymentRecord) => sum + (+p.amount || 0), 0);
   const confirmedCount = rentPayments.filter((p: RentPaymentRecord) => p.status === "CONFIRMED").length;
@@ -49,8 +52,49 @@ function RentTrackingPage() {
     return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
   };
 
+  const handleApprovePayment = async () => {
+    if (!selectedPayment) return;
+
+    setIsApproving(true);
+    try {
+      await rentPaymentsService.updatePaymentStatus(selectedPayment.id, {
+        paymentStatus: "CONFIRMED",
+      });
+
+      toast.success("Payment approved successfully");
+      setIsDetailOpen(false);
+      setSelectedPayment(null);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to approve payment");
+    } finally {
+      setIsApproving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-slate-900">Rent Tracking</h1>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate({ to: "/dashboard/renttracking/record" })}
+            className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+          >
+            <Plus size={20} />
+            Record Payment
+          </button>
+          <button
+            onClick={() => navigate({ to: "/dashboard/renttracking/accounts" })}
+            className="flex items-center gap-2 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+          >
+            <Settings size={20} />
+            Manage Accounts
+          </button>
+        </div>
+      </div>
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg border border-slate-200 p-6">
@@ -207,13 +251,23 @@ function RentTrackingPage() {
               </div>
             </div>
 
-            <div className="border-t border-slate-200 px-6 py-4 flex justify-end">
+            <div className="border-t border-slate-200 px-6 py-4 flex justify-end gap-3">
               <button
                 onClick={() => setIsDetailOpen(false)}
                 className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
               >
                 Close
               </button>
+              {selectedPayment.status === "PENDING" && (
+                <button
+                  onClick={handleApprovePayment}
+                  disabled={isApproving}
+                  className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Check size={18} />
+                  {isApproving ? "Approving..." : "Approve Payment"}
+                </button>
+              )}
             </div>
           </div>
         </div>

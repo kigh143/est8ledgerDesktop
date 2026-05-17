@@ -1,9 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard/agreement')({
-  component: RouteComponent,
+  beforeLoad: async () => {
+    throw redirect({ to: '/dashboard/agreements' })
+  },
 })
-
-function RouteComponent() {
-  return <div>Hello "/dashboard/agreement"!</div>
-}

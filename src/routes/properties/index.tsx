@@ -29,7 +29,7 @@ function RouteComponent() {
 
   const handlePropertyClicked = (property: PropertyAgreement) => {
     state.setActiveProperty(property);
-    navigate({ to: '/dashboard' });
+    navigate({ to: '/dashboard/home' });
   }
 
   return <PropertiesLayout pageTitle={`${properties.length} Properties`} subTitle='All properties with agreement details'>
