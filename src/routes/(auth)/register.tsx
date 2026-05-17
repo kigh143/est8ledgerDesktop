@@ -1,8 +1,7 @@
-import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useAppStore } from '../../store';
 import AuthLayout from '../../componennts/AuthLayout';
-import { Eye, EyeOff, Download } from 'lucide-react';
-import { useState } from 'react';
+import { Download } from 'lucide-react';
 
 export const Route = createFileRoute('/(auth)/register')({
   component: RouteComponent,
@@ -15,7 +14,6 @@ export const Route = createFileRoute('/(auth)/register')({
 })
 
 function RouteComponent() {
-  const [showPassword, setShowPassword] = useState(false);
 
   return <AuthLayout>
     <div className="w-full max-w-md">

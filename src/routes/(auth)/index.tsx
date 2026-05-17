@@ -41,7 +41,7 @@ function RouteComponent() {
 
       <div className="relative z-10 flex flex-col items-center gap-4 text-white">
         <img src="/long_logo.png" alt="est8Ledger" className="h-20" />
-        <p className='text-white text-2xl'>Property Managing done the right way</p>
+        <p className='text-white'>Property Managing done the right way</p>
       </div>
     </div>
   )
