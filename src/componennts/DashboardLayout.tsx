@@ -41,7 +41,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
     },
     {
       icon: <HandCoins size={20} />,
-      label: "property Expenses",
+      label: "Property Expenses",
       route: '/dashboard/expenses'
     },
     {

@@ -478,3 +478,66 @@ export interface InspectionItem {
 }
 
 export type InspectionResponse = InspectionItem[];
+
+// Expenses
+export type ExpenseCategory = "MAINTENANCE" | "REPAIRS" | "UTILITIES" | "INSURANCE" | "CLEANING" | "OTHER";
+export type ExpenseStatus = "PENDING" | "APPROVED" | "REJECTED" | "PAID";
+
+export interface Expense {
+  id: number;
+  propertyAgreementId: number;
+  tenancyId?: number;
+  category: ExpenseCategory;
+  description: string;
+  amount: number;
+  currency: string;
+  status: ExpenseStatus;
+  date: string;
+  receiptUrl?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: {
+    id: number;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+  };
+}
+
+export type ExpenseResponse = Expense[];
+
+// Repairs & Maintenance
+export type RepairStatus = "REPORTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+export type RepairPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+
+export interface RepairRequest {
+  id: number;
+  propertyAgreementId: number;
+  tenancyId?: number;
+  title: string;
+  description: string;
+  status: RepairStatus;
+  priority: RepairPriority;
+  estimatedCost?: number;
+  actualCost?: number;
+  currency: string;
+  reportedDate: string;
+  completionDate?: string;
+  assignedTo?: {
+    id: number;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+  };
+  reportedBy?: {
+    id: number;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type RepairResponse = RepairRequest[];
