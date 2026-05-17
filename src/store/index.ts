@@ -40,7 +40,7 @@ export const useAppStore = create<RootRouteContext>()(
           },
         });
       },
-      setActiveProperty: (activeProperty: PropertyAgreement) => {
+      setActiveProperty: (activeProperty: PropertyAgreement | null) => {
         set({ activeProperty });
       },
       setToken: (token: string) => {

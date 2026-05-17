@@ -196,6 +196,20 @@ export const rentPaymentsService = {
       throw error;
     }
   },
+
+  /**
+   * Delete a rent payment account
+   * DELETE /rent-payment-accounts/:id
+   */
+  deleteRentPaymentAccount: async (accountId: string | number): Promise<ApiResponse<void>> => {
+    try {
+      const response = await apiClient.delete(`/rent-payment-accounts/${accountId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("Error deleting rent payment account:", error);
+      throw error;
+    }
+  },
 };
 
 export default rentPaymentsService;

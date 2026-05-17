@@ -17,7 +17,7 @@ export type RootRouteContext = {
   loggedIn: boolean;
   login: (user: User) => void;
   logout: () => void;
-  setActiveProperty: (property: PropertyAgreement) => void;
+  setActiveProperty: (property: PropertyAgreement | null) => void;
   setToken: (token: string) => void;
   setAuthData: (data: AuthData) => void;
 };
@@ -307,3 +307,237 @@ export interface PropertyAgreement {
   notifications: any[];
   PropertyListing: any[];
 }
+
+
+export type TenancyAgreement = {
+  id: number;
+  propertyAgreementId: number;
+  tenantId: number;
+  managerId: number;
+  rentAmount: string;
+  unitName: string;
+  yakaMeter: string;
+  waterMeter: string;
+  late_payment_fee: string | null;
+  late_paymeny_percentage: string | null;
+  wasteHandledBy: "TENANT" | "LANDLORD";
+  securityDeposit: string;
+  securityDepositPaidAt: string | null;
+  mgtSignedAt: string;
+  tenantSignedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  terminatedAt: string | null;
+  terminationApprovedByTenantAt: string | null;
+  tenantRequestedAt: string | null;
+  mgtRequestedAt: string | null;
+  days_of_late_payment: number | null;
+  paymentDueDay: number | null;
+  lastPaymentDate: string | null;
+  outstandingBalance: string;
+  gracePeriodDays: number;
+  lateFeeType: string | null;
+
+  tenant: {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+  };
+
+  manager: {
+    id: number;
+    email: string;
+    firstName: string | null;
+    lastName: string | null;
+  };
+
+  propertyAgreement: {
+    id: number;
+    propertyName: string;
+    propertyAddress: string;
+    city: string;
+    district: string;
+    currency: string;
+    countryId: number;
+    ownerId: number;
+    propertyImage: string | null;
+    propertyType: string;
+    numberOfUnits: number;
+    evictionProcess: string;
+    terminationNoticeDays: number;
+    maxSecurityDepositMonths: number | null;
+    securityDepositMonths: number;
+    rentIncreaseNoticeDays: number;
+    initialAdvanceMonths: number;
+    isActive: boolean;
+    securityDepositRequired: boolean;
+    isDeleted: boolean;
+    customClauses: any[];
+    createdAt: string;
+    updatedAt: string;
+    added_by: string | null;
+    trackRentCollection: boolean;
+  };
+
+  securityDeposits: any[];
+  inspections: any[];
+  repairBreakdowns: any[];
+};
+
+export type TenancyAgreementResponse = TenancyAgreement[];
+
+// Security Deposits
+export interface SecurityDepositRecord {
+  id: string;
+  tenancyId: string;
+  amount: number;
+  status: "PENDING" | "PAID" | "REFUNDED" | "DISPUTED";
+  paymentMethod: string;
+  reference?: string;
+  createdAt: string;
+  updatedAt: string;
+  currency: string;
+  investedAt: string | null;
+  tenantOptedIntoInvestmentAt: string | null;
+  mgtOptedIntoInvestmentAt: string | null;
+  depositFees: string | null;
+  tenantShare: string | null;
+  mgtShare: string | null;
+  tenancy?: {
+    id: number;
+    tenant: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+    unitName: string;
+  };
+}
+
+export type SecurityDepositResponse = SecurityDepositRecord[];
+
+// Rent Payments / Rent Tracking
+export interface RentPayment {
+  id: string;
+  monthPaidFor: number;
+  yearPaidFor: number;
+  amount: number;
+  currency: string;
+  tenancyId: string;
+  propertyAgreementId: string;
+  paymentReference: string;
+  status: "PENDING" | "CONFIRMED" | "DISPUTED" | "CANCELLED";
+  createdAt: string;
+  updatedAt: string;
+  tenancy?: {
+    id: number;
+    tenant: {
+      firstName: string;
+      lastName: string;
+    };
+    unitName: string;
+    rentAmount: string;
+  };
+}
+
+export type RentTrackingResponse = RentPayment[];
+
+export interface RentPaymentAccount {
+  id: string;
+  accountNumber: string;
+  accountType: string;
+  accountName: string;
+  instructions?: string;
+  propertyAgreementId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Inspections
+export interface InspectionItem {
+  id: number;
+  tenancyId: number;
+  propertyAgreementId: number;
+  type: "MOVE_IN" | "MOVE_OUT";
+  status?: "PENDING" | "COMPLETED" | "APPROVED";
+  tenantApprovedAt?: string | null;
+  managerApprovedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  tenancy?: {
+    id: number;
+    unitName: string;
+    tenant: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+  };
+}
+
+export type InspectionResponse = InspectionItem[];
+
+// Expenses
+export type ExpenseCategory = "MAINTENANCE" | "REPAIRS" | "UTILITIES" | "INSURANCE" | "CLEANING" | "OTHER";
+export type ExpenseStatus = "PENDING" | "APPROVED" | "REJECTED" | "PAID";
+
+export interface Expense {
+  id: number;
+  propertyAgreementId: number;
+  tenancyId?: number;
+  category: ExpenseCategory;
+  description: string;
+  amount: number;
+  currency: string;
+  status: ExpenseStatus;
+  date: string;
+  receiptUrl?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: {
+    id: number;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+  };
+}
+
+export type ExpenseResponse = Expense[];
+
+// Repairs & Maintenance
+export type RepairStatus = "REPORTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+export type RepairPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+
+export interface RepairRequest {
+  id: number;
+  propertyAgreementId: number;
+  tenancyId?: number;
+  title: string;
+  description: string;
+  status: RepairStatus;
+  priority: RepairPriority;
+  estimatedCost?: number;
+  actualCost?: number;
+  currency: string;
+  reportedDate: string;
+  completionDate?: string;
+  assignedTo?: {
+    id: number;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+  };
+  reportedBy?: {
+    id: number;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type RepairResponse = RepairRequest[];

@@ -1,4 +1,4 @@
-import apiClient from "./apiClient";
+import apiClient from "./api";
 
 export const notificationService = {
   getPropertyNotifications: async (propertyId: string) => {
