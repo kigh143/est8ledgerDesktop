@@ -17,7 +17,7 @@ export type RootRouteContext = {
   loggedIn: boolean;
   login: (user: User) => void;
   logout: () => void;
-  setActiveProperty: (property: PropertyAgreement) => void;
+  setActiveProperty: (property: PropertyAgreement | null) => void;
   setToken: (token: string) => void;
   setAuthData: (data: AuthData) => void;
 };

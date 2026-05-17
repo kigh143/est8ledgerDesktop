@@ -4,7 +4,6 @@ import {
   HousePlus,
   Settings,
   CreditCard,
-  MessageCircleQuestionMark,
   Menu,
   X,
   ChevronRight,
@@ -34,14 +33,13 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
       route: '/properties/add'
     },
     {
-      icon: <Settings size={20} />,
-      label: "Settings",
-      route: '/properties/settings'
-    },
-    {
       icon: <CreditCard size={20} />,
       label: "Subscriptions",
       route: '/properties/subscription'
+    }, {
+      icon: <Settings size={20} />,
+      label: "Settings",
+      route: '/properties/settings'
     }
   ];
 

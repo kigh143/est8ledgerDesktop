@@ -9,7 +9,6 @@ import {
   Megaphone,
   ToolCase,
   HandCoins,
-  Bell,
   ArrowLeft,
   Menu,
   X

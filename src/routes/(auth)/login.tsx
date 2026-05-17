@@ -76,7 +76,7 @@ function RouteComponent() {
           label="Log in with"
           options={[{ value: "email", label: "Email Address" }, { value: "phone", label: 'Phone Number' }]}
           value={authData?.loginWith}
-          onChange={(loginWith: LoginWith) => setAuthData({ ...authData, loginWith })}
+          onChange={(value) => setAuthData({ ...authData, loginWith: value as LoginWith })}
           placeholder="Select option"
         />
 

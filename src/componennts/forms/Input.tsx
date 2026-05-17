@@ -52,7 +52,7 @@ export const Input = ({
                     maxLength={isPin ? 6 : undefined}
                     pattern={isPin ? "[0-9]*" : undefined}
                     placeholder={placeholder}
-                    value={value}
+                    value={value ?? ''}
                     onChange={(e) => {
                         if (isPin) {
                             const onlyNumbers = e.target.value.replace(/\D/g, "");

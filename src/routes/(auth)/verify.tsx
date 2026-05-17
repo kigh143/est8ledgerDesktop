@@ -36,7 +36,7 @@ function RouteComponent() {
         } : {
           phoneNumber: cleanPhone
         };
-      const response = await checkUserExisits(payload);
+      await checkUserExisits(payload);
       setResendig(false);
       setTimer(120);
     } catch (error) {

@@ -25,7 +25,7 @@ function RouteComponent() {
     const [loading, setLoading] = useState(false);
     const navigate = Route.useNavigate();
 
-    const { user, logout } = useAppStore()
+    const { logout } = useAppStore()
 
     const handleLogout = () => {
         logout();
