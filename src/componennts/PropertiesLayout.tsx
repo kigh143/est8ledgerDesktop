@@ -59,10 +59,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
       {/* Logo */}
       <div className="mb-10 mt-8 md:mt-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3f0ee3] to-[#3f0ee3]/80 flex items-center justify-center shadow-sm">
-            <span className="text-white font-bold text-lg">E8</span>
-          </div>
-          <h1 className="text-xl font-bold text-white">est8Ledger</h1>
+          <img src="/long_logo.png" alt="est8Ledger" className="h-10" />
         </div>
       </div>
 

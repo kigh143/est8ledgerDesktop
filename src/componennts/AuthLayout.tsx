@@ -23,16 +23,13 @@ const AuthLayout = ({ children, showBackBtn = false }: LayoutProps) => {
 
                 <div className="relative z-10 p-10">
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#3f0ee3] to-[#3f0ee3]/80 flex items-center justify-center shadow-lg">
-                            <span className="text-white font-bold text-xl">E8</span>
-                        </div>
-                        <h1 className="text-2xl font-bold text-white">est8Ledger</h1>
+                       <img src="/long_logo.png" alt="est8Ledger" className="h-10" />
                     </div>
                 </div>
 
                 <div className="relative z-10 px-14 pb-20">
-                    <h2 className="text-5xl lg:text-6xl font-bold leading-tight text-white max-w-md">
-                        Digital Property <span className="bg-gradient-to-r from-[#7fe502] to-[#7fe502]/80 bg-clip-text text-transparent">Management</span>
+                    <h2 className="text-4xl lg:text-4xl font-bold leading-tight text-white max-w-md">
+                        Digital Property <span className="bg-gradient-to-r from-[#7fe502] to-[#7fe502]/80 bg-clip-text text-transparent">Management System</span>
                     </h2>
 
                     <p className="mt-6 text-lg text-white/90 max-w-md leading-relaxed">

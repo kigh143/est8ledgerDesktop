@@ -5,7 +5,7 @@ import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen.ts';
 import { ToastContainer } from 'react-toastify';
 
-const router = createRouter({routeTree});
+const router = createRouter({routeTree, basepath:"/"});
 
 declare module '@tanstack/react-router' {
   interface Register {

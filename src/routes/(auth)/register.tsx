@@ -1,7 +1,7 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { useAppStore } from '../../store';
 import AuthLayout from '../../componennts/AuthLayout';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Download } from 'lucide-react';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/(auth)/register')({
@@ -19,96 +19,39 @@ function RouteComponent() {
 
   return <AuthLayout>
     <div className="w-full max-w-md">
-      <h2
-        className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 to-[#3f0ee3] bg-clip-text text-transparent leading-tight"
-      >
-        Create Account
-      </h2>
-
-      <p className="mt-4 text-slate-600 text-sm sm:text-base font-medium">
-        Join est8Ledger to manage your properties
-      </p>
-
-      <form className="mt-10 space-y-5">
-
-        <div>
-          <label
-            className="block text-sm font-semibold text-slate-900 mb-2"
-          >
-            Email Address
-          </label>
-
-          <input
-            type="email"
-            placeholder="you@example.com"
-            className="w-full h-12 border border-slate-200 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#3f0ee3]/40 focus:border-[#3f0ee3] transition-colors"
-          />
+ 
+      <div className="">
+        <div className="flex flex-col items-center gap-4">
+          <img src="/long_logo.png" alt="est8Ledger" className="h-10" />
+          <h3 className="text-lg font-bold text-slate-900 text-center">
+            Create Your Account with Our Application
+          </h3>
+          <p className="text-sm text-slate-600 text-center max-w-sm">
+            Download the est8Ledger app to manage your properties on the go
+          </p>
         </div>
 
-        <div>
-          <label
-            className="block text-sm font-semibold text-slate-900 mb-2"
+        <div className="flex flex-col sm:flex-row gap-3 mt-6">
+          <a
+            href="https://play.google.com/store/apps/details?id=com.rentalynk.est8ledger&hl=en&pli=1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold transition-colors text-sm"
           >
-            Password
-          </label>
-
-          <div className="relative">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Enter your password"
-              className="w-full h-12 border border-slate-200 rounded-lg px-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-[#3f0ee3]/40 focus:border-[#3f0ee3] transition-colors"
-            />
-
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <label
-            className="block text-sm font-semibold text-slate-900 mb-2"
+            <Download size={18} />
+            <span>Play Store</span>
+          </a>
+          <a
+            href="https://apps.apple.com/us/app/est8ledger/id6759548753"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-semibold transition-colors text-sm"
           >
-            Confirm Password
-          </label>
-
-          <input
-            type="password"
-            placeholder="Confirm your password"
-            className="w-full h-12 border border-slate-200 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#3f0ee3]/40 focus:border-[#3f0ee3] transition-colors"
-          />
+            <Download size={18} />
+            <span>App Store</span>
+          </a>
         </div>
-
-        <label className="flex items-center gap-3 pt-2">
-          <input
-            type="checkbox"
-            className="w-4 h-4 border border-slate-300 rounded accent-[#3f0ee3] cursor-pointer"
-          />
-          <span className="text-sm text-slate-600">
-            I agree to the <a href="#" className="text-[#3f0ee3] hover:text-[#3f0ee3]/80 font-semibold transition-colors">Terms of Service</a>
-          </span>
-        </label>
-
-        <button
-          type="button"
-          className="w-full h-14 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 text-white rounded-lg text-base font-semibold shadow-lg shadow-[#3f0ee3]/40 hover:shadow-[#3f0ee3]/60 transition-all hover:from-[#3f0ee3] hover:to-[#3f0ee3] mt-6"
-        >
-          Create Account
-        </button>
-      </form>
-
-      <p className="text-center text-slate-600 text-sm mt-10">
-        Already have an account?
-        <Link to='/login'>
-          <span className="ml-1 text-[#3f0ee3] font-semibold hover:text-[#3f0ee3]/80 transition-colors">
-            Login
-          </span>
-        </Link>
-      </p>
+      </div>
     </div>
   </AuthLayout>
 }
