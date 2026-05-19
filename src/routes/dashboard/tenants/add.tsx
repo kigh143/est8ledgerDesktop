@@ -29,6 +29,9 @@ function AddTenantPage() {
     waterMeter: "",
     yakaMeter: "",
     wasteHandledBy: "TENANT" as "TENANT" | "LANDLORD",
+    dayOfRentPayment: "1",
+    latePaymentPercentage: "10",
+    daysOfLatePayment: "3",
   });
 
   useEffect(() => {
@@ -103,7 +106,10 @@ function AddTenantPage() {
           yakaMeter: formData.yakaMeter || '',
           waterMeter: formData.waterMeter || '',
           wasteHandledBy: formData.wasteHandledBy,
-          propertyAgreementId: activeProperty.id
+          propertyAgreementId: activeProperty.id,
+          dayOfRentPayment: parseInt(formData.dayOfRentPayment),
+          latePaymentPercentage: parseFloat(formData.latePaymentPercentage),
+          daysOfLatePayment: parseInt(formData.daysOfLatePayment),
         }
       };
 
@@ -266,6 +272,61 @@ function AddTenantPage() {
                   <option value="TENANT">Tenant Handles</option>
                   <option value="LANDLORD">Landlord Handles</option>
                 </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Terms */}
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900 mb-4">Payment Terms</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-900 mb-2">
+                  Day of Rent Payment <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formData.dayOfRentPayment}
+                  onChange={(e) => handleInputChange("dayOfRentPayment", e.target.value)}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                >
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                    <option key={day} value={day.toString()}>
+                      Day {day}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-slate-500 mt-1">The day each month when rent is due</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-900 mb-2">
+                  Days Before Late <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  value={formData.daysOfLatePayment}
+                  onChange={(e) => handleInputChange("daysOfLatePayment", e.target.value)}
+                  placeholder="3"
+                  min="0"
+                  max="31"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                />
+                <p className="text-xs text-slate-500 mt-1">Days after due date before payment is late</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-900 mb-2">
+                  Late Payment Penalty (%) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  value={formData.latePaymentPercentage}
+                  onChange={(e) => handleInputChange("latePaymentPercentage", e.target.value)}
+                  placeholder="10"
+                  step="0.1"
+                  min="0"
+                  max="100"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                />
+                <p className="text-xs text-slate-500 mt-1">Percentage of rent charged as penalty</p>
               </div>
             </div>
           </div>
