@@ -28,9 +28,9 @@ function EditTenantPage() {
     waterMeter: "",
     yakaMeter: "",
     wasteHandledBy: "TENANT" as "TENANT" | "LANDLORD",
-    dayOfRentPayment: "1",
-    latePaymentPercentage: "10",
-    daysOfLatePayment: "3",
+    day_of_rent_payment: "1",
+    late_paymeny_percentage: "10",
+    days_of_late_payment: "3",
   });
 
   useEffect(() => {
@@ -58,9 +58,9 @@ function EditTenantPage() {
         waterMeter: tenancyData.waterMeter || "",
         yakaMeter: tenancyData.yakaMeter || "",
         wasteHandledBy: tenancyData.wasteHandledBy || "TENANT",
-        dayOfRentPayment: tenancyData.dayOfRentPayment?.toString() || "1",
-        latePaymentPercentage: tenancyData.latePaymentPercentage?.toString() || "10",
-        daysOfLatePayment: tenancyData.daysOfLatePayment?.toString() || "3",
+        day_of_rent_payment: tenancyData.day_of_rent_payment?.toString() || "1",
+        late_paymeny_percentage: tenancyData.late_paymeny_percentage?.toString() || "10",
+        days_of_late_payment: tenancyData.days_of_late_payment?.toString() || "3",
       });
     } catch (error) {
       console.error(error);
@@ -109,16 +109,16 @@ function EditTenantPage() {
     setSaving(true);
     try {
       await tenancyService.updateTenancy({
-        ...tenancy,
+        id:tenancy.id,
         unitName: formData.unitName,
         rentAmount: parseFloat(formData.rentAmount),
         securityDeposit: parseFloat(formData.securityDeposit) || 0,
         waterMeter: formData.waterMeter,
         yakaMeter: formData.yakaMeter,
         wasteHandledBy: formData.wasteHandledBy,
-        dayOfRentPayment: parseInt(formData.dayOfRentPayment),
-        latePaymentPercentage: parseFloat(formData.latePaymentPercentage),
-        daysOfLatePayment: parseInt(formData.daysOfLatePayment),
+        day_of_rent_payment: parseInt(formData.day_of_rent_payment),
+        late_paymeny_percentage: parseFloat(formData.late_paymeny_percentage),
+        days_of_late_payment: parseInt(formData.days_of_late_payment),
       });
 
       toast.success("Tenant updated successfully");

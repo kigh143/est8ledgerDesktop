@@ -107,9 +107,9 @@ function AddTenantPage() {
           waterMeter: formData.waterMeter || '',
           wasteHandledBy: formData.wasteHandledBy,
           propertyAgreementId: activeProperty.id,
-          dayOfRentPayment: parseInt(formData.dayOfRentPayment),
-          latePaymentPercentage: parseFloat(formData.latePaymentPercentage),
-          daysOfLatePayment: parseInt(formData.daysOfLatePayment),
+          day_of_rent_payment: parseInt(formData.dayOfRentPayment),
+          late_paymeny_percentage: parseFloat(formData.latePaymentPercentage),
+          days_of_late_payment: parseInt(formData.daysOfLatePayment),
         }
       };
 
