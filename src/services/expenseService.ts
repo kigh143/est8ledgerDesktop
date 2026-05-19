@@ -52,6 +52,34 @@ export const expenseService = {
     });
     return response.data;
   },
+
+  createExpenseWithPayload: async (payload: {
+    amount: number;
+    status: string;
+    category: string;
+    description: string;
+    notes: string;
+    propertyAgreementId: number;
+    isPaid: boolean;
+  }) => {
+    const response = await apiClient.post("/expenses", payload);
+    return response.data;
+  },
+
+  getExpensesByStatus: async (propertyAgreementId: string, status: string) => {
+    const response = await apiClient.get(`/expenses/property/${propertyAgreementId}/status/${status}`);
+    return response.data;
+  },
+
+  getExpensesByCategory: async (propertyAgreementId: string, category: string) => {
+    const response = await apiClient.get(`/expenses/property/${propertyAgreementId}/category/${category}`);
+    return response.data;
+  },
+
+  getExpenseSummary: async (propertyAgreementId: string) => {
+    const response = await apiClient.get(`/expenses/property/${propertyAgreementId}/summary`);
+    return response.data;
+  },
 };
 
 export default expenseService;

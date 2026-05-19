@@ -273,6 +273,7 @@ function AddPropertyPage() {
         ownerId: user.id,
         selectedClauseIds: formData.selectedClauseIds,
         customClauses: formData.customClauses,
+        countryId: user.countryId
       };
 
       await agreementService.createPropertyAgreement(propertyData);

@@ -1,35 +1,77 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, X, Plus, DollarSign } from "lucide-react";
+import { Eye, X, Plus, DollarSign, Edit2, Trash2, BarChart3 } from "lucide-react";
 import { expenseService } from "../../../services/expenseService";
+import { useAppStore } from "../../../store";
 import { toast } from "react-toastify";
-import type { Expense, ExpenseStatus } from "../../../types";
+import type { Expense, ExpenseStatus, ExpenseCategory } from "../../../types";
+
+interface ExpenseSummary {
+  totalExpenses: number;
+  totalAmount: number;
+  byCategory: Record<string, number>;
+  byStatus: Record<string, number>;
+}
 
 export const Route = createFileRoute("/dashboard/expenses/")({
   loader: async () => {
-    // const { activeProperty } = useAppStore.getState();
-    // if (!activeProperty) {
-    //   return { expenses: [] };
-    // }
-    // const response = await expenseService.getPropertyExpenses(activeProperty.id.toString());
-    // const expenses = (response.data || []) as Expense[];
-    return { expenses:[] };
+    const { activeProperty } = useAppStore.getState();
+    if (!activeProperty) {
+      return { expenses: [], summary: null };
+    }
+    try {
+      const [expensesRes, summaryRes] = await Promise.all([
+        expenseService.getPropertyExpenses(activeProperty.id.toString()),
+        expenseService.getExpenseSummary(activeProperty.id.toString()),
+      ]);
+      return {
+        expenses: (expensesRes.data || expensesRes || []) as Expense[],
+        summary: (summaryRes.data || summaryRes) as ExpenseSummary,
+      };
+    } catch {
+      return { expenses: [], summary: null };
+    }
   },
   component: ExpensesPage,
 });
 
 function ExpensesPage() {
   const navigate = useNavigate();
-  const { expenses: initialExpenses } = Route.useLoaderData();
+  const { activeProperty } = useAppStore();
+  const { expenses: initialExpenses, summary } = Route.useLoaderData();
   const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [statusFilter, setStatusFilter] = useState<ExpenseStatus | "">("");
+  const [categoryFilter, setCategoryFilter] = useState<ExpenseCategory | "">("");
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
-  const pendingCount = expenses.filter((e) => e.status === "PENDING").length;
-  const approvedCount = expenses.filter((e) => e.status === "APPROVED").length;
-  const paidCount = expenses.filter((e) => e.status === "PAID").length;
-  const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const filteredExpenses = expenses.filter((e) => {
+    if (statusFilter && e.status !== statusFilter) return false;
+    if (categoryFilter && e.category !== categoryFilter) return false;
+    return true;
+  });
+
+  const pendingCount = filteredExpenses.filter((e) => e.status === "PENDING").length;
+  const approvedCount = filteredExpenses.filter((e) => e.status === "APPROVED").length;
+  const paidCount = filteredExpenses.filter((e) => e.status === "PAID").length;
+  const totalAmount = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+
+  const loadFilteredExpenses = async (status: ExpenseStatus | null, category: ExpenseCategory | null) => {
+    if (!activeProperty) return;
+    try {
+      if (status) {
+        const res = await expenseService.getExpensesByStatus(activeProperty.id.toString(), status);
+        setExpenses(res.data || res || []);
+      } else if (category) {
+        const res = await expenseService.getExpensesByCategory(activeProperty.id.toString(), category);
+        setExpenses(res.data || res || []);
+      }
+    } catch {
+      toast.error("Failed to load filtered expenses");
+    }
+  };
 
   const getStatusColor = (status: ExpenseStatus) => {
     switch (status) {
@@ -112,18 +154,141 @@ function ExpensesPage() {
     }
   };
 
+  const handleDelete = async (expenseId: number) => {
+    if (!confirm("Are you sure you want to delete this expense?")) return;
+    setUpdatingId(expenseId);
+    try {
+      await expenseService.deleteExpense(expenseId.toString());
+      setExpenses((prev) => prev.filter((e) => e.id !== expenseId));
+      setIsDetailOpen(false);
+      toast.success("Expense deleted successfully");
+    } catch {
+      toast.error("Failed to delete expense");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleEdit = (expenseId: number) => {
+    const expense = expenses.find((e) => e.id === expenseId);
+    if (expense) {
+      navigate({
+        to: "/dashboard/expenses/$expenseId/edit",
+        params: { expenseId: expenseId.toString() },
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header with Add Button */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">Expenses</h1>
-        <button
-          onClick={() => navigate({ to: "/dashboard/expenses/add" })}
-          className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowAnalytics(!showAnalytics)}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors"
+          >
+            <BarChart3 size={20} />
+            Analytics
+          </button>
+          <button
+            onClick={() => navigate({ to: "/dashboard/expenses/add" })}
+            className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+          >
+            <Plus size={20} />
+            Add Expense
+          </button>
+        </div>
+      </div>
+
+      {/* Analytics Section */}
+      {showAnalytics && summary && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-6">
+          <h2 className="text-lg font-bold text-slate-900 mb-4">Expense Analytics</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div>
+              <p className="text-sm text-slate-600">Total Expenses</p>
+              <p className="text-2xl font-bold text-slate-900">{summary.totalExpenses}</p>
+            </div>
+            <div>
+              <p className="text-sm text-slate-600">Total Amount</p>
+              <p className="text-2xl font-bold text-slate-900">
+                {new Intl.NumberFormat("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }).format(summary.totalAmount)}
+              </p>
+            </div>
+            {summary.byStatus && Object.entries(summary.byStatus).map(([status, count]) => (
+              <div key={status}>
+                <p className="text-sm text-slate-600">{status}</p>
+                <p className="text-2xl font-bold text-slate-900">{count}</p>
+              </div>
+            ))}
+          </div>
+          {summary.byCategory && (
+            <div>
+              <p className="text-sm font-semibold text-slate-900 mb-3">By Category</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {Object.entries(summary.byCategory).map(([category, count]) => (
+                  <div key={category} className="bg-white rounded p-3 border border-slate-200">
+                    <p className="text-xs text-slate-600">{category}</p>
+                    <p className="text-lg font-semibold text-slate-900">{count}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="flex gap-3">
+        <select
+          value={statusFilter}
+          onChange={(e) => {
+            const value = e.target.value as ExpenseStatus | "";
+            setStatusFilter(value);
+            if (value) loadFilteredExpenses(value, null);
+          }}
+          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
         >
-          <Plus size={20} />
-          Add Expense
-        </button>
+          <option value="">All Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="APPROVED">Approved</option>
+          <option value="PAID">Paid</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+        <select
+          value={categoryFilter}
+          onChange={(e) => {
+            const value = e.target.value as ExpenseCategory | "";
+            setCategoryFilter(value);
+            if (value) loadFilteredExpenses(null, value);
+          }}
+          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+        >
+          <option value="">All Categories</option>
+          <option value="MAINTENANCE">Maintenance</option>
+          <option value="REPAIRS">Repairs</option>
+          <option value="UTILITIES">Utilities</option>
+          <option value="INSURANCE">Insurance</option>
+          <option value="CLEANING">Cleaning</option>
+          <option value="OTHER">Other</option>
+        </select>
+        {(statusFilter || categoryFilter) && (
+          <button
+            onClick={() => {
+              setStatusFilter("");
+              setCategoryFilter("");
+              setExpenses(initialExpenses);
+            }}
+            className="px-4 py-2 text-slate-700 hover:text-slate-900 font-medium"
+          >
+            Clear Filters
+          </button>
+        )}
       </div>
 
       {/* Stats Cards */}
@@ -166,14 +331,14 @@ function ExpensesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {expenses.length === 0 ? (
+              {filteredExpenses.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-8 text-center text-slate-500">
-                    No expenses recorded yet
+                    {expenses.length === 0 ? "No expenses recorded yet" : "No expenses match the selected filters"}
                   </td>
                 </tr>
               ) : (
-                expenses.map((expense) => (
+                filteredExpenses.map((expense) => (
                   <tr key={expense.id} className="hover:bg-slate-50 transition-colors">
                     <td className={`px-6 py-4 font-medium ${getCategoryColor(expense.category)}`}>
                       {expense.category}
@@ -194,7 +359,7 @@ function ExpensesPage() {
                     <td className="px-6 py-4 text-slate-600">
                       {new Date(expense.date).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-4 text-center flex gap-2 justify-center">
                       <button
                         onClick={() => {
                           setSelectedExpense(expense);
@@ -204,6 +369,23 @@ function ExpensesPage() {
                       >
                         <Eye size={16} />
                       </button>
+                      {expense.status === "PENDING" && (
+                        <>
+                          <button
+                            onClick={() => handleEdit(expense.id)}
+                            className="inline-flex items-center gap-2 text-amber-600 hover:text-amber-700 font-medium transition-colors"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(expense.id)}
+                            disabled={updatingId === expense.id}
+                            className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -299,40 +481,66 @@ function ExpensesPage() {
               )}
             </div>
 
-            <div className="border-t border-slate-200 px-6 py-4 flex gap-3 justify-end">
-              {selectedExpense.status === "PENDING" && (
-                <>
+            <div className="border-t border-slate-200 px-6 py-4 flex gap-3 justify-between">
+              <div className="flex gap-3">
+                {selectedExpense.status === "PENDING" && (
+                  <>
+                    <button
+                      onClick={() => handleDelete(selectedExpense.id)}
+                      disabled={updatingId === selectedExpense.id}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Trash2 size={16} />
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleEdit(selectedExpense.id);
+                        setIsDetailOpen(false);
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-lg font-medium hover:bg-amber-200 transition-colors"
+                    >
+                      <Edit2 size={16} />
+                      Edit
+                    </button>
+                  </>
+                )}
+              </div>
+              <div className="flex gap-3">
+                {selectedExpense.status === "PENDING" && (
+                  <>
+                    <button
+                      onClick={() => handleReject(selectedExpense.id)}
+                      disabled={updatingId === selectedExpense.id}
+                      className="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Reject
+                    </button>
+                    <button
+                      onClick={() => handleApprove(selectedExpense.id)}
+                      disabled={updatingId === selectedExpense.id}
+                      className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Approve
+                    </button>
+                  </>
+                )}
+                {selectedExpense.status === "APPROVED" && (
                   <button
-                    onClick={() => handleReject(selectedExpense.id)}
+                    onClick={() => handleMarkPaid(selectedExpense.id)}
                     disabled={updatingId === selectedExpense.id}
-                    className="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg font-medium hover:bg-emerald-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Reject
+                    Mark as Paid
                   </button>
-                  <button
-                    onClick={() => handleApprove(selectedExpense.id)}
-                    disabled={updatingId === selectedExpense.id}
-                    className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-medium hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Approve
-                  </button>
-                </>
-              )}
-              {selectedExpense.status === "APPROVED" && (
+                )}
                 <button
-                  onClick={() => handleMarkPaid(selectedExpense.id)}
-                  disabled={updatingId === selectedExpense.id}
-                  className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg font-medium hover:bg-emerald-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setIsDetailOpen(false)}
+                  className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
                 >
-                  Mark as Paid
+                  Close
                 </button>
-              )}
-              <button
-                onClick={() => setIsDetailOpen(false)}
-                className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
-              >
-                Close
-              </button>
+              </div>
             </div>
           </div>
         </div>

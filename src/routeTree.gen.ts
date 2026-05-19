@@ -38,10 +38,12 @@ import { Route as DashboardTenantsAddRouteImport } from './routes/dashboard/tena
 import { Route as DashboardTenantsTenantIdRouteImport } from './routes/dashboard/tenants/$tenantId'
 import { Route as DashboardRenttrackingRecordRouteImport } from './routes/dashboard/renttracking/record'
 import { Route as DashboardRenttrackingAccountsRouteImport } from './routes/dashboard/renttracking/accounts'
+import { Route as DashboardInspectionsInspectionIdRouteImport } from './routes/dashboard/inspections/$inspectionId'
 import { Route as DashboardExpensesAddRouteImport } from './routes/dashboard/expenses/add'
 import { Route as DashboardAgreementsEditRouteImport } from './routes/dashboard/agreements/edit'
 import { Route as DashboardTenantsEditRouteRouteImport } from './routes/dashboard/tenants/edit/route'
 import { Route as DashboardTenantsEditTenantIdRouteImport } from './routes/dashboard/tenants/edit/$tenantId'
+import { Route as DashboardExpensesExpenseIdEditRouteImport } from './routes/dashboard/expenses/$expenseId.edit'
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
@@ -197,6 +199,12 @@ const DashboardRenttrackingAccountsRoute =
     path: '/accounts',
     getParentRoute: () => DashboardRenttrackingRouteRoute,
   } as any)
+const DashboardInspectionsInspectionIdRoute =
+  DashboardInspectionsInspectionIdRouteImport.update({
+    id: '/$inspectionId',
+    path: '/$inspectionId',
+    getParentRoute: () => DashboardInspectionsRoute,
+  } as any)
 const DashboardExpensesAddRoute = DashboardExpensesAddRouteImport.update({
   id: '/add',
   path: '/add',
@@ -219,6 +227,12 @@ const DashboardTenantsEditTenantIdRoute =
     path: '/$tenantId',
     getParentRoute: () => DashboardTenantsEditRouteRoute,
   } as any)
+const DashboardExpensesExpenseIdEditRoute =
+  DashboardExpensesExpenseIdEditRouteImport.update({
+    id: '/$expenseId/edit',
+    path: '/$expenseId/edit',
+    getParentRoute: () => DashboardExpensesRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
@@ -233,7 +247,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/advertise': typeof DashboardAdvertiseRoute
   '/dashboard/agreement': typeof DashboardAgreementRoute
   '/dashboard/home': typeof DashboardHomeRoute
-  '/dashboard/inspections': typeof DashboardInspectionsRoute
+  '/dashboard/inspections': typeof DashboardInspectionsRouteWithChildren
   '/dashboard/repairs': typeof DashboardRepairsRoute
   '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
   '/properties/add': typeof PropertiesAddRoute
@@ -244,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
   '/dashboard/agreements/edit': typeof DashboardAgreementsEditRoute
   '/dashboard/expenses/add': typeof DashboardExpensesAddRoute
+  '/dashboard/inspections/$inspectionId': typeof DashboardInspectionsInspectionIdRoute
   '/dashboard/renttracking/accounts': typeof DashboardRenttrackingAccountsRoute
   '/dashboard/renttracking/record': typeof DashboardRenttrackingRecordRoute
   '/dashboard/tenants/$tenantId': typeof DashboardTenantsTenantIdRoute
@@ -253,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/expenses/': typeof DashboardExpensesIndexRoute
   '/dashboard/renttracking/': typeof DashboardRenttrackingIndexRoute
   '/dashboard/tenants/': typeof DashboardTenantsIndexRoute
+  '/dashboard/expenses/$expenseId/edit': typeof DashboardExpensesExpenseIdEditRoute
   '/dashboard/tenants/edit/$tenantId': typeof DashboardTenantsEditTenantIdRoute
 }
 export interface FileRoutesByTo {
@@ -264,7 +280,7 @@ export interface FileRoutesByTo {
   '/dashboard/advertise': typeof DashboardAdvertiseRoute
   '/dashboard/agreement': typeof DashboardAgreementRoute
   '/dashboard/home': typeof DashboardHomeRoute
-  '/dashboard/inspections': typeof DashboardInspectionsRoute
+  '/dashboard/inspections': typeof DashboardInspectionsRouteWithChildren
   '/dashboard/repairs': typeof DashboardRepairsRoute
   '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
   '/properties/add': typeof PropertiesAddRoute
@@ -275,6 +291,7 @@ export interface FileRoutesByTo {
   '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
   '/dashboard/agreements/edit': typeof DashboardAgreementsEditRoute
   '/dashboard/expenses/add': typeof DashboardExpensesAddRoute
+  '/dashboard/inspections/$inspectionId': typeof DashboardInspectionsInspectionIdRoute
   '/dashboard/renttracking/accounts': typeof DashboardRenttrackingAccountsRoute
   '/dashboard/renttracking/record': typeof DashboardRenttrackingRecordRoute
   '/dashboard/tenants/$tenantId': typeof DashboardTenantsTenantIdRoute
@@ -284,6 +301,7 @@ export interface FileRoutesByTo {
   '/dashboard/expenses': typeof DashboardExpensesIndexRoute
   '/dashboard/renttracking': typeof DashboardRenttrackingIndexRoute
   '/dashboard/tenants': typeof DashboardTenantsIndexRoute
+  '/dashboard/expenses/$expenseId/edit': typeof DashboardExpensesExpenseIdEditRoute
   '/dashboard/tenants/edit/$tenantId': typeof DashboardTenantsEditTenantIdRoute
 }
 export interface FileRoutesById {
@@ -300,7 +318,7 @@ export interface FileRoutesById {
   '/dashboard/advertise': typeof DashboardAdvertiseRoute
   '/dashboard/agreement': typeof DashboardAgreementRoute
   '/dashboard/home': typeof DashboardHomeRoute
-  '/dashboard/inspections': typeof DashboardInspectionsRoute
+  '/dashboard/inspections': typeof DashboardInspectionsRouteWithChildren
   '/dashboard/repairs': typeof DashboardRepairsRoute
   '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
   '/properties/add': typeof PropertiesAddRoute
@@ -311,6 +329,7 @@ export interface FileRoutesById {
   '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
   '/dashboard/agreements/edit': typeof DashboardAgreementsEditRoute
   '/dashboard/expenses/add': typeof DashboardExpensesAddRoute
+  '/dashboard/inspections/$inspectionId': typeof DashboardInspectionsInspectionIdRoute
   '/dashboard/renttracking/accounts': typeof DashboardRenttrackingAccountsRoute
   '/dashboard/renttracking/record': typeof DashboardRenttrackingRecordRoute
   '/dashboard/tenants/$tenantId': typeof DashboardTenantsTenantIdRoute
@@ -320,6 +339,7 @@ export interface FileRoutesById {
   '/dashboard/expenses/': typeof DashboardExpensesIndexRoute
   '/dashboard/renttracking/': typeof DashboardRenttrackingIndexRoute
   '/dashboard/tenants/': typeof DashboardTenantsIndexRoute
+  '/dashboard/expenses/$expenseId/edit': typeof DashboardExpensesExpenseIdEditRoute
   '/dashboard/tenants/edit/$tenantId': typeof DashboardTenantsEditTenantIdRoute
 }
 export interface FileRouteTypes {
@@ -348,6 +368,7 @@ export interface FileRouteTypes {
     | '/dashboard/tenants/edit'
     | '/dashboard/agreements/edit'
     | '/dashboard/expenses/add'
+    | '/dashboard/inspections/$inspectionId'
     | '/dashboard/renttracking/accounts'
     | '/dashboard/renttracking/record'
     | '/dashboard/tenants/$tenantId'
@@ -357,6 +378,7 @@ export interface FileRouteTypes {
     | '/dashboard/expenses/'
     | '/dashboard/renttracking/'
     | '/dashboard/tenants/'
+    | '/dashboard/expenses/$expenseId/edit'
     | '/dashboard/tenants/edit/$tenantId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -379,6 +401,7 @@ export interface FileRouteTypes {
     | '/dashboard/tenants/edit'
     | '/dashboard/agreements/edit'
     | '/dashboard/expenses/add'
+    | '/dashboard/inspections/$inspectionId'
     | '/dashboard/renttracking/accounts'
     | '/dashboard/renttracking/record'
     | '/dashboard/tenants/$tenantId'
@@ -388,6 +411,7 @@ export interface FileRouteTypes {
     | '/dashboard/expenses'
     | '/dashboard/renttracking'
     | '/dashboard/tenants'
+    | '/dashboard/expenses/$expenseId/edit'
     | '/dashboard/tenants/edit/$tenantId'
   id:
     | '__root__'
@@ -414,6 +438,7 @@ export interface FileRouteTypes {
     | '/dashboard/tenants/edit'
     | '/dashboard/agreements/edit'
     | '/dashboard/expenses/add'
+    | '/dashboard/inspections/$inspectionId'
     | '/dashboard/renttracking/accounts'
     | '/dashboard/renttracking/record'
     | '/dashboard/tenants/$tenantId'
@@ -423,6 +448,7 @@ export interface FileRouteTypes {
     | '/dashboard/expenses/'
     | '/dashboard/renttracking/'
     | '/dashboard/tenants/'
+    | '/dashboard/expenses/$expenseId/edit'
     | '/dashboard/tenants/edit/$tenantId'
   fileRoutesById: FileRoutesById
 }
@@ -645,6 +671,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRenttrackingAccountsRouteImport
       parentRoute: typeof DashboardRenttrackingRouteRoute
     }
+    '/dashboard/inspections/$inspectionId': {
+      id: '/dashboard/inspections/$inspectionId'
+      path: '/$inspectionId'
+      fullPath: '/dashboard/inspections/$inspectionId'
+      preLoaderRoute: typeof DashboardInspectionsInspectionIdRouteImport
+      parentRoute: typeof DashboardInspectionsRoute
+    }
     '/dashboard/expenses/add': {
       id: '/dashboard/expenses/add'
       path: '/add'
@@ -673,6 +706,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardTenantsEditTenantIdRouteImport
       parentRoute: typeof DashboardTenantsEditRouteRoute
     }
+    '/dashboard/expenses/$expenseId/edit': {
+      id: '/dashboard/expenses/$expenseId/edit'
+      path: '/$expenseId/edit'
+      fullPath: '/dashboard/expenses/$expenseId/edit'
+      preLoaderRoute: typeof DashboardExpensesExpenseIdEditRouteImport
+      parentRoute: typeof DashboardExpensesRouteRoute
+    }
   }
 }
 
@@ -695,12 +735,14 @@ const DashboardAgreementsRouteRouteWithChildren =
 interface DashboardExpensesRouteRouteChildren {
   DashboardExpensesAddRoute: typeof DashboardExpensesAddRoute
   DashboardExpensesIndexRoute: typeof DashboardExpensesIndexRoute
+  DashboardExpensesExpenseIdEditRoute: typeof DashboardExpensesExpenseIdEditRoute
 }
 
 const DashboardExpensesRouteRouteChildren: DashboardExpensesRouteRouteChildren =
   {
     DashboardExpensesAddRoute: DashboardExpensesAddRoute,
     DashboardExpensesIndexRoute: DashboardExpensesIndexRoute,
+    DashboardExpensesExpenseIdEditRoute: DashboardExpensesExpenseIdEditRoute,
   }
 
 const DashboardExpensesRouteRouteWithChildren =
@@ -759,6 +801,17 @@ const DashboardTenantsRouteRouteWithChildren =
     DashboardTenantsRouteRouteChildren,
   )
 
+interface DashboardInspectionsRouteChildren {
+  DashboardInspectionsInspectionIdRoute: typeof DashboardInspectionsInspectionIdRoute
+}
+
+const DashboardInspectionsRouteChildren: DashboardInspectionsRouteChildren = {
+  DashboardInspectionsInspectionIdRoute: DashboardInspectionsInspectionIdRoute,
+}
+
+const DashboardInspectionsRouteWithChildren =
+  DashboardInspectionsRoute._addFileChildren(DashboardInspectionsRouteChildren)
+
 interface DashboardRouteRouteChildren {
   DashboardAgreementsRouteRoute: typeof DashboardAgreementsRouteRouteWithChildren
   DashboardExpensesRouteRoute: typeof DashboardExpensesRouteRouteWithChildren
@@ -767,7 +820,7 @@ interface DashboardRouteRouteChildren {
   DashboardAdvertiseRoute: typeof DashboardAdvertiseRoute
   DashboardAgreementRoute: typeof DashboardAgreementRoute
   DashboardHomeRoute: typeof DashboardHomeRoute
-  DashboardInspectionsRoute: typeof DashboardInspectionsRoute
+  DashboardInspectionsRoute: typeof DashboardInspectionsRouteWithChildren
   DashboardRepairsRoute: typeof DashboardRepairsRoute
   DashboardSecuritydepositsRoute: typeof DashboardSecuritydepositsRoute
 }
@@ -780,7 +833,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardAdvertiseRoute: DashboardAdvertiseRoute,
   DashboardAgreementRoute: DashboardAgreementRoute,
   DashboardHomeRoute: DashboardHomeRoute,
-  DashboardInspectionsRoute: DashboardInspectionsRoute,
+  DashboardInspectionsRoute: DashboardInspectionsRouteWithChildren,
   DashboardRepairsRoute: DashboardRepairsRoute,
   DashboardSecuritydepositsRoute: DashboardSecuritydepositsRoute,
 }

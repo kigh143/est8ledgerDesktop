@@ -1,52 +1,36 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
+import { expenseService } from "../../../services/expenseService";
 import { useAppStore } from "../../../store";
 import { toast } from "react-toastify";
-import { createExpenseFromPayload } from "../../../utils/expenseUtils";
 import type { ExpenseCategory } from "../../../types";
 
-type SearchParams = {
-  amount?: string;
-  category?: string;
-  description?: string;
-  notes?: string;
-  isPaid?: boolean;
-};
-
-export const Route = createFileRoute("/dashboard/expenses/add")({
-  component: AddExpensePage,
-  validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    amount: search.amount as string | undefined,
-    category: search.category as string | undefined,
-    description: search.description as string | undefined,
-    notes: search.notes as string | undefined,
-    isPaid: search.isPaid as boolean | undefined,
-  }),
+export const Route = createFileRoute("/dashboard/expenses/$expenseId/edit")({
+  component: EditExpensePage,
+  loader: async ({ params }) => {
+    try {
+      const expense = await expenseService.getExpense(params.expenseId);
+      return { expense: expense.data || expense };
+    } catch {
+      return { expense: null };
+    }
+  },
 });
 
-function AddExpensePage() {
+function EditExpensePage() {
   const navigate = useNavigate();
   const { activeProperty } = useAppStore();
-  const searchParams = useSearch({ from: "/dashboard/expenses/add" });
+  const { expense: initialExpense } = Route.useLoaderData();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    category: (searchParams.category as ExpenseCategory) || ("MAINTENANCE" as ExpenseCategory),
-    description: searchParams.description || "",
-    amount: searchParams.amount || "",
-    date: new Date().toISOString().split("T")[0],
-    notes: searchParams.notes || "",
-    isPaid: searchParams.isPaid || false,
+    category: (initialExpense?.category || "MAINTENANCE") as ExpenseCategory,
+    description: initialExpense?.description || "",
+    amount: initialExpense?.amount?.toString() || "",
+    date: initialExpense?.date?.split("T")[0] || new Date().toISOString().split("T")[0],
+    notes: initialExpense?.notes || "",
+    isPaid: initialExpense?.isPaid || false,
   });
-
-  useEffect(() => {
-    if (searchParams.category) {
-      setFormData((prev) => ({
-        ...prev,
-        category: searchParams.category as ExpenseCategory,
-      }));
-    }
-  }, [searchParams]);
 
   const categories: { value: ExpenseCategory; label: string }[] = [
     { value: "MAINTENANCE", label: "Maintenance" },
@@ -81,35 +65,46 @@ function AddExpensePage() {
       return;
     }
 
-    if (!activeProperty) {
-      toast.error("No property selected");
+    if (!initialExpense?.id) {
+      toast.error("Expense not found");
       return;
     }
 
     setLoading(true);
     try {
       const payload = {
-        amount: parseFloat(formData.amount),
-        status: "PENDING" as const,
         category: formData.category,
         description: formData.description,
-        notes: formData.notes,
-        propertyAgreementId: activeProperty.id,
-        isPaid: formData.isPaid,
+        amount: parseFloat(formData.amount),
         date: formData.date,
-        currency: activeProperty?.currency || "UGX",
+        notes: formData.notes,
+        isPaid: formData.isPaid,
       };
 
-      await createExpenseFromPayload(payload);
-      toast.success("Expense added successfully");
+      await expenseService.updateExpense(initialExpense.id.toString(), payload);
+      toast.success("Expense updated successfully");
       navigate({ to: "/dashboard/expenses" });
     } catch (error) {
       console.error(error);
-      toast.error("Failed to add expense");
+      toast.error("Failed to update expense");
     } finally {
       setLoading(false);
     }
   };
+
+  if (!initialExpense) {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-12">
+        <p className="text-slate-600">Expense not found</p>
+        <button
+          onClick={() => navigate({ to: "/dashboard/expenses" })}
+          className="mt-4 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90"
+        >
+          Back to Expenses
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -121,7 +116,7 @@ function AddExpensePage() {
         >
           <ArrowLeft size={20} className="text-slate-600" />
         </button>
-        <h1 className="text-2xl font-bold text-slate-900">Add Expense</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Edit Expense</h1>
       </div>
 
       {/* Form Card */}
@@ -221,8 +216,7 @@ function AddExpensePage() {
           {/* Info Box */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-900">
-              This expense will be created with status <span className="font-semibold">PENDING</span> and will require
-              approval before payment.
+              You can only edit expenses with <span className="font-semibold">PENDING</span> status.
             </p>
           </div>
 
@@ -240,7 +234,7 @@ function AddExpensePage() {
               disabled={loading}
               className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Creating..." : "Create Expense"}
+              {loading ? "Updating..." : "Update Expense"}
             </button>
           </div>
         </form>

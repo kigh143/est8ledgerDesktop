@@ -109,8 +109,8 @@ function DashboardHome() {
       ).length
 
       // Get repairs
-      const repairsResponse = await repairService.getPropertyRepairs(propertyId)
-      const repairs = Array.isArray(repairsResponse)
+      const repairsResponse = await repairService.getManagementRepairs(propertyId)
+      const repairs = Array.isArray(repairsResponse) ||[]
         ? repairsResponse
         : repairsResponse.data || []
       const totalRepairRequests = repairs.length

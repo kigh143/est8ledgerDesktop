@@ -1,6 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Eye, X } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Eye } from "lucide-react";
 import { inspectionService } from "../../services/inspectionService";
 import { useAppStore } from "../../store";
 import type { InspectionItem } from "../../types";
@@ -21,9 +20,8 @@ export const Route = createFileRoute("/dashboard/inspections")({
 });
 
 function InspectionsPage() {
+  const navigate = useNavigate();
   const { inspections } = Route.useLoaderData();
-  const [selectedInspection, setSelectedInspection] = useState<InspectionItem | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const moveInCount = inspections.filter((i: InspectionItem) => i.type === "MOVE_IN").length;
   const moveOutCount = inspections.filter((i: InspectionItem) => i.type === "MOVE_OUT").length;
@@ -129,8 +127,10 @@ function InspectionsPage() {
                   <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => {
-                        setSelectedInspection(inspection);
-                        setIsDetailOpen(true);
+                        navigate({
+                          to: "/dashboard/inspections/$inspectionId",
+                          params: { inspectionId: inspection.id.toString() },
+                        });
                       }}
                       className="inline-flex items-center gap-2 text-[#3f0ee3] hover:text-[#3f0ee3]/80 font-medium transition-colors"
                     >
@@ -144,98 +144,6 @@ function InspectionsPage() {
         </div>
       </div>
 
-      {/* Detail Modal */}
-      {isDetailOpen && selectedInspection && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 border-b border-slate-200 bg-white px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900">Inspection Details</h2>
-              <button
-                onClick={() => setIsDetailOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {/* Inspection Info */}
-              <div>
-                <h3 className="font-semibold text-slate-900 mb-3">Inspection Information</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-600">Type</p>
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${getTypeColor(selectedInspection.type)}`}>
-                      {selectedInspection.type === "MOVE_IN" ? "Move-In" : "Move-Out"}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Status</p>
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${getStatusColor(selectedInspection.status)}`}>
-                      {selectedInspection.status || "PENDING"}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Created Date</p>
-                    <p className="font-medium text-slate-900">
-                      {new Date(selectedInspection.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Last Updated</p>
-                    <p className="font-medium text-slate-900">
-                      {new Date(selectedInspection.updatedAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tenant Info */}
-              <div className="border-t border-slate-200 pt-4">
-                <h3 className="font-semibold text-slate-900 mb-3">Tenant Information</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-600">Unit</p>
-                    <p className="font-medium text-slate-900">{selectedInspection.tenancy?.unitName}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Approval Info */}
-              <div className="border-t border-slate-200 pt-4">
-                <h3 className="font-semibold text-slate-900 mb-3">Approval Status</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-600">Tenant Approved At</p>
-                    <p className="font-medium text-slate-900">
-                      {selectedInspection.tenantApprovedAt
-                        ? new Date(selectedInspection.tenantApprovedAt).toLocaleDateString()
-                        : "Not approved"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Manager Approved At</p>
-                    <p className="font-medium text-slate-900">
-                      {selectedInspection.managerApprovedAt
-                        ? new Date(selectedInspection.managerApprovedAt).toLocaleDateString()
-                        : "Not approved"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-slate-200 px-6 py-4 flex justify-end">
-              <button
-                onClick={() => setIsDetailOpen(false)}
-                className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

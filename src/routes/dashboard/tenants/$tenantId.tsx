@@ -349,7 +349,7 @@ function TenantProfilePage() {
                 outstandingBalance > 0 ? "text-red-600" : "text-emerald-600"
               }`}
             >
-              UGX {Number(outstandingBalance).toLocaleString()}
+              UGX {tenancy.outstanding_rent_balance}
             </p>
             {outstandingBalance > 0 && (
               <p className="text-xs text-red-600 mt-2">⚠️ Rent overdue</p>

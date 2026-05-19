@@ -320,6 +320,7 @@ export type TenancyAgreement = {
   waterMeter: string;
   late_payment_fee: string | null;
   late_paymeny_percentage: string | null;
+  outstanding_rent_balance:number;
   wasteHandledBy: "TENANT" | "LANDLORD";
   securityDeposit: string;
   securityDepositPaidAt: string | null;
@@ -508,7 +509,7 @@ export interface Expense {
 export type ExpenseResponse = Expense[];
 
 // Repairs & Maintenance
-export type RepairStatus = "REPORTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+export type RepairStatus = "REPORTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "MGT_REVIEWED" | "ASSIGNED";
 export type RepairPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 
 export interface RepairRequest {

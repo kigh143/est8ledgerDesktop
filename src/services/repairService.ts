@@ -49,6 +49,31 @@ export const repairService = {
     });
     return response.data;
   },
+
+  getManagementRepairs: async (propertyAgreementId: string) => {
+    const response = await apiClient.get(`/repair-requests/management?propertyAgreementId=${propertyAgreementId}`);
+    return response.data;
+  },
+
+  reviewRepairRequest: async (repairRequestId: string, data: { status: string; notes: string }) => {
+    const response = await apiClient.put(`/repair-requests/${repairRequestId}/review`, data);
+    return response.data;
+  },
+
+  assignContractor: async (repairRequestId: string, data: { contractorId: number; estimatedAmount: number }) => {
+    const response = await apiClient.put(`/repair-requests/${repairRequestId}/assign`, data);
+    return response.data;
+  },
+
+  applyForRepair: async (repairRequestId: string, data: { quotedAmount: number; comment: string }) => {
+    const response = await apiClient.post(`/repair-requests/${repairRequestId}/apply`, data);
+    return response.data;
+  },
+
+  getRepairRequestDetail: async (repairRequestId: string) => {
+    const response = await apiClient.get(`/repair-requests/${repairRequestId}/review`);
+    return response.data;
+  },
 };
 
 export default repairService;

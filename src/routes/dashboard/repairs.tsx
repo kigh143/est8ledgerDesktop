@@ -1,29 +1,59 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, X, Wrench } from "lucide-react";
+import { Eye, X, Wrench, CheckCircle, Clock } from "lucide-react";
 import { repairService } from "../../services/repairService";
+import { useAppStore } from "../../store";
 import { toast } from "react-toastify";
 import type { RepairRequest, RepairStatus } from "../../types";
 
+type RepairRequestDetail = RepairRequest & {
+  notes?: string;
+  estimatedAmount?: number;
+  applications?: Array<{
+    id: number;
+    contractorId: number;
+    quotedAmount: number;
+    comment: string;
+    status: string;
+    contractor?: {
+      id: number;
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+  }>;
+};
+
 export const Route = createFileRoute("/dashboard/repairs")({
   loader: async () => {
-    // const { activeProperty } = useAppStore.getState();
-    // if (!activeProperty) {
-    //   return { repairs: [] };
-    // }
-    // const response = await repairService.getPropertyRepairs(activeProperty.id.toString());
-    // const repairs = (response.data || []) as RepairRequest[];
-    return { repairs:[] };
+    const { activeProperty } = useAppStore.getState();
+    if (!activeProperty) {
+      return { repairs: [] };
+    }
+    try {
+      const response = await repairService.getManagementRepairs(activeProperty.id.toString());
+      return { repairs: (response.data || response || []) as RepairRequestDetail[] };
+    } catch {
+      return { repairs: [] };
+    }
   },
   component: RepairsPage,
 });
 
 function RepairsPage() {
   const { repairs: initialRepairs } = Route.useLoaderData();
-  const [repairs, setRepairs] = useState<RepairRequest[]>(initialRepairs);
-  const [selectedRepair, setSelectedRepair] = useState<RepairRequest | null>(null);
+  const [repairs, setRepairs] = useState<RepairRequestDetail[]>(initialRepairs);
+  const [selectedRepair, setSelectedRepair] = useState<RepairRequestDetail | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [reviewMode, setReviewMode] = useState(false);
+  const [assignMode, setAssignMode] = useState(false);
+  const [applyMode, setApplyMode] = useState(false);
+  const [reviewNotes, setReviewNotes] = useState("");
+  const [contractorId, setContractorId] = useState("");
+  const [estimatedAmount, setEstimatedAmount] = useState("");
+  const [quotedAmount, setQuotedAmount] = useState("");
+  const [comment, setComment] = useState("");
 
   const reportedCount = repairs.filter((r) => r.status === "REPORTED").length;
   const inProgressCount = repairs.filter((r) => r.status === "IN_PROGRESS").length;
@@ -73,6 +103,95 @@ function RepairsPage() {
       toast.success("Status updated successfully");
     } catch {
       toast.error("Failed to update status");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleReviewRepair = async () => {
+    if (!selectedRepair?.id || !reviewNotes.trim()) {
+      toast.error("Please enter review notes");
+      return;
+    }
+    setUpdatingId(selectedRepair.id);
+    try {
+      await repairService.reviewRepairRequest(selectedRepair.id.toString(), {
+        status: "MGT_REVIEWED",
+        notes: reviewNotes,
+      });
+      setRepairs((prev) =>
+        prev.map((r) =>
+          r.id === selectedRepair.id
+            ? { ...r, status: "MGT_REVIEWED", notes: reviewNotes }
+            : r
+        )
+      );
+      setSelectedRepair({ ...selectedRepair, status: "MGT_REVIEWED", notes: reviewNotes });
+      setReviewMode(false);
+      setReviewNotes("");
+      toast.success("Repair request reviewed successfully");
+    } catch {
+      toast.error("Failed to review repair request");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleAssignContractor = async () => {
+    if (!selectedRepair?.id || !contractorId || !estimatedAmount) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    setUpdatingId(selectedRepair.id);
+    try {
+      await repairService.assignContractor(selectedRepair.id.toString(), {
+        contractorId: parseInt(contractorId),
+        estimatedAmount: parseFloat(estimatedAmount),
+      });
+      setRepairs((prev) =>
+        prev.map((r) =>
+          r.id === selectedRepair.id
+            ? {
+                ...r,
+                estimatedAmount: parseFloat(estimatedAmount),
+                status: "ASSIGNED",
+              }
+            : r
+        )
+      );
+      setSelectedRepair({
+        ...selectedRepair,
+        estimatedAmount: parseFloat(estimatedAmount),
+        status: "ASSIGNED",
+      });
+      setAssignMode(false);
+      setContractorId("");
+      setEstimatedAmount("");
+      toast.success("Contractor assigned successfully");
+    } catch {
+      toast.error("Failed to assign contractor");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleApplyForRepair = async () => {
+    if (!selectedRepair?.id || !quotedAmount || !comment.trim()) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    setUpdatingId(selectedRepair.id);
+    try {
+      await repairService.applyForRepair(selectedRepair.id.toString(), {
+        quotedAmount: parseFloat(quotedAmount),
+        comment,
+      });
+      setApplyMode(false);
+      setQuotedAmount("");
+      setComment("");
+      toast.success("Application submitted successfully");
+    } catch {
+      toast.error("Failed to submit application");
     } finally {
       setUpdatingId(null);
     }
@@ -211,7 +330,7 @@ function RepairsPage() {
                   <div>
                     <p className="text-sm text-slate-600 mb-2">Status</p>
                     <select
-                      value={selectedRepair.status}
+                      value={(selectedRepair.status as RepairStatus) || "REPORTED"}
                       onChange={(e) =>
                         handleStatusUpdate(selectedRepair.id, e.target.value as RepairStatus)
                       }
@@ -319,11 +438,245 @@ function RepairsPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Manager Review Section */}
+              {selectedRepair.status === "REPORTED" && !reviewMode && (
+                <div className="border-t border-slate-200 pt-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-slate-900">Manager Review</h3>
+                    <button
+                      onClick={() => setReviewMode(true)}
+                      className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors"
+                    >
+                      <CheckCircle size={16} />
+                      Review
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Review Form */}
+              {reviewMode && (
+                <div className="border-t border-slate-200 pt-4">
+                  <h3 className="font-semibold text-slate-900 mb-3">Manager Review</h3>
+                  <textarea
+                    value={reviewNotes}
+                    onChange={(e) => setReviewNotes(e.target.value)}
+                    placeholder="Enter review notes..."
+                    rows={3}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  />
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={handleReviewRepair}
+                      disabled={updatingId === selectedRepair.id}
+                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Submit Review
+                    </button>
+                    <button
+                      onClick={() => {
+                        setReviewMode(false);
+                        setReviewNotes("");
+                      }}
+                      className="flex-1 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Contractor Assignment Section */}
+              {selectedRepair.status === "MGT_REVIEWED" && !assignMode && (
+                <div className="border-t border-slate-200 pt-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-slate-900">Assign Contractor</h3>
+                    <button
+                      onClick={() => setAssignMode(true)}
+                      className="flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-700 rounded-lg text-sm font-medium hover:bg-amber-200 transition-colors"
+                    >
+                      <Clock size={16} />
+                      Assign
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Assignment Form */}
+              {assignMode && (
+                <div className="border-t border-slate-200 pt-4">
+                  <h3 className="font-semibold text-slate-900 mb-3">Assign Contractor</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-900 mb-2">
+                        Contractor ID
+                      </label>
+                      <input
+                        type="number"
+                        value={contractorId}
+                        onChange={(e) => setContractorId(e.target.value)}
+                        placeholder="Enter contractor ID"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-900 mb-2">
+                        Estimated Amount
+                      </label>
+                      <input
+                        type="number"
+                        value={estimatedAmount}
+                        onChange={(e) => setEstimatedAmount(e.target.value)}
+                        placeholder="Enter estimated amount"
+                        step="0.01"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={handleAssignContractor}
+                      disabled={updatingId === selectedRepair.id}
+                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Assign
+                    </button>
+                    <button
+                      onClick={() => {
+                        setAssignMode(false);
+                        setContractorId("");
+                        setEstimatedAmount("");
+                      }}
+                      className="flex-1 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Contractor Applications */}
+              {selectedRepair.applications && selectedRepair.applications.length > 0 && (
+                <div className="border-t border-slate-200 pt-4">
+                  <h3 className="font-semibold text-slate-900 mb-3">Contractor Applications</h3>
+                  <div className="space-y-3">
+                    {selectedRepair.applications.map((app) => (
+                      <div
+                        key={app.id}
+                        className="border border-slate-200 rounded-lg p-3 bg-slate-50"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="font-medium text-slate-900">
+                              {app.contractor?.firstName} {app.contractor?.lastName}
+                            </p>
+                            <p className="text-xs text-slate-500">{app.contractor?.email}</p>
+                          </div>
+                          <span
+                            className={`px-2 py-1 rounded text-xs font-semibold ${
+                              app.status === "APPROVED"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-amber-100 text-amber-700"
+                            }`}
+                          >
+                            {app.status}
+                          </span>
+                        </div>
+                        <div className="mt-2 space-y-1">
+                          <p className="text-sm text-slate-700">
+                            <span className="font-medium">Quoted: </span>
+                            {app.quotedAmount}
+                          </p>
+                          <p className="text-sm text-slate-700">
+                            <span className="font-medium">Comment: </span>
+                            {app.comment}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Contractor Apply Section */}
+              {selectedRepair.status === "ASSIGNED" && !applyMode && (
+                <div className="border-t border-slate-200 pt-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-slate-900">Submit Application</h3>
+                    <button
+                      onClick={() => setApplyMode(true)}
+                      className="flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-200 transition-colors"
+                    >
+                      <CheckCircle size={16} />
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Apply Form */}
+              {applyMode && (
+                <div className="border-t border-slate-200 pt-4">
+                  <h3 className="font-semibold text-slate-900 mb-3">Submit Application</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-900 mb-2">
+                        Quoted Amount
+                      </label>
+                      <input
+                        type="number"
+                        value={quotedAmount}
+                        onChange={(e) => setQuotedAmount(e.target.value)}
+                        placeholder="Enter your quote"
+                        step="0.01"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-900 mb-2">
+                        Comment
+                      </label>
+                      <textarea
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        placeholder="Add your comment..."
+                        rows={2}
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={handleApplyForRepair}
+                      disabled={updatingId === selectedRepair.id}
+                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Submit Application
+                    </button>
+                    <button
+                      onClick={() => {
+                        setApplyMode(false);
+                        setQuotedAmount("");
+                        setComment("");
+                      }}
+                      className="flex-1 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="border-t border-slate-200 px-6 py-4 flex justify-end">
               <button
-                onClick={() => setIsDetailOpen(false)}
+                onClick={() => {
+                  setIsDetailOpen(false);
+                  setReviewMode(false);
+                  setAssignMode(false);
+                  setApplyMode(false);
+                }}
                 className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
               >
                 Close

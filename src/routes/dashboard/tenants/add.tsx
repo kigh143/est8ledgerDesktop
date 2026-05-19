@@ -83,38 +83,32 @@ function AddTenantPage() {
 
     setLoading(true);
     try {
-      // First create or search for user
-      const searchResponse = await tenancyService.searchForUser({
-        email: formData.email,
-        phoneNumber: formData.phoneNumber,
-      });
+      const selectedCountry = countries.find((val: any) => +val.id === +formData.countryId);
+      // return;
+      const dialCode = selectedCountry?.dialingCode || '';
+      const phoneWithoutDialCode = dialCode ? formData.phoneNumber.replace(dialCode, '').trim() : formData.phoneNumber.trim();
+      const fullPhoneNumber = formData.phoneNumber.startsWith(dialCode) ? formData.phoneNumber : `${dialCode}${phoneWithoutDialCode}`;
 
-      let userId = searchResponse?.user?.id;
-
-      if (!userId) {
-        // Create new tenant user
-        const userResponse = await tenancyService.createTenantUser({
-          email: formData.email,
-          phoneNumber: formData.phoneNumber,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          countryId: formData.countryId,
-        });
-        userId = userResponse.user.id;
-      }
+      // Prepare tenancy data with tenant information
+      const tenancyPayload = {
+        tenant: {
+          tenantName: `${formData.lastName} ${formData.lastName}`,
+          tenantEmail: formData.email.toLowerCase().trim(),
+          tenantPhone: fullPhoneNumber.replace(/\s/g, ''),
+        },
+        tenancy: {
+          rentAmount: parseFloat(formData.rentAmount),
+          securityDeposit: parseInt(formData.securityDeposit.replace(/[^0-9.]/g, '')),
+          unitName: formData.unitName,
+          yakaMeter: formData.yakaMeter || '',
+          waterMeter: formData.waterMeter || '',
+          wasteHandledBy: formData.wasteHandledBy,
+          propertyAgreementId: activeProperty.id
+        }
+      };
 
       // Create tenancy agreement
-      await tenancyService.createTenancy({
-        tenantId: userId,
-        propertyAgreementId: activeProperty.id,
-        managerId: 1, // This should come from current user
-        rentAmount: parseFloat(formData.rentAmount),
-        unitName: formData.unitName,
-        yakaMeter: formData.yakaMeter,
-        waterMeter: formData.waterMeter,
-        securityDeposit: parseFloat(formData.securityDeposit) || 0,
-        wasteHandledBy: formData.wasteHandledBy,
-      });
+      await tenancyService.createTenancy(tenancyPayload);
 
       toast.success("Tenant added successfully");
       navigate({ to: "/dashboard/tenants" });
