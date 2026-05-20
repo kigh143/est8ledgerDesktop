@@ -28,9 +28,9 @@ function EditTenantPage() {
     waterMeter: "",
     yakaMeter: "",
     wasteHandledBy: "TENANT" as "TENANT" | "LANDLORD",
-    day_of_rent_payment: "1",
-    late_paymeny_percentage: "10",
-    days_of_late_payment: "3",
+    day_of_rent_payment: "",
+    late_paymeny_percentage: "",
+    days_of_late_payment: "",
   });
 
   useEffect(() => {
@@ -287,7 +287,7 @@ function EditTenantPage() {
                 </label>
                 <select
                   value={formData.days_of_late_payment}
-                  onChange={(e) => handleInputChange("dayOfRentPayment", e.target.value)}
+                  onChange={(e) => handleInputChange("days_of_late_payment", e.target.value)}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
                 >
                   {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
@@ -305,7 +305,7 @@ function EditTenantPage() {
                 <input
                   type="number"
                   value={formData.day_of_rent_payment}
-                  onChange={(e) => handleInputChange("daysOfLatePayment", e.target.value)}
+                  onChange={(e) => handleInputChange("day_of_rent_payment", e.target.value)}
                   placeholder="3"
                   min="0"
                   max="31"
@@ -320,7 +320,7 @@ function EditTenantPage() {
                 <input
                   type="number"
                   value={formData.late_paymeny_percentage}
-                  onChange={(e) => handleInputChange("latePaymentPercentage", e.target.value)}
+                  onChange={(e) => handleInputChange("late_paymeny_percentage", e.target.value)}
                   placeholder="10"
                   step="0.1"
                   min="0"
