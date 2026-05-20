@@ -286,7 +286,7 @@ function EditTenantPage() {
                   Day of Rent Payment <span className="text-red-500">*</span>
                 </label>
                 <select
-                  value={formData.dayOfRentPayment}
+                  value={formData.days_of_late_payment}
                   onChange={(e) => handleInputChange("dayOfRentPayment", e.target.value)}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
                 >
@@ -304,7 +304,7 @@ function EditTenantPage() {
                 </label>
                 <input
                   type="number"
-                  value={formData.daysOfLatePayment}
+                  value={formData.day_of_rent_payment}
                   onChange={(e) => handleInputChange("daysOfLatePayment", e.target.value)}
                   placeholder="3"
                   min="0"
@@ -319,7 +319,7 @@ function EditTenantPage() {
                 </label>
                 <input
                   type="number"
-                  value={formData.latePaymentPercentage}
+                  value={formData.late_paymeny_percentage}
                   onChange={(e) => handleInputChange("latePaymentPercentage", e.target.value)}
                   placeholder="10"
                   step="0.1"

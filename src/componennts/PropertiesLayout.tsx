@@ -24,7 +24,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   const menu = [
     {
       icon: <House size={20} />,
-      label: "Properties",
+      label: "My Properties",
       route: '/properties'
     },
     {
@@ -34,7 +34,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
     },
     {
       icon: <CreditCard size={20} />,
-      label: "Subscriptions",
+      label: "Subscription",
       route: '/properties/subscription'
     }, {
       icon: <Settings size={20} />,
@@ -47,7 +47,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
 
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-gradient-to-b from-slate-900 to-slate-800 px-4 py-6 sm:px-6 md:relative md:py-8 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+    <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-700/50 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 px-4 py-6 sm:px-6 md:relative md:py-8 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-2xl`}>
       {/* Close Button (Mobile) */}
       <button
         onClick={onClose}
@@ -56,37 +56,43 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
         <X size={24} />
       </button>
 
-      {/* Logo */}
-      <div className="mb-10 mt-8 md:mt-0">
-        <div className="flex items-center gap-3">
-          <img src="/long_logo.png" alt="est8Ledger" className="h-10" />
+      {/* Logo Section */}
+      <div className="mb-8 mt-8 md:mt-0">
+        <div className="flex items-center gap-2 bg-gradient-to-r from-[#3f0ee3]/10 to-[#7fe502]/5 rounded-xl p-3 border border-[#3f0ee3]/20">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3f0ee3] to-[#7fe502] flex items-center justify-center shadow-lg shadow-[#3f0ee3]/50">
+            <span className="text-white font-bold text-sm">E8</span>
+          </div>
+          <img src="/long_logo.png" alt="est8Ledger" className="h-6" />
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-2 overflow-y-auto pr-2">
+      <nav className="flex-1 space-y-1 overflow-y-auto pr-2">
         {menu.map((item) => (
           <Link
             to={item.route}
             key={item.label}
             onClick={onClose}
-            className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-all hover:bg-slate-700/50 hover:text-white active:bg-slate-700 md:rounded-xl group"
-            activeProps={{ className: "bg-[#3f0ee3]/20 text-[#7fe502] border-l-2 border-[#3f0ee3]" }}
+            className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-all hover:bg-slate-700/50 hover:text-white hover:pl-5 active:bg-slate-700 md:rounded-xl group"
+            activeProps={{ className: "bg-gradient-to-r from-[#3f0ee3]/20 to-[#3f0ee3]/10 text-[#7fe502] border-l-2 border-[#3f0ee3] hover:bg-gradient-to-r hover:from-[#3f0ee3]/30 hover:to-[#3f0ee3]/20" }}
           >
             <div className="flex items-center gap-3">
-              {item.icon}
+              <span className="text-[#3f0ee3] group-hover:text-[#7fe502] transition-colors">{item.icon}</span>
               <span>{item.label}</span>
             </div>
-            <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+            <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400" />
           </Link>
         ))}
       </nav>
 
+      {/* Divider */}
+      <div className="my-3 h-px bg-gradient-to-r from-slate-700/0 via-slate-700/50 to-slate-700/0" />
+
       {/* User Section */}
-      <div className="border-t border-slate-700 pt-4 space-y-3">
+      <div className="border-t border-slate-700/50 pt-4 space-y-3">
         <div className="hidden md:block">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Account</p>
-          <h3 className="mt-2 font-semibold text-white truncate">{user?.firstName ?? 'Name'}</h3>
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Account</p>
+          <h3 className="mt-2 font-semibold text-white truncate text-sm">{user?.firstName ?? 'User'}</h3>
           <p className="text-xs text-slate-400 truncate">{user?.email}</p>
         </div>
       </div>
@@ -139,20 +145,7 @@ export default function PropertiesLayout({ children, pageTitle, subTitle, action
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 md:gap-4">
-                {action && (
-                  <button className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#7fe502] to-[#7fe502]/90 px-5 py-2.5 text-sm font-semibold text-slate-900 shadow-lg shadow-[#7fe502]/40 transition-all hover:shadow-[#7fe502]/60 hover:from-[#7fe502] hover:to-[#7fe502] active:scale-95 md:rounded-xl md:px-6 md:py-3 md:text-base whitespace-nowrap font-bold">
-                    Mark all as completed
-                  </button>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-100 text-slate-700 px-4 py-2.5 text-sm font-semibold hover:bg-slate-200 transition-colors md:rounded-xl md:px-5 md:py-3 md:text-base shrink-0"
-                >
-                  <LogOut size={18} />
-                  <span className="hidden sm:inline">Logout</span>
-                </button>
-              </div>
+              
             </div>
           </div>
 
