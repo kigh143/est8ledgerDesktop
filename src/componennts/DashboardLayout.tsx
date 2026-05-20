@@ -242,7 +242,7 @@ export default function DashboardLayout({ children}: LayoutProps) {
                   <Menu size={24} />
                 </button>
                 <div className="min-w-0 flex-1">
-                  <h1 className="truncate text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent sm:text-3xl">
+                  <h1 className="truncate text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent sm:text-2xl">
                     {state.activeProperty?.propertyName}
                   </h1>
                   <p className="mt-2 truncate text-sm text-slate-500 font-medium">
