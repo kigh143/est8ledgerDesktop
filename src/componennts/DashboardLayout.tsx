@@ -16,7 +16,7 @@ import {
   Building2
 } from "lucide-react";
 import { useAppStore } from "../store";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { useState } from "react";
 
 type LayoutProps = {
@@ -87,22 +87,24 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
         }
       ]
     },
-    {
-      id: "marketing",
-      title: "Marketing",
-      icon: <Megaphone size={18} />,
-      items: [
-        {
-          icon: <Megaphone size={20} />,
-          label: "Advertise",
-          route: '/dashboard/advertise'
-        }
-      ]
-    }
+    // {
+    //   id: "marketing",
+    //   title: "Marketing",
+    //   icon: <Megaphone size={18} />,
+    //   items: [
+    //     {
+    //       icon: <Megaphone size={20} />,
+    //       label: "Advertise",
+    //       route: '/dashboard/advertise'
+    //     }
+    //   ]
+    // }
   ];
 
   const state = useAppStore();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isActive = (route: string) => location.pathname === route;
 
   const handleGoBack = () => {
     state.setActiveProperty(null);
@@ -114,19 +116,19 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   }
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-700/50 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 px-4 py-6 sm:px-6 md:relative md:py-8 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-2xl`}>
+    <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 md:relative md:py-8 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-sm`}>
       {/* Close Button (Mobile) */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 md:hidden text-slate-400 hover:text-white transition-colors"
+        className="absolute top-4 right-4 md:hidden text-slate-600 hover:text-slate-900 transition-colors"
       >
         <X size={24} />
       </button>
 
       {/* Logo Section */}
       <div className="mb-8 mt-8 md:mt-0">
-        <div className="flex items-center gap-2 bg-gradient-to-r from-[#3f0ee3]/10 to-[#7fe502]/5 rounded-xl p-3 border border-[#3f0ee3]/20">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3f0ee3] to-[#7fe502] flex items-center justify-center shadow-lg shadow-[#3f0ee3]/50">
+        <div className="flex items-center gap-2 bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-[#552ae7] to-[#7fe502] flex items-center justify-center shadow-md">
             <span className="text-white font-bold text-sm">E8</span>
           </div>
           <img src="/long_logo.png" alt="est8Ledger" className="h-6" />
@@ -140,71 +142,83 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
             handleGoBack();
             onClose();
           }}
-          className="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-all hover:bg-slate-700/50 hover:text-white hover:pl-5 active:bg-slate-700 md:rounded-xl"
+          className="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-700 transition-all hover:bg-slate-100 hover:text-slate-900 md:rounded-lg group"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={20} className="text-slate-600 group-hover:text-slate-800" />
           <span>Back to Properties</span>
         </button>
-        <div className="my-3 h-px bg-gradient-to-r from-slate-700/0 via-slate-700/50 to-slate-700/0" />
+        <div className="my-3 h-px bg-slate-200" />
 
-        {sections.map((section) => (
-          <div key={section.id}>
-            {section.items.length === 1 && !section.icon ? (
-              <Link
-                to={section.items[0].route}
-                onClick={onClose}
-                className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-all hover:bg-slate-700/50 hover:text-white hover:pl-5 active:bg-slate-700 md:rounded-xl"
-                activeProps={{ className: "bg-gradient-to-r from-[#3f0ee3]/20 to-[#3f0ee3]/10 text-[#7fe502] border-l-2 border-[#3f0ee3] hover:bg-gradient-to-r hover:from-[#3f0ee3]/30 hover:to-[#3f0ee3]/20" }}
-              >
-                {section.items[0].icon}
-                <span>{section.items[0].label}</span>
-              </Link>
-            ) : (
-              <>
-                <button
-                  onClick={() => toggleSection(section.id)}
-                  className="w-full flex items-center justify-between rounded-lg px-4 py-3 text-sm font-semibold text-slate-300 transition-all hover:bg-slate-700/50 hover:text-white hover:pl-5 active:bg-slate-700 md:rounded-xl group"
+        {sections.map((section) => {
+          const isFirstItemActive = section.items.length === 1 && isActive(section.items[0].route);
+          return (
+            <div key={section.id}>
+              {section.items.length === 1 && !section.icon ? (
+                <Link
+                  to={section.items[0].route}
+                  onClick={onClose}
+                  className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all border-l-2 md:rounded-lg group ${
+                    isFirstItemActive
+                      ? 'border-[#552ae7] text-[#552ae7] bg-[#552ae7]/5'
+                      : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
                 >
-                  <div className="flex items-center gap-3">
-                    {section.icon}
-                    <span>{section.title}</span>
-                  </div>
-                  <ChevronDown
-                    size={18}
-                    className={`transition-transform duration-300 text-slate-400 group-hover:text-slate-200 ${
-                      expandedSection === section.id ? 'rotate-180' : ''
-                    }`}
-                  />
-                </button>
+                  <span className={isFirstItemActive ? 'text-[#552ae7]' : 'text-slate-600 group-hover:text-slate-800'}>{section.items[0].icon}</span>
+                  <span>{section.items[0].label}</span>
+                </Link>
+              ) : (
+                <>
+                  <button
+                    onClick={() => toggleSection(section.id)}
+                    className="w-full flex items-center justify-between rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-100 hover:text-slate-900 md:rounded-lg group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-slate-600 group-hover:text-slate-800">{section.icon}</span>
+                      <span>{section.title}</span>
+                    </div>
+                    <ChevronDown
+                      size={18}
+                      className={`transition-transform duration-300 text-slate-600 group-hover:text-slate-800 ${
+                        expandedSection === section.id ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
 
-                {expandedSection === section.id && (
-                  <div className="space-y-1 py-2 pl-4">
-                    {section.items.map((item) => (
-                      <Link
-                        key={item.label}
-                        to={item.route}
-                        onClick={onClose}
-                        className="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-slate-400 transition-all hover:bg-slate-700/50 hover:text-white hover:pl-5 active:bg-slate-700 md:rounded-lg"
-                        activeProps={{ className: "bg-[#3f0ee3]/15 text-[#7fe502] border-l-2 border-[#3f0ee3] hover:bg-[#3f0ee3]/25" }}
-                      >
-                        <div className="text-[#3f0ee3]">{item.icon}</div>
-                        <span>{item.label}</span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        ))}
+                  {expandedSection === section.id && (
+                    <div className="space-y-1 py-2 pl-4">
+                      {section.items.map((item) => {
+                        const itemActive = isActive(item.route);
+                        return (
+                          <Link
+                            key={item.label}
+                            to={item.route}
+                            onClick={onClose}
+                            className={`flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-all border-l-2 md:rounded-lg group ${
+                              itemActive
+                                ? 'border-[#552ae7] text-[#552ae7] bg-[#552ae7]/5'
+                                : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                            }`}
+                          >
+                            <span className={itemActive ? 'text-[#552ae7]' : 'text-slate-600 group-hover:text-slate-800'}>{item.icon}</span>
+                            <span>{item.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
       </nav>
 
       {/* User Section */}
-      <div className="border-t border-slate-700/50 pt-4 space-y-3">
+      <div className="border-t border-slate-200 pt-4 space-y-3">
         <div className="hidden md:block">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Account</p>
-          <h3 className="mt-2 font-semibold text-white truncate text-sm">{state.user?.firstName || "User"}</h3>
-          <p className="text-xs text-slate-400 truncate">{state.user?.email}</p>
+          <h3 className="mt-2 font-semibold text-slate-900 truncate text-sm">{state.user?.firstName || "User"}</h3>
+          <p className="text-xs text-slate-600 truncate">{state.user?.email}</p>
         </div>
       </div>
     </aside>

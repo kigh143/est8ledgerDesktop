@@ -10,7 +10,7 @@ import {
   LogOut
 } from "lucide-react";
 import { useAppStore } from "../store";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { useState } from "react";
 
 type LayoutProps = {
@@ -44,22 +44,23 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   ];
 
   const user = useAppStore(state => state.user);
-
+  const location = useLocation();
+  const isActive = (route: string) => location.pathname === route;
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-700/50 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 px-4 py-6 sm:px-6 md:relative md:py-8 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-2xl`}>
+    <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-slate-50 px-4 py-6 sm:px-6 md:relative md:py-8 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-sm`}>
       {/* Close Button (Mobile) */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 md:hidden text-slate-400 hover:text-white transition-colors"
+        className="absolute top-4 right-4 md:hidden text-slate-600 hover:text-slate-900 transition-colors"
       >
         <X size={24} />
       </button>
 
       {/* Logo Section */}
       <div className="mb-8 mt-8 md:mt-0">
-        <div className="flex items-center gap-2 bg-gradient-to-r from-[#3f0ee3]/10 to-[#7fe502]/5 rounded-xl p-3 border border-[#3f0ee3]/20">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3f0ee3] to-[#7fe502] flex items-center justify-center shadow-lg shadow-[#3f0ee3]/50">
+        <div className="flex items-center gap-2 bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-[#552ae7] to-[#7fe502] flex items-center justify-center shadow-md">
             <span className="text-white font-bold text-sm">E8</span>
           </div>
           <img src="/long_logo.png" alt="est8Ledger" className="h-6" />
@@ -68,32 +69,38 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 overflow-y-auto pr-2">
-        {menu.map((item) => (
-          <Link
-            to={item.route}
-            key={item.label}
-            onClick={onClose}
-            className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium text-slate-300 transition-all hover:bg-slate-700/50 hover:text-white hover:pl-5 active:bg-slate-700 md:rounded-xl group"
-            activeProps={{ className: "bg-gradient-to-r from-[#3f0ee3]/20 to-[#3f0ee3]/10 text-[#7fe502] border-l-2 border-[#3f0ee3] hover:bg-gradient-to-r hover:from-[#3f0ee3]/30 hover:to-[#3f0ee3]/20" }}
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-[#3f0ee3] group-hover:text-[#7fe502] transition-colors">{item.icon}</span>
-              <span>{item.label}</span>
-            </div>
-            <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400" />
-          </Link>
-        ))}
+        {menu.map((item) => {
+          const active = isActive(item.route);
+          return (
+            <Link
+              to={item.route}
+              key={item.label}
+              onClick={onClose}
+              className={`flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all border-l-2 md:rounded-lg group ${
+                active
+                  ? 'border-[#552ae7] text-[#552ae7] bg-[#552ae7]/5'
+                  : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className={`transition-colors ${active ? 'text-[#552ae7]' : 'text-slate-600 group-hover:text-slate-800'}`}>{item.icon}</span>
+                <span>{item.label}</span>
+              </div>
+              <ChevronRight size={18} className={`transition-opacity ${active ? 'opacity-100 text-[#552ae7]' : 'opacity-0 group-hover:opacity-100 text-slate-400'}`} />
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Divider */}
-      <div className="my-3 h-px bg-gradient-to-r from-slate-700/0 via-slate-700/50 to-slate-700/0" />
+      <div className="my-3 h-px bg-slate-200" />
 
       {/* User Section */}
-      <div className="border-t border-slate-700/50 pt-4 space-y-3">
+      <div className="border-t border-slate-200 pt-4 space-y-3">
         <div className="hidden md:block">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Account</p>
-          <h3 className="mt-2 font-semibold text-white truncate text-sm">{user?.firstName ?? 'User'}</h3>
-          <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+          <h3 className="mt-2 font-semibold text-slate-900 truncate text-sm">{user?.firstName ?? 'User'}</h3>
+          <p className="text-xs text-slate-600 truncate">{user?.email}</p>
         </div>
       </div>
     </aside>

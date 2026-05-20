@@ -297,7 +297,7 @@ function AddPropertyPage() {
       >
         <div className="flex items-center justify-center py-32">
           <div className="text-center">
-            <Loader className="w-12 h-12 text-[#3f0ee3] animate-spin mx-auto mb-4" />
+            <Loader className="w-12 h-12 text-[#552ae7] animate-spin mx-auto mb-4" />
             <p className="text-slate-600 font-medium">Loading country configuration...</p>
           </div>
         </div>
@@ -310,7 +310,7 @@ function AddPropertyPage() {
       pageTitle="Add Property"
       subTitle="Create a new property and configure its agreement terms"
     >
-      <div className="max-w-3xl mx-auto">
+      <div className="space-y-8">
         {/* Enhanced Progress Steps */}
         <div className="mb-10">
           <div className="flex justify-between items-center mb-6">
@@ -321,11 +321,11 @@ function AddPropertyPage() {
             ].map(({ step, icon: Icon }) => (
               <div key={step} className="flex items-center flex-1">
                 <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold transition-all shadow-sm ${
-                    currentStep >= step
-                      ? "bg-gradient-to-br from-[#3f0ee3] to-[#3f0ee3]/80 text-white"
-                      : currentStep > step
-                        ? "bg-emerald-500 text-white"
+                  className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold transition-all shadow-md ${
+                    currentStep > step
+                      ? "bg-linear-to-r from-[#7fe502] to-[#7fe502]/80 text-white"
+                      : currentStep === step
+                        ? "bg-linear-to-r from-[#552ae7] to-[#552ae7]/80 text-white shadow-lg"
                         : "bg-slate-100 text-slate-600"
                   }`}
                 >
@@ -339,9 +339,9 @@ function AddPropertyPage() {
                   <div
                     className={`flex-1 h-1.5 mx-2 rounded-full transition-all ${
                       currentStep > step
-                        ? "bg-emerald-500"
+                        ? "bg-[#7fe502]"
                         : currentStep >= step
-                          ? "bg-[#3f0ee3]"
+                          ? "bg-[#552ae7]"
                           : "bg-slate-200"
                     }`}
                   />
@@ -381,7 +381,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("propertyType", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                   >
                     <option value="">Select property type</option>
                     {propertyTypes.map((type) => (
@@ -404,7 +404,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("propertyName", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                   />
                 </div>
 
@@ -421,7 +421,7 @@ function AddPropertyPage() {
                       onChange={(e) =>
                         handleInputChange("city", e.target.value)
                       }
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                     />
                   </div>
                   <div>
@@ -435,7 +435,7 @@ function AddPropertyPage() {
                       onChange={(e) =>
                         handleInputChange("district", e.target.value)
                       }
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                     />
                   </div>
                 </div>
@@ -452,7 +452,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("propertyAddress", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                   />
                 </div>
 
@@ -469,7 +469,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("numberOfUnits", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                   />
                 </div>
               </div>
@@ -504,7 +504,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("currency", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                   >
                     <option value="UGX">🇺🇬 UGX (Ugandan Shilling)</option>
                     <option value="USD">🇺🇸 USD (US Dollar)</option>
@@ -529,7 +529,7 @@ function AddPropertyPage() {
                         onChange={(e) =>
                           handleInputChange("securityDepositMonths", e.target.value)
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                       />
                     </div>
                     <div>
@@ -544,7 +544,7 @@ function AddPropertyPage() {
                         onChange={(e) =>
                           handleInputChange("maxSecurityDepositMonths", e.target.value)
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                       />
                     </div>
                   </div>
@@ -566,7 +566,7 @@ function AddPropertyPage() {
                         onChange={(e) =>
                           handleInputChange("terminationNoticeDays", e.target.value)
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                       />
                     </div>
                     <div>
@@ -581,7 +581,7 @@ function AddPropertyPage() {
                         onChange={(e) =>
                           handleInputChange("rentIncreaseNoticeDays", e.target.value)
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                       />
                     </div>
                   </div>
@@ -600,7 +600,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("initialAdvanceMonths", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                   />
                 </div>
 
@@ -616,7 +616,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("evictionProcess", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400 resize-none"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400 resize-none"
                   />
                 </div>
               </div>
@@ -636,7 +636,7 @@ function AddPropertyPage() {
                   </div>
                   <button
                     onClick={() => setShowCustomClauseModal(true)}
-                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/80 text-white rounded-lg font-semibold hover:shadow-lg transition-all whitespace-nowrap"
+                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#552ae7] to-[#552ae7]/80 text-white rounded-lg font-semibold hover:shadow-lg transition-all whitespace-nowrap"
                   >
                     <Plus size={18} />
                     Add Custom Clause
@@ -646,7 +646,7 @@ function AddPropertyPage() {
                 {clausesLoading ? (
                   <div className="flex justify-center py-12">
                     <div className="text-center">
-                      <Loader className="w-10 h-10 text-[#3f0ee3] animate-spin mx-auto mb-3" />
+                      <Loader className="w-10 h-10 text-[#552ae7] animate-spin mx-auto mb-3" />
                       <p className="text-slate-600 font-medium">Loading clauses...</p>
                     </div>
                   </div>
@@ -659,7 +659,7 @@ function AddPropertyPage() {
                         onClick={() => toggleClause(clause.id)}
                         className={`p-5 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md ${
                           formData.selectedClauseIds.includes(clause.id)
-                            ? "border-[#3f0ee3] bg-[#3f0ee3]/5"
+                            ? "border-[#552ae7] bg-[#552ae7]/5"
                             : "border-slate-200 bg-white hover:border-slate-300"
                         }`}
                       >
@@ -667,7 +667,7 @@ function AddPropertyPage() {
                           <div
                             className={`mt-1 shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
                               formData.selectedClauseIds.includes(clause.id)
-                                ? "border-[#3f0ee3] bg-[#3f0ee3]"
+                                ? "border-[#552ae7] bg-[#552ae7]"
                                 : "border-slate-300"
                             }`}
                           >
@@ -785,7 +785,7 @@ function AddPropertyPage() {
                             title: e.target.value,
                           }))
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                       />
                     </div>
 
@@ -804,7 +804,7 @@ function AddPropertyPage() {
                             description: e.target.value,
                           }))
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400"
                       />
                     </div>
 
@@ -823,7 +823,7 @@ function AddPropertyPage() {
                             body: e.target.value,
                           }))
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition hover:border-slate-400 resize-none"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition hover:border-slate-400 resize-none"
                       />
                     </div>
 
@@ -840,7 +840,7 @@ function AddPropertyPage() {
                       </button>
                       <button
                         onClick={handleAddCustomClause}
-                        className="flex-1 px-4 py-3 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/80 text-white rounded-lg font-medium hover:shadow-lg transition-all"
+                        className="flex-1 px-4 py-3 bg-gradient-to-r from-[#552ae7] to-[#552ae7]/80 text-white rounded-lg font-medium hover:shadow-lg transition-all"
                       >
                         Add Clause
                       </button>
@@ -864,7 +864,7 @@ function AddPropertyPage() {
               {currentStep < 3 ? (
                 <button
                   onClick={handleNext}
-                  className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/80 text-white rounded-lg font-semibold hover:shadow-lg hover:from-[#3f0ee3] hover:to-[#3f0ee3]/70 transition-all"
+                  className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-[#552ae7] to-[#552ae7]/80 text-white rounded-lg font-semibold hover:shadow-lg hover:from-[#552ae7] hover:to-[#552ae7]/70 transition-all"
                 >
                   Next Step
                   <ChevronRight size={20} />

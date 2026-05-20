@@ -75,44 +75,52 @@ function SettingsPage() {
 
   return (
     <PropertiesLayout pageTitle="Settings" subTitle="Manage your account and preferences">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="space-y-8">
         {/* User Profile Card */}
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900 mb-6">Account Information</h2>
+        <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">Account Information</h2>
+              <p className="text-sm text-slate-600 mt-1">Your profile details</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#552ae7] to-[#552ae7]/80 flex items-center justify-center text-white font-bold text-lg">
+              {user?.firstName?.charAt(0) || "U"}
+            </div>
+          </div>
 
           <div className="space-y-6">
             {/* User Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-sm text-slate-600 uppercase font-semibold">First Name</p>
-                <p className="text-slate-900 font-medium mt-2">{user?.firstName || "N/A"}</p>
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                <p className="text-xs text-slate-600 uppercase font-semibold tracking-wide">First Name</p>
+                <p className="text-slate-900 font-semibold mt-2">{user?.firstName || "N/A"}</p>
               </div>
-              <div>
-                <p className="text-sm text-slate-600 uppercase font-semibold">Last Name</p>
-                <p className="text-slate-900 font-medium mt-2">{user?.lastName || "N/A"}</p>
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                <p className="text-xs text-slate-600 uppercase font-semibold tracking-wide">Last Name</p>
+                <p className="text-slate-900 font-semibold mt-2">{user?.lastName || "N/A"}</p>
               </div>
-              <div>
-                <p className="text-sm text-slate-600 uppercase font-semibold">Email</p>
-                <p className="text-slate-900 font-medium mt-2">{user?.email || "N/A"}</p>
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                <p className="text-xs text-slate-600 uppercase font-semibold tracking-wide">Email</p>
+                <p className="text-slate-900 font-semibold mt-2 text-sm break-all">{user?.email || "N/A"}</p>
               </div>
-              <div>
-                <p className="text-sm text-slate-600 uppercase font-semibold">Phone</p>
-                <p className="text-slate-900 font-medium mt-2">{user?.phoneNumber || "N/A"}</p>
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                <p className="text-xs text-slate-600 uppercase font-semibold tracking-wide">Phone</p>
+                <p className="text-slate-900 font-semibold mt-2">{user?.phoneNumber || "N/A"}</p>
               </div>
-              <div>
-                <p className="text-sm text-slate-600 uppercase font-semibold">Country</p>
-                <p className="text-slate-900 font-medium mt-2">{user?.countryId || "N/A"}</p>
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                <p className="text-xs text-slate-600 uppercase font-semibold tracking-wide">Country</p>
+                <p className="text-slate-900 font-semibold mt-2">{user?.countryId || "N/A"}</p>
               </div>
-              <div>
-                <p className="text-sm text-slate-600 uppercase font-semibold">User ID</p>
-                <p className="text-slate-900 font-medium mt-2 font-mono text-sm">{user?.id || "N/A"}</p>
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                <p className="text-xs text-slate-600 uppercase font-semibold tracking-wide">User ID</p>
+                <p className="text-slate-900 font-mono text-xs break-all">{user?.id || "N/A"}</p>
               </div>
             </div>
 
             <div className="border-t border-slate-200 pt-6">
               <button
                 onClick={() => toast.info("Profile editing coming soon")}
-                className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+                className="px-6 py-2.5 bg-linear-to-r from-[#552ae7] to-[#552ae7]/80 text-white rounded-lg font-semibold hover:shadow-lg transition-all active:scale-95"
               >
                 Edit Profile
               </button>
@@ -121,60 +129,66 @@ function SettingsPage() {
         </div>
 
         {/* Security Section */}
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900 mb-6 flex items-center gap-2">
-            <Shield size={20} />
+        <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+          <h2 className="text-xl font-bold text-slate-900 mb-8 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-[#552ae7]/20 to-[#552ae7]/10 flex items-center justify-center">
+              <Shield size={20} className="text-[#552ae7]" />
+            </div>
             Security
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Change PIN Button */}
             <button
               onClick={() => setShowChangePinModal(true)}
-              className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors group"
+              className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
             >
               <div className="flex items-center gap-3">
-                <Lock className="w-5 h-5 text-[#3f0ee3]" />
+                <div className="w-10 h-10 rounded-lg bg-[#552ae7]/10 flex items-center justify-center group-hover:bg-[#552ae7]/20">
+                  <Lock className="w-5 h-5 text-[#552ae7]" />
+                </div>
                 <div className="text-left">
-                  <p className="font-medium text-slate-900">Change Security PIN</p>
+                  <p className="font-semibold text-slate-900">Change Security PIN</p>
                   <p className="text-sm text-slate-600">Update your 4-digit PIN</p>
                 </div>
               </div>
-              <div className="text-slate-400 group-hover:text-slate-600">→</div>
+              <div className="text-slate-400 group-hover:text-[#552ae7] transition-colors">→</div>
             </button>
 
             {/* Change Password Button */}
             <button
               onClick={() => toast.info("Password change feature coming soon")}
-              className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors group"
+              className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
             >
               <div className="flex items-center gap-3">
-                <Lock className="w-5 h-5 text-[#3f0ee3]" />
+                <div className="w-10 h-10 rounded-lg bg-[#552ae7]/10 flex items-center justify-center group-hover:bg-[#552ae7]/20">
+                  <Lock className="w-5 h-5 text-[#552ae7]" />
+                </div>
                 <div className="text-left">
-                  <p className="font-medium text-slate-900">Change Password</p>
+                  <p className="font-semibold text-slate-900">Change Password</p>
                   <p className="text-sm text-slate-600">Update your login password</p>
                 </div>
               </div>
-              <div className="text-slate-400 group-hover:text-slate-600">→</div>
+              <div className="text-slate-400 group-hover:text-[#552ae7] transition-colors">→</div>
             </button>
           </div>
         </div>
 
         {/* Help & Support Section */}
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900 mb-6">Help & Support</h2>
+        <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+          <h2 className="text-xl font-bold text-slate-900 mb-8">Help & Support</h2>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Email */}
             <a
               href="mailto:info@est8Ledger.com"
-              className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-[#3f0ee3] transition-colors group"
+              className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
             >
-              <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                <Mail className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 rounded-lg bg-[#552ae7]/10 flex items-center justify-center group-hover:bg-[#552ae7]/20">
+                <Mail className="w-6 h-6 text-[#552ae7]" />
               </div>
               <div>
-                <p className="font-medium text-slate-900">Email Support</p>
+                <p className="font-semibold text-slate-900">Email Support</p>
                 <p className="text-sm text-slate-600">info@est8Ledger.com</p>
               </div>
             </a>
@@ -182,13 +196,13 @@ function SettingsPage() {
             {/* Phone */}
             <a
               href="tel:+447930068728"
-              className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-[#3f0ee3] transition-colors group"
+              className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
             >
-              <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
-                <Phone className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 rounded-lg bg-[#552ae7]/10 flex items-center justify-center group-hover:bg-[#552ae7]/20">
+                <Phone className="w-6 h-6 text-[#552ae7]" />
               </div>
               <div>
-                <p className="font-medium text-slate-900">Phone Support</p>
+                <p className="font-semibold text-slate-900">Phone Support</p>
                 <p className="text-sm text-slate-600">+447930068728</p>
               </div>
             </a>
@@ -196,25 +210,27 @@ function SettingsPage() {
         </div>
 
         {/* Legal Section */}
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900 mb-6 flex items-center gap-2">
-            <FileText size={20} />
+        <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+          <h2 className="text-xl font-bold text-slate-900 mb-8 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-[#552ae7]/20 to-[#552ae7]/10 flex items-center justify-center">
+              <FileText size={20} className="text-[#552ae7]" />
+            </div>
             Legal
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Privacy Policy */}
             <a
               href="https://www.est8ledger.com/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-[#3f0ee3] transition-colors group"
+              className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
             >
               <div>
-                <p className="font-medium text-slate-900">Privacy Policy</p>
+                <p className="font-semibold text-slate-900">Privacy Policy</p>
                 <p className="text-sm text-slate-600">Read our privacy practices</p>
               </div>
-              <div className="text-slate-400 group-hover:text-[#3f0ee3]">↗</div>
+              <div className="text-slate-400 group-hover:text-[#552ae7] transition-colors">↗</div>
             </a>
 
             {/* Terms of Use */}
@@ -222,41 +238,43 @@ function SettingsPage() {
               href="https://www.est8ledger.com/terms-of-use"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-[#3f0ee3] transition-colors group"
+              className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
             >
               <div>
-                <p className="font-medium text-slate-900">Terms of Use</p>
+                <p className="font-semibold text-slate-900">Terms of Use</p>
                 <p className="text-sm text-slate-600">Review our terms and conditions</p>
               </div>
-              <div className="text-slate-400 group-hover:text-[#3f0ee3]">↗</div>
+              <div className="text-slate-400 group-hover:text-[#552ae7] transition-colors">↗</div>
             </a>
           </div>
         </div>
 
         {/* App Info Section */}
-        <div className="bg-slate-50 rounded-lg border border-slate-200 p-6">
+        <div className="bg-linear-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 p-8 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-600 uppercase font-semibold">App Version</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">v{appVersion}</p>
+              <p className="text-xs text-slate-600 uppercase font-semibold tracking-wide">App Version</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">v{appVersion}</p>
             </div>
             <div className="text-right">
               <p className="text-xs text-slate-500">Latest version installed</p>
-              <p className="text-sm text-emerald-600 font-semibold mt-1">✓ Up to date</p>
+              <p className="text-sm text-[#7fe502] font-semibold mt-2 flex items-center justify-end gap-1">
+                <span>✓</span> Up to date
+              </p>
             </div>
           </div>
         </div>
 
         {/* Logout Section */}
-        <div className="bg-red-50 rounded-lg border border-red-200 p-6">
+        <div className="bg-linear-to-br from-red-50 to-red-100 rounded-xl border border-red-200 p-8 shadow-sm">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-linear-to-r from-red-600 to-red-700 text-white rounded-lg font-semibold hover:shadow-lg transition-all active:scale-95"
           >
             <LogOut size={20} />
             Logout
           </button>
-          <p className="text-sm text-red-700 mt-3 text-center">
+          <p className="text-sm text-red-700 mt-4 text-center">
             You will be returned to the login screen
           </p>
         </div>
@@ -287,7 +305,7 @@ function SettingsPage() {
                     onChange={(e) =>
                       handlePinInputChange("currentPin", e.target.value.replace(/\D/g, ""))
                     }
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition text-center text-2xl tracking-widest"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition text-center text-2xl tracking-widest"
                   />
                   <button
                     type="button"
@@ -313,7 +331,7 @@ function SettingsPage() {
                   onChange={(e) =>
                     handlePinInputChange("newPin", e.target.value.replace(/\D/g, ""))
                   }
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition text-center text-2xl tracking-widest"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition text-center text-2xl tracking-widest"
                 />
               </div>
 
@@ -331,7 +349,7 @@ function SettingsPage() {
                   onChange={(e) =>
                     handlePinInputChange("confirmPin", e.target.value.replace(/\D/g, ""))
                   }
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition text-center text-2xl tracking-widest"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition text-center text-2xl tracking-widest"
                 />
               </div>
 
@@ -354,7 +372,7 @@ function SettingsPage() {
                 <button
                   type="submit"
                   disabled={loadingPin}
-                  className="flex-1 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 bg-[#552ae7] text-white rounded-lg font-medium hover:bg-[#552ae7]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loadingPin ? "Changing..." : "Change PIN"}
                 </button>

@@ -138,7 +138,7 @@ function SubscriptionPage() {
       >
         <div className="flex items-center justify-center py-16">
           <div className="text-center">
-            <div className="inline-block w-12 h-12 border-4 border-[#3f0ee3]/20 border-t-[#3f0ee3] rounded-full animate-spin mb-4" />
+            <div className="inline-block w-12 h-12 border-4 border-[#552ae7]/20 border-t-[#552ae7] rounded-full animate-spin mb-4" />
             <p className="text-slate-600 font-medium">Loading subscription details...</p>
           </div>
         </div>
@@ -178,7 +178,7 @@ function SubscriptionPage() {
         </div>
 
         {/* Pricing Calculation */}
-        <div className="bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/80 rounded-lg p-8 text-white">
+        <div className="bg-gradient-to-r from-[#552ae7] to-[#552ae7]/80 rounded-lg p-8 text-white">
           <div className="max-w-2xl">
             <h2 className="text-2xl font-bold mb-6">Pricing Calculation</h2>
 
@@ -243,7 +243,7 @@ function SubscriptionPage() {
                 key={index}
                 className={`border-2 rounded-lg p-6 cursor-pointer transition-all ${
                   selectedPaymentMethod === method.shortName
-                    ? "border-[#3f0ee3] bg-[#3f0ee3]/5"
+                    ? "border-[#552ae7] bg-[#552ae7]/5"
                     : `${method.color} border-slate-200`
                 }`}
                 onClick={() => setSelectedPaymentMethod(method.shortName)}
@@ -260,7 +260,7 @@ function SubscriptionPage() {
                   <div
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                       selectedPaymentMethod === method.shortName
-                        ? "border-[#3f0ee3] bg-[#3f0ee3]"
+                        ? "border-[#552ae7] bg-[#552ae7]"
                         : "border-slate-300"
                     }`}
                   >
