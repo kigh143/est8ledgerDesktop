@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, X } from "lucide-react";
+import { Eye, X, Vault, Wallet, CheckCircle2, TrendingUp } from "lucide-react";
 import { securityDepositService } from "../../services/securityDepositService";
 import { useAppStore } from "../../store";
+import { PageHeader, StatCard, EmptyState } from "../../componennts/dashboard/ui";
 import type { SecurityDepositRecord } from "../../types";
 
 export const Route = createFileRoute("/dashboard/securitydeposits")({
@@ -47,91 +48,103 @@ function SecurityDepositsPage() {
 
   const getInvestmentStatus = (deposit: SecurityDepositRecord) => {
     if (deposit.investedAt) {
-      return <span className="text-emerald-600 text-xs font-semibold">✓ Invested</span>;
+      return (
+        <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-semibold">
+          <CheckCircle2 size={14} /> Invested
+        </span>
+      );
     }
     return <span className="text-slate-400 text-xs">Not invested</span>;
   };
 
+  const currency = deposits[0]?.currency || "UGX";
+
   return (
     <div className="space-y-6">
+      <PageHeader
+        icon={Vault}
+        title="Security Deposits"
+        subtitle="Tenant deposits, status, and investment tracking"
+      />
+
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Total Deposits</p>
-          <p className="mt-2 text-3xl font-bold text-slate-900">{totalDeposits}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Total Amount</p>
-          <p className="mt-2 text-3xl font-bold text-slate-900">
-            {new Intl.NumberFormat("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(totalAmount)}
-          </p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Paid Deposits</p>
-          <p className="mt-2 text-3xl font-bold text-emerald-600">{paidCount}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Invested</p>
-          <p className="mt-2 text-3xl font-bold text-[#3f0ee3]">{investedCount}</p>
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard icon={Vault} tone="violet" label="Total Deposits" value={totalDeposits} />
+        <StatCard
+          icon={Wallet}
+          tone="slate"
+          label="Total Amount"
+          value={`${currency} ${new Intl.NumberFormat("en-US").format(Math.round(totalAmount))}`}
+        />
+        <StatCard icon={CheckCircle2} tone="emerald" label="Paid Deposits" value={paidCount} />
+        <StatCard icon={TrendingUp} tone="violet" label="Invested" value={investedCount} />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50">
-              <tr>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Tenant</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Unit</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Amount</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Status</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Investment</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Paid Date</th>
-                <th className="px-6 py-3 text-center font-semibold text-slate-900">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {deposits.map((deposit: SecurityDepositRecord) => (
-                <tr key={deposit.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-slate-900">
-                      {deposit.tenancy?.tenant.firstName} {deposit.tenancy?.tenant.lastName}
-                    </div>
-                    <div className="text-xs text-slate-500">{deposit.tenancy?.tenant.email}</div>
-                  </td>
-                  <td className="px-6 py-4 text-slate-600">{deposit.tenancy?.unitName}</td>
-                  <td className="px-6 py-4 font-medium text-slate-900">
-                    {deposit.currency} {deposit.amount}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(deposit.status)}`}>
-                      {deposit.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">{getInvestmentStatus(deposit)}</td>
-                  <td className="px-6 py-4 text-slate-600">
-                    {deposit.createdAt ? new Date(deposit.createdAt).toLocaleDateString() : "-"}
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={() => {
-                        setSelectedDeposit(deposit);
-                        setIsDetailOpen(true);
-                      }}
-                      className="inline-flex items-center gap-2 text-[#3f0ee3] hover:text-[#3f0ee3]/80 font-medium transition-colors"
-                    >
-                      <Eye size={16} />
-                    </button>
-                  </td>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        {deposits.length === 0 ? (
+          <EmptyState
+            icon={Vault}
+            title="No security deposits yet"
+            message="Deposits collected from tenants for this property will appear here."
+          />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th className="px-6 py-3 text-left font-semibold">Tenant</th>
+                  <th className="px-6 py-3 text-left font-semibold">Unit</th>
+                  <th className="px-6 py-3 text-right font-semibold">Amount</th>
+                  <th className="px-6 py-3 text-left font-semibold">Status</th>
+                  <th className="px-6 py-3 text-left font-semibold">Investment</th>
+                  <th className="px-6 py-3 text-left font-semibold">Paid Date</th>
+                  <th className="px-6 py-3 text-center font-semibold">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {deposits.map((deposit: SecurityDepositRecord) => (
+                  <tr
+                    key={deposit.id}
+                    onClick={() => {
+                      setSelectedDeposit(deposit);
+                      setIsDetailOpen(true);
+                    }}
+                    className="group hover:bg-[#3f0ee3]/[0.03] cursor-pointer transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-slate-900 capitalize">
+                        {deposit.tenancy?.tenant.firstName} {deposit.tenancy?.tenant.lastName}
+                      </div>
+                      <div className="text-xs text-slate-500">{deposit.tenancy?.tenant.email}</div>
+                    </td>
+                    <td className="px-6 py-4 text-slate-600">{deposit.tenancy?.unitName}</td>
+                    <td className="px-6 py-4 text-right font-medium text-slate-900 tabular-nums whitespace-nowrap">
+                      {deposit.currency} {Number(deposit.amount).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(deposit.status)}`}>
+                        {deposit.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">{getInvestmentStatus(deposit)}</td>
+                    <td className="px-6 py-4 text-slate-600">
+                      {deposit.createdAt ? new Date(deposit.createdAt).toLocaleDateString() : "-"}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span
+                        className="inline-flex items-center justify-center text-[#3f0ee3] opacity-70 group-hover:opacity-100 transition-opacity"
+                        aria-hidden="true"
+                      >
+                        <Eye size={16} />
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Detail Modal */}

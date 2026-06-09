@@ -1,7 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { AlertCircle, CheckCircle, DollarSign, Home, Zap, FileText, TrendingUp } from 'lucide-react'
+import { AlertCircle, CheckCircle, DollarSign, Home, Zap, FileText, TrendingUp, LayoutDashboard } from 'lucide-react'
 import { useAppStore } from '../../store'
+import { PageHeader } from '../../componennts/dashboard/ui'
 import { tenancyService } from '../../services/tenancyService'
 import { inspectionService } from '../../services/inspectionService'
 import { securityDepositService } from '../../services/securityDepositService'
@@ -207,10 +208,11 @@ function DashboardHome() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-600 mt-2">{activeProperty?.propertyName}</p>
-      </div>
+      <PageHeader
+        icon={LayoutDashboard}
+        title="Dashboard"
+        subtitle={activeProperty?.propertyName}
+      />
 
       {/* Alerts/Notifications */}
       {stats.notifications.length > 0 && (
@@ -265,7 +267,7 @@ function DashboardHome() {
       {/* Main Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Occupancy Rate */}
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm font-medium text-slate-600 uppercase">Occupancy Rate</p>
@@ -287,7 +289,7 @@ function DashboardHome() {
         </div>
 
         {/* Inspections */}
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm font-medium text-slate-600 uppercase">Inspections</p>
@@ -313,7 +315,7 @@ function DashboardHome() {
         </div>
 
         {/* Security Deposits */}
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm font-medium text-slate-600 uppercase">Security Deposits</p>
@@ -339,7 +341,7 @@ function DashboardHome() {
         </div>
 
         {/* Total Repair Requests */}
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm font-medium text-slate-600 uppercase">Repair Requests</p>
@@ -373,7 +375,7 @@ function DashboardHome() {
         </div>
 
         {/* Monthly Expenses */}
-        <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm font-medium text-slate-600 uppercase">Monthly Expenses</p>
@@ -392,7 +394,7 @@ function DashboardHome() {
         </div>
 
         {/* Summary Card */}
-        <div className="bg-gradient-to-br from-[#3f0ee3] to-[#3f0ee3]/80 rounded-lg p-6 shadow-sm text-white">
+        <div className="bg-gradient-to-br from-[#3f0ee3] to-indigo-600 rounded-xl p-6 shadow-lg shadow-[#3f0ee3]/20 text-white">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-white/80 uppercase">Property Overview</p>
@@ -411,7 +413,7 @@ function DashboardHome() {
       </div>
 
       {/* Detailed Stats Section */}
-      <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
+      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900 mb-6">Quick Summary</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center">

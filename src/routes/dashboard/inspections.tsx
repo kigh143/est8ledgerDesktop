@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Eye } from "lucide-react";
+import { Eye, ClipboardCheck, LogIn, LogOut, CheckCircle2, ShieldCheck } from "lucide-react";
 import { inspectionService } from "../../services/inspectionService";
 import { useAppStore } from "../../store";
+import { PageHeader, StatCard, EmptyState } from "../../componennts/dashboard/ui";
 import type { InspectionItem } from "../../types";
 
 export const Route = createFileRoute("/dashboard/inspections")({
@@ -53,97 +54,117 @@ function InspectionsPage() {
 
   const getApprovalStatus = (inspection: InspectionItem) => {
     if (inspection.tenantApprovedAt && inspection.managerApprovedAt) {
-      return <span className="text-emerald-600 text-xs font-semibold">✓ Both Approved</span>;
+      return (
+        <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-semibold">
+          <CheckCircle2 size={14} /> Both approved
+        </span>
+      );
     }
     if (inspection.tenantApprovedAt) {
-      return <span className="text-blue-600 text-xs font-semibold">✓ Tenant Only</span>;
+      return (
+        <span className="inline-flex items-center gap-1 text-blue-600 text-xs font-semibold">
+          <CheckCircle2 size={14} /> Tenant only
+        </span>
+      );
     }
     if (inspection.managerApprovedAt) {
-      return <span className="text-blue-600 text-xs font-semibold">✓ Manager Only</span>;
+      return (
+        <span className="inline-flex items-center gap-1 text-blue-600 text-xs font-semibold">
+          <CheckCircle2 size={14} /> Manager only
+        </span>
+      );
     }
-    return <span className="text-slate-400 text-xs">Pending Approval</span>;
+    return <span className="text-slate-400 text-xs">Pending approval</span>;
   };
+
+  const tenantName = (i: InspectionItem) =>
+    i.tenancy?.tenant
+      ? `${i.tenancy.tenant.firstName ?? ""} ${i.tenancy.tenant.lastName ?? ""}`.trim()
+      : "—";
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        icon={ClipboardCheck}
+        title="Inspections"
+        subtitle="Move-in and move-out inspection records"
+      />
+
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Total Inspections</p>
-          <p className="mt-2 text-3xl font-bold text-slate-900">{inspections.length}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Move-In Inspections</p>
-          <p className="mt-2 text-3xl font-bold text-purple-600">{moveInCount}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Move-Out Inspections</p>
-          <p className="mt-2 text-3xl font-bold text-orange-600">{moveOutCount}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Completed</p>
-          <p className="mt-2 text-3xl font-bold text-emerald-600">{completedCount}</p>
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard icon={ClipboardCheck} tone="violet" label="Total Inspections" value={inspections.length} />
+        <StatCard icon={LogIn} tone="purple" label="Move-In" value={moveInCount} />
+        <StatCard icon={LogOut} tone="orange" label="Move-Out" value={moveOutCount} />
+        <StatCard icon={ShieldCheck} tone="emerald" label="Completed" value={completedCount} />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50">
-              <tr>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Tenant</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Unit</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Type</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Status</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Approval</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Created</th>
-                <th className="px-6 py-3 text-center font-semibold text-slate-900">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {inspections.map((inspection: InspectionItem) => (
-                <tr key={inspection.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-slate-900">
-                      {inspection.tenancy?.unitName}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-slate-600">{inspection.tenancy?.unitName}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getTypeColor(inspection.type)}`}>
-                      {inspection.type === "MOVE_IN" ? "Move-In" : "Move-Out"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(inspection.status)}`}>
-                      {inspection.status || "PENDING"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">{getApprovalStatus(inspection)}</td>
-                  <td className="px-6 py-4 text-slate-600">
-                    {new Date(inspection.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={() => {
-                        navigate({
-                          to: "/dashboard/inspections/$inspectionId",
-                          params: { inspectionId: inspection.id.toString() },
-                        });
-                      }}
-                      className="inline-flex items-center gap-2 text-[#3f0ee3] hover:text-[#3f0ee3]/80 font-medium transition-colors"
-                    >
-                      <Eye size={16} />
-                    </button>
-                  </td>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        {inspections.length === 0 ? (
+          <EmptyState
+            icon={ClipboardCheck}
+            title="No inspections yet"
+            message="Move-in and move-out inspections for this property will appear here."
+          />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th className="px-6 py-3 text-left font-semibold">Tenant</th>
+                  <th className="px-6 py-3 text-left font-semibold">Unit</th>
+                  <th className="px-6 py-3 text-left font-semibold">Type</th>
+                  <th className="px-6 py-3 text-left font-semibold">Status</th>
+                  <th className="px-6 py-3 text-left font-semibold">Approval</th>
+                  <th className="px-6 py-3 text-left font-semibold">Created</th>
+                  <th className="px-6 py-3 text-center font-semibold">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {inspections.map((inspection: InspectionItem) => (
+                  <tr
+                    key={inspection.id}
+                    onClick={() =>
+                      navigate({
+                        to: "/dashboard/inspections/$inspectionId",
+                        params: { inspectionId: inspection.id.toString() },
+                      })
+                    }
+                    className="group hover:bg-[#3f0ee3]/[0.03] cursor-pointer transition-colors"
+                  >
+                    <td className="px-6 py-4 font-medium text-slate-900 capitalize">
+                      {tenantName(inspection)}
+                    </td>
+                    <td className="px-6 py-4 text-slate-600">{inspection.tenancy?.unitName || "—"}</td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getTypeColor(inspection.type)}`}>
+                        {inspection.type === "MOVE_IN" ? "Move-In" : "Move-Out"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(inspection.status)}`}>
+                        {inspection.status || "PENDING"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">{getApprovalStatus(inspection)}</td>
+                    <td className="px-6 py-4 text-slate-600">
+                      {new Date(inspection.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span
+                        className="inline-flex items-center justify-center text-[#3f0ee3] opacity-70 group-hover:opacity-100 transition-opacity"
+                        aria-hidden="true"
+                      >
+                        <Eye size={16} />
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-
     </div>
   );
 }

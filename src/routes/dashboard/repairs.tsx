@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, X, Wrench, CheckCircle, Clock } from "lucide-react";
+import { Eye, X, Wrench, CheckCircle, Clock, AlertTriangle, Loader, CircleCheck, Coins } from "lucide-react";
 import { repairService } from "../../services/repairService";
 import { useAppStore } from "../../store";
 import { toast } from "react-toastify";
+import { PageHeader, StatCard, EmptyState } from "../../componennts/dashboard/ui";
 import type { RepairRequest, RepairStatus } from "../../types";
 
 type RepairRequestDetail = RepairRequest & {
@@ -197,57 +198,60 @@ function RepairsPage() {
     }
   };
 
+  const currency = repairs[0]?.currency || "UGX";
+
   return (
     <div className="space-y-6">
+      <PageHeader
+        icon={Wrench}
+        title="Repairs"
+        subtitle="Maintenance requests and contractor assignments"
+      />
+
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Reported</p>
-          <p className="mt-2 text-3xl font-bold text-red-600">{reportedCount}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">In Progress</p>
-          <p className="mt-2 text-3xl font-bold text-blue-600">{inProgressCount}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Completed</p>
-          <p className="mt-2 text-3xl font-bold text-emerald-600">{completedCount}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Est. Total Cost</p>
-          <p className="mt-2 text-3xl font-bold text-slate-900">
-            {new Intl.NumberFormat("en-US", {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            }).format(totalEstimatedCost)}
-          </p>
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard icon={AlertTriangle} tone="red" label="Reported" value={reportedCount} valueClass="text-red-600" />
+        <StatCard icon={Loader} tone="blue" label="In Progress" value={inProgressCount} valueClass="text-blue-600" />
+        <StatCard icon={CircleCheck} tone="emerald" label="Completed" value={completedCount} valueClass="text-emerald-600" />
+        <StatCard
+          icon={Coins}
+          tone="slate"
+          label="Est. Total Cost"
+          value={`${currency} ${new Intl.NumberFormat("en-US").format(Math.round(totalEstimatedCost))}`}
+        />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50">
-              <tr>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Title</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Priority</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Status</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Est. Cost</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Reported Date</th>
-                <th className="px-6 py-3 text-center font-semibold text-slate-900">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {repairs.length === 0 ? (
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        {repairs.length === 0 ? (
+          <EmptyState
+            icon={Wrench}
+            title="No repairs reported"
+            message="Maintenance requests for this property will show up here as tenants report them."
+          />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-slate-500">
-                    No repairs reported yet
-                  </td>
+                  <th className="px-6 py-3 text-left font-semibold">Title</th>
+                  <th className="px-6 py-3 text-left font-semibold">Priority</th>
+                  <th className="px-6 py-3 text-left font-semibold">Status</th>
+                  <th className="px-6 py-3 text-right font-semibold">Est. Cost</th>
+                  <th className="px-6 py-3 text-left font-semibold">Reported Date</th>
+                  <th className="px-6 py-3 text-center font-semibold">Action</th>
                 </tr>
-              ) : (
-                repairs.map((repair) => (
-                  <tr key={repair.id} className="hover:bg-slate-50 transition-colors">
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {repairs.map((repair) => (
+                  <tr
+                    key={repair.id}
+                    onClick={() => {
+                      setSelectedRepair(repair);
+                      setIsDetailOpen(true);
+                    }}
+                    className="group hover:bg-[#3f0ee3]/[0.03] cursor-pointer transition-colors"
+                  >
                     <td className="px-6 py-4 font-medium text-slate-900">{repair.title}</td>
                     <td className={`px-6 py-4 ${getPriorityColor(repair.priority)}`}>
                       {repair.priority}
@@ -261,31 +265,28 @@ function RepairsPage() {
                         {repair.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-medium text-slate-900">
+                    <td className="px-6 py-4 text-right font-medium text-slate-900 tabular-nums whitespace-nowrap">
                       {repair.estimatedCost
-                        ? `${repair.currency} ${repair.estimatedCost}`
+                        ? `${repair.currency} ${Number(repair.estimatedCost).toLocaleString()}`
                         : "-"}
                     </td>
                     <td className="px-6 py-4 text-slate-600">
                       {new Date(repair.reportedDate).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={() => {
-                          setSelectedRepair(repair);
-                          setIsDetailOpen(true);
-                        }}
-                        className="inline-flex items-center gap-2 text-[#3f0ee3] hover:text-[#3f0ee3]/80 font-medium transition-colors"
+                      <span
+                        className="inline-flex items-center justify-center text-[#3f0ee3] opacity-70 group-hover:opacity-100 transition-opacity"
+                        aria-hidden="true"
                       >
                         <Eye size={16} />
-                      </button>
+                      </span>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Detail Modal */}

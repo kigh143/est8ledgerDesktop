@@ -1,8 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react';
 import { Upload, X, Check, Loader, AlertCircle, Image as ImageIcon } from 'lucide-react';
-import { useAppStore } from '../../store';
-import DashboardLayout from '../../componennts/DashboardLayout';
+
 import agreementService from '../../services/agreementService';
 import listingService from '../../services/listingService';
 import { toast } from 'react-toastify';

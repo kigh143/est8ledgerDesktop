@@ -6,7 +6,6 @@ import {
   Vault,
   FolderOpenDot,
   NotebookText,
-  Megaphone,
   ToolCase,
   HandCoins,
   ArrowLeft,

@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, X, Plus, DollarSign, Edit2, Trash2, BarChart3 } from "lucide-react";
+import { Eye, X, Plus, DollarSign, Edit2, Trash2, BarChart3, HandCoins, Clock, CircleCheck, Wallet, Coins } from "lucide-react";
 import { expenseService } from "../../../services/expenseService";
 import { useAppStore } from "../../../store";
 import { toast } from "react-toastify";
+import { PageHeader, StatCard } from "../../../componennts/dashboard/ui";
 import type { Expense, ExpenseStatus, ExpenseCategory } from "../../../types";
 
 interface ExpenseSummary {
@@ -182,25 +183,34 @@ function ExpensesPage() {
   return (
     <div className="space-y-6">
       {/* Header with Add Button */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Expenses</h1>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowAnalytics(!showAnalytics)}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-300 transition-colors"
-          >
-            <BarChart3 size={20} />
-            Analytics
-          </button>
-          <button
-            onClick={() => navigate({ to: "/dashboard/expenses/add" })}
-            className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
-          >
-            <Plus size={20} />
-            Add Expense
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        icon={HandCoins}
+        title="Expenses"
+        subtitle="Track, approve, and pay property expenses"
+        actions={
+          <>
+            <button
+              onClick={() => setShowAnalytics(!showAnalytics)}
+              aria-pressed={showAnalytics}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                showAnalytics
+                  ? "bg-[#3f0ee3]/10 text-[#3f0ee3]"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              }`}
+            >
+              <BarChart3 size={20} />
+              Analytics
+            </button>
+            <button
+              onClick={() => navigate({ to: "/dashboard/expenses/add" })}
+              className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+            >
+              <Plus size={20} />
+              Add Expense
+            </button>
+          </>
+        }
+      />
 
       {/* Analytics Section */}
       {showAnalytics && summary && (
@@ -292,42 +302,30 @@ function ExpensesPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Pending</p>
-          <p className="mt-2 text-3xl font-bold text-amber-600">{pendingCount}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Approved</p>
-          <p className="mt-2 text-3xl font-bold text-blue-600">{approvedCount}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Paid</p>
-          <p className="mt-2 text-3xl font-bold text-emerald-600">{paidCount}</p>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <p className="text-sm font-medium text-slate-600">Total Amount</p>
-          <p className="mt-2 text-3xl font-bold text-slate-900">
-            {new Intl.NumberFormat("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(totalAmount)}
-          </p>
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard icon={Clock} tone="amber" label="Pending" value={pendingCount} valueClass="text-amber-600" />
+        <StatCard icon={CircleCheck} tone="blue" label="Approved" value={approvedCount} valueClass="text-blue-600" />
+        <StatCard icon={Wallet} tone="emerald" label="Paid" value={paidCount} valueClass="text-emerald-600" />
+        <StatCard
+          icon={Coins}
+          tone="slate"
+          label="Total Amount"
+          value={new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(totalAmount)}
+        />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50">
+            <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
               <tr>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Category</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Description</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Amount</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Status</th>
-                <th className="px-6 py-3 text-left font-semibold text-slate-900">Date</th>
-                <th className="px-6 py-3 text-center font-semibold text-slate-900">Action</th>
+                <th className="px-6 py-3 text-left font-semibold">Category</th>
+                <th className="px-6 py-3 text-left font-semibold">Description</th>
+                <th className="px-6 py-3 text-right font-semibold">Amount</th>
+                <th className="px-6 py-3 text-left font-semibold">Status</th>
+                <th className="px-6 py-3 text-left font-semibold">Date</th>
+                <th className="px-6 py-3 text-center font-semibold">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -344,7 +342,7 @@ function ExpensesPage() {
                       {expense.category}
                     </td>
                     <td className="px-6 py-4 text-slate-900">{expense.description}</td>
-                    <td className="px-6 py-4 font-medium text-slate-900">
+                    <td className="px-6 py-4 text-right font-medium text-slate-900 tabular-nums whitespace-nowrap">
                       {expense.currency} {expense.amount.toFixed(2)}
                     </td>
                     <td className="px-6 py-4">

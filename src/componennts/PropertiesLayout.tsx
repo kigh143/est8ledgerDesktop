@@ -7,10 +7,9 @@ import {
   Menu,
   X,
   ChevronRight,
-  LogOut
 } from "lucide-react";
 import { useAppStore } from "../store";
-import { Link, useNavigate, useLocation } from "@tanstack/react-router";
+import { Link,  useLocation } from "@tanstack/react-router";
 import { useState } from "react";
 
 type LayoutProps = {
@@ -109,13 +108,6 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
 
 export default function PropertiesLayout({ children, pageTitle, subTitle, action = null }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { logout } = useAppStore();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate({ to: '/login' });
-  };
 
   return (
     <div className="min-h-screen bg-slate-50">

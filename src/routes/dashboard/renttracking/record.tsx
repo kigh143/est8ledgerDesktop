@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useAppStore } from "../../../store";
@@ -7,19 +7,27 @@ import { rentPaymentsService } from "../../../services/rentPaymentsService";
 import { toast } from "react-toastify";
 import type { Tenancy } from "../../../types";
 
+type SearchParams = {
+  tenancyId?: string;
+};
+
 export const Route = createFileRoute("/dashboard/renttracking/record")({
   component: RecordPaymentPage,
+  validateSearch: (search: Record<string, unknown>): SearchParams => ({
+    tenancyId: search.tenancyId as string | undefined,
+  }),
 });
 
 function RecordPaymentPage() {
   const navigate = useNavigate();
   const { activeProperty } = useAppStore();
+  const searchParams = useSearch({ from: "/dashboard/renttracking/record" });
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(true);
   const [tenancies, setTenancies] = useState<Tenancy[]>([]);
 
   const [formData, setFormData] = useState({
-    tenancyId: "",
+    tenancyId: searchParams.tenancyId || "",
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     amount: "",
@@ -47,6 +55,16 @@ function RecordPaymentPage() {
         ? tenanciesResponse
         : tenanciesResponse.data || [];
       setTenancies(tenanciesData);
+
+      // Pre-fill the rent amount when a tenant was pre-selected (e.g. from a tenant profile)
+      if (searchParams.tenancyId) {
+        const preselected = tenanciesData.find(
+          (t: Tenancy) => t.id.toString() === searchParams.tenancyId
+        );
+        if (preselected?.rentAmount) {
+          setFormData((prev) => ({ ...prev, amount: preselected.rentAmount!.toString() }));
+        }
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to load data");
@@ -59,10 +77,17 @@ function RecordPaymentPage() {
     field: string,
     value: string | number
   ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => {
+      const next = { ...prev, [field]: value };
+      // When the tenant changes, default the amount to their monthly rent
+      if (field === "tenancyId") {
+        const tenancy = tenancies.find((t) => t.id.toString() === value);
+        if (tenancy?.rentAmount) {
+          next.amount = tenancy.rentAmount.toString();
+        }
+      }
+      return next;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
