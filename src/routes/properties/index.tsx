@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
-import { Building2, DoorOpen, Users, Percent, TrendingUp, Search, MapPin, ArrowRight, HousePlus } from 'lucide-react'
+import { Building2, DoorOpen, Users, TrendingUp, Search, MapPin, ArrowRight, HousePlus } from 'lucide-react'
 import { useAppStore } from '../../store';
 import PropertiesLayout from '../../componennts/PropertiesLayout';
 import type { PropertyAgreement } from '../../types';
@@ -72,7 +72,6 @@ function RouteComponent() {
   const totalUnits = properties.reduce((a: number, p: PropertyAgreement) => a + p.numberOfUnits, 0);
   const totalTenants = properties.reduce((a: number, p: PropertyAgreement) => a + p.tenancies.length, 0);
   const totalRevenue = properties.reduce((a: number, p: PropertyAgreement) => a + revenueOf(p), 0);
-  const avgOccupancy = totalUnits > 0 ? Math.round((totalTenants / totalUnits) * 100) : 0;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

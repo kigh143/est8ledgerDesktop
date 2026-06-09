@@ -106,7 +106,7 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   );
 }
 
-export default function PropertiesLayout({ children, pageTitle, subTitle, action = null }: LayoutProps) {
+export default function PropertiesLayout({ children, pageTitle, subTitle }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
