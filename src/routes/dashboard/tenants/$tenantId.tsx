@@ -1,9 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import type { ComponentType } from "react";
 import {
   ArrowLeft, MessageCircle, Mail, Phone, AlertCircle, Edit, Trash2, Banknote,
-  CheckCircle2, XCircle, Clock, ShieldCheck, FileSignature, ClipboardCheck,
+  CheckCircle2, Clock, ShieldCheck, FileSignature, ClipboardCheck,
   Wallet, CalendarClock, Coins, CircleDollarSign, Home, Droplets, Zap,
   ListChecks, X, AlertTriangle,
 } from "lucide-react";
@@ -19,66 +18,6 @@ export const Route = createFileRoute("/dashboard/tenants/$tenantId")({
   component: TenantProfilePage,
 });
 
-type IconType = ComponentType<{ size?: number; className?: string }>;
-type Tone = "violet" | "emerald" | "amber" | "red" | "slate";
-
-const toneChip: Record<Tone, string> = {
-  violet: "bg-[#3f0ee3]/10 text-[#3f0ee3]",
-  emerald: "bg-emerald-100 text-emerald-700",
-  amber: "bg-amber-100 text-amber-700",
-  red: "bg-red-100 text-red-700",
-  slate: "bg-slate-100 text-slate-600",
-};
-
-function KpiCard({ icon: Icon, label, value, hint, tone = "slate", valueClass }: {
-  icon: IconType;
-  label: string;
-  value: string;
-  hint?: string;
-  tone?: Tone;
-  valueClass?: string;
-}) {
-  return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <div className="flex items-center gap-3">
-        <span className={`flex items-center justify-center w-10 h-10 rounded-lg shrink-0 ${toneChip[tone]}`}>
-          <Icon size={20} />
-        </span>
-        <p className="text-sm font-medium text-slate-600">{label}</p>
-      </div>
-      <p className={`mt-3 text-2xl font-bold tabular-nums ${valueClass ?? "text-slate-900"}`}>{value}</p>
-      {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
-    </div>
-  );
-}
-
-function StatusTile({ icon: Icon, label, value, state }: {
-  icon: IconType;
-  label: string;
-  value: string;
-  state: "good" | "warn" | "bad";
-}) {
-  const styles = {
-    good: { ring: "border-emerald-200", chip: "bg-emerald-100 text-emerald-700", mark: "text-emerald-600", Mark: CheckCircle2 },
-    warn: { ring: "border-amber-200", chip: "bg-amber-100 text-amber-700", mark: "text-amber-600", Mark: Clock },
-    bad: { ring: "border-red-200", chip: "bg-red-100 text-red-700", mark: "text-red-600", Mark: XCircle },
-  }[state];
-  const Mark = styles.Mark;
-  return (
-    <div className={`bg-white rounded-xl border ${styles.ring} p-4 flex items-center gap-3`}>
-      <span className={`flex items-center justify-center w-10 h-10 rounded-lg shrink-0 ${styles.chip}`}>
-        <Icon size={20} />
-      </span>
-      <div className="min-w-0">
-        <p className="text-xs font-medium text-slate-500">{label}</p>
-        <p className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
-          <Mark size={15} className={styles.mark} />
-          {value}
-        </p>
-      </div>
-    </div>
-  );
-}
 
 function UnpaidMonthsDrawer({
   open,
@@ -450,71 +389,108 @@ function TenantProfilePage() {
         </div>
       </div>
 
-      {/* Status overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatusTile
-          icon={ShieldCheck}
-          label="Security Deposit"
-          value={depositPaid ? "Paid" : "Not paid"}
-          state={depositPaid ? "good" : "bad"}
-        />
-        <StatusTile
-          icon={FileSignature}
-          label="Agreement"
-          value={agreementSigned ? "Signed" : "Awaiting signature"}
-          state={agreementSigned ? "good" : "warn"}
-        />
-        <StatusTile
-          icon={ClipboardCheck}
-          label="Inspections"
-          value={
-            inspections.length === 0
-              ? "None yet"
-              : inspectionsDone
-              ? "Completed"
-              : `${completedInspections}/${inspections.length} done`
-          }
-          state={inspections.length === 0 ? "warn" : inspectionsDone ? "good" : "warn"}
-        />
-        <StatusTile
-          icon={Wallet}
-          label="Rent Status"
-          value={isUpToDate ? "Up to date" : `${monthsUnpaid} month${monthsUnpaid === 1 ? "" : "s"} behind`}
-          state={isUpToDate ? "good" : "bad"}
-        />
-      </div>
+      {/* Financial command center — the single home for all money figures */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div className="flex flex-col lg:flex-row">
+          {/* Outstanding focal */}
+          <div
+            className={`p-6 lg:w-80 shrink-0 text-white ${
+              outstandingBalance > 0
+                ? "bg-gradient-to-br from-red-500 to-rose-600"
+                : "bg-gradient-to-br from-emerald-500 to-emerald-600"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-white/85">
+                <CircleDollarSign size={16} />
+                Outstanding Balance
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 backdrop-blur">
+                {isUpToDate ? "Up to date" : "Overdue"}
+              </span>
+            </div>
+            <p className="mt-3 text-[1.5rem] leading-none font-bold tabular-nums">
+              {fmtMoney(outstandingBalance)}
+            </p>
+            <p className="mt-2 text-sm text-white/80">
+              {dueRent && dueRent.totalLateFees > 0
+                ? `+ ${fmtMoney(dueRent.totalLateFees)} late fees → ${fmtMoney(dueRent.overallTotal)} total due`
+                : isUpToDate
+                ? "All rent settled"
+                : "Rent outstanding"}
+            </p>
+            {dueRent && dueRent.unpaidMonths.length > 0 && (
+              <button
+                onClick={() => setShowUnpaidModal(true)}
+                className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/15 hover:bg-white/25 rounded-lg text-sm font-semibold backdrop-blur transition-colors"
+              >
+                <ListChecks size={16} />
+                See all unpaid months
+              </button>
+            )}
+          </div>
 
-      {/* Financial KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard icon={Wallet} tone="emerald" label="Total Rent Paid" value={fmtMoney(totalPayments)} hint={`${payments.length} payment${payments.length === 1 ? "" : "s"}`} />
-        <KpiCard
-          icon={CircleDollarSign}
-          tone={outstandingBalance > 0 ? "red" : "emerald"}
-          label="Outstanding Balance"
-          value={fmtMoney(outstandingBalance)}
-          valueClass={outstandingBalance > 0 ? "text-red-600" : "text-emerald-600"}
-          hint={isUpToDate ? "All rent settled" : "Overdue"}
-        />
-        <KpiCard
-          icon={CalendarClock}
-          tone={monthsUnpaid > 0 ? "amber" : "emerald"}
-          label="Months Unpaid"
-          value={String(monthsUnpaid)}
-          valueClass={monthsUnpaid > 0 ? "text-amber-600" : "text-emerald-600"}
-          hint={monthsUnpaid > 0 ? "Based on outstanding rent" : "None"}
-        />
-        <KpiCard icon={Coins} tone="violet" label="Monthly Rent" value={fmtMoney(monthlyRent)} hint={tenancy.paymentDueDay ? `Due day ${tenancy.paymentDueDay}` : undefined} />
+          {/* Secondary metrics — clean divided cells */}
+          <div className="flex-1 grid grid-cols-2 xl:grid-cols-4 gap-px bg-slate-100">
+            {[
+              {
+                icon: CalendarClock,
+                label: "Months Unpaid",
+                value: String(monthsUnpaid),
+                valueClass: monthsUnpaid > 0 ? "text-amber-600" : "text-slate-900",
+                hint: monthsUnpaid > 0 ? "behind on rent" : "none",
+              },
+              {
+                icon: Coins,
+                label: "Late Fees",
+                value: fmtMoney(dueRent?.totalLateFees ?? 0),
+                valueClass: (dueRent?.totalLateFees ?? 0) > 0 ? "text-amber-600" : "text-slate-900",
+                hint: dueRent ? `${dueRent.late_paymeny_percentage}% per month` : undefined,
+              },
+              {
+                icon: Wallet,
+                label: "Total Paid",
+                value: fmtMoney(totalPayments),
+                valueClass: "text-emerald-600",
+                hint: `${payments.length} payment${payments.length === 1 ? "" : "s"}`,
+              },
+              {
+                icon: Banknote,
+                label: "Monthly Rent",
+                value: fmtMoney(monthlyRent),
+                valueClass: "text-slate-900",
+                hint: tenancy.paymentDueDay ? `due day ${tenancy.paymentDueDay}` : undefined,
+              },
+            ].map(({ icon: Icon, label, value, valueClass, hint }) => (
+              <div key={label} className="bg-white p-5 flex flex-col justify-center">
+                <div className="flex items-center gap-1.5 text-slate-400">
+                  <Icon size={14} />
+                  <p className="text-[11px] font-semibold uppercase tracking-wide">{label}</p>
+                </div>
+                <p className={`mt-1.5 text-xl font-bold tabular-nums ${valueClass}`}>{value}</p>
+                {hint && <p className="text-xs text-slate-400 mt-0.5">{hint}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Main Info */}
+        {/* Left Column — records */}
         <div className="lg:col-span-2 space-y-6">
           {/* Recent Payments */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">Recent Payments</h2>
-                <p className="text-sm text-slate-500">Last 3 of {payments.length} recorded</p>
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-[#3f0ee3]/10 text-[#3f0ee3]">
+                  <Banknote size={18} />
+                </span>
+                <div>
+                  <h2 className="text-base font-semibold text-slate-900">Recent Payments</h2>
+                  <p className="text-xs text-slate-500">
+                    {payments.length === 0 ? "No records yet" : `Showing ${Math.min(3, payments.length)} of ${payments.length}`}
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() =>
@@ -526,11 +502,11 @@ function TenantProfilePage() {
                 className="flex items-center gap-1.5 text-sm font-medium text-[#3f0ee3] hover:text-[#3f0ee3]/80 transition-colors"
               >
                 <Banknote size={16} />
-                Record Payment
+                Record
               </button>
             </div>
             {recentPayments.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {recentPayments.slice(0, 3).map((payment) => {
                   const badge =
                     payment.status === "CONFIRMED"
@@ -543,10 +519,10 @@ function TenantProfilePage() {
                   return (
                     <div
                       key={payment.id}
-                      className="flex items-center justify-between gap-4 p-4 rounded-lg border border-slate-100 bg-slate-50/60"
+                      className="flex items-center justify-between gap-4 p-3.5 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#3f0ee3]/10 text-[#3f0ee3] shrink-0">
+                        <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 shrink-0">
                           <Banknote size={18} />
                         </span>
                         <div className="min-w-0">
@@ -571,7 +547,7 @@ function TenantProfilePage() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-10 border border-dashed border-slate-200 rounded-lg">
+              <div className="text-center py-10 border border-dashed border-slate-200 rounded-xl">
                 <Banknote size={32} className="text-slate-300 mx-auto mb-2" />
                 <p className="text-sm font-medium text-slate-600">No payments recorded yet</p>
                 <p className="text-xs text-slate-400 mt-1">Record this tenant's first payment to start tracking.</p>
@@ -579,50 +555,36 @@ function TenantProfilePage() {
             )}
           </div>
 
-          {/* Tenancy Details */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Tenancy Details</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
-              {[
-                { icon: Home, label: "Unit Name", value: tenancy.unitName || "N/A" },
-                { icon: Coins, label: "Monthly Rent", value: fmtMoney(monthlyRent) },
-                { icon: Droplets, label: "Water Meter", value: tenancy.waterMeter || "N/A" },
-                { icon: Zap, label: "YAKA Meter", value: tenancy.yakaMeter || "N/A" },
-                { icon: Trash2, label: "Waste Handled By", value: tenancy.wasteHandledBy || "N/A" },
-                { icon: CalendarClock, label: "Payment Due Day", value: tenancy.paymentDueDay ? `Day ${tenancy.paymentDueDay}` : "N/A" },
-              ].map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex items-center gap-3">
-                  <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 text-slate-500 shrink-0">
-                    <Icon size={17} />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs text-slate-500">{label}</p>
-                    <p className="font-medium text-slate-900 truncate capitalize">{value}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Inspections */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-slate-900">Inspections</h2>
+          {/* Inspections — single home for inspection status + records */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-violet-100 text-violet-600">
+                  <ClipboardCheck size={18} />
+                </span>
+                <h2 className="text-base font-semibold text-slate-900">Inspections</h2>
+              </div>
               {inspections.length > 0 && (
-                <span className="text-sm text-slate-500">{completedInspections}/{inspections.length} completed</span>
+                <span
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                    inspectionsDone ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                  }`}
+                >
+                  {completedInspections}/{inspections.length} done
+                </span>
               )}
             </div>
             {inspections.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {inspections.map((inspection) => {
                   const done = inspection.status === "COMPLETED" || inspection.status === "APPROVED";
                   return (
                     <div
                       key={inspection.id}
-                      className="flex items-center justify-between gap-4 p-4 rounded-lg border border-slate-100 bg-slate-50/60"
+                      className="flex items-center justify-between gap-4 p-3.5 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <span className={`flex items-center justify-center w-10 h-10 rounded-lg shrink-0 ${done ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-500"}`}>
+                        <span className={`flex items-center justify-center w-10 h-10 rounded-lg shrink-0 ${done ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-400"}`}>
                           <ClipboardCheck size={18} />
                         </span>
                         <div>
@@ -646,7 +608,7 @@ function TenantProfilePage() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-10 border border-dashed border-slate-200 rounded-lg">
+              <div className="text-center py-10 border border-dashed border-slate-200 rounded-xl">
                 <ClipboardCheck size={32} className="text-slate-300 mx-auto mb-2" />
                 <p className="text-sm font-medium text-slate-600">No inspections yet</p>
               </div>
@@ -654,133 +616,132 @@ function TenantProfilePage() {
           </div>
         </div>
 
-        {/* Right Column - Summary */}
+        {/* Right Column — status & reference */}
         <div className="space-y-6">
-          {/* Rent Summary */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="font-semibold text-slate-900 mb-4">Rent Summary</h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <p className="text-slate-600">Monthly Rent</p>
-                <p className="font-medium text-slate-900 tabular-nums">{fmtMoney(monthlyRent)}</p>
+          {/* Security Deposit — single home for deposit status + detail */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700">
+                  <ShieldCheck size={18} />
+                </span>
+                <h2 className="text-base font-semibold text-slate-900">Security Deposit</h2>
               </div>
-              <div className="flex justify-between">
-                <p className="text-slate-600">Total Paid</p>
-                <p className="font-medium text-emerald-600 tabular-nums">{fmtMoney(totalPayments)}</p>
-              </div>
-              <div className="flex justify-between">
-                <p className="text-slate-600">Months Unpaid</p>
-                <p className="font-medium text-slate-900 tabular-nums">{monthsUnpaid}</p>
-              </div>
-              <div className="flex justify-between pt-3 border-t border-slate-200">
-                <p className="font-medium text-slate-700">Outstanding</p>
-                <p className={`font-bold tabular-nums ${outstandingBalance > 0 ? "text-red-600" : "text-emerald-600"}`}>
-                  {fmtMoney(outstandingBalance)}
-                </p>
-              </div>
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  depositPaid ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"
+                }`}
+              >
+                {depositPaid ? "Paid" : "Not paid"}
+              </span>
             </div>
-          </div>
-
-          {/* Security Deposit */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="font-semibold text-slate-900 mb-4">Security Deposit</h3>
             {deposits.length > 0 ? (
-              <div className="space-y-4">
-                <div className="flex justify-between text-sm">
-                  <p className="text-slate-600">Total Deposits</p>
-                  <p className="font-medium text-slate-900 tabular-nums">{fmtMoney(totalDeposits)}</p>
+              <div className="space-y-3">
+                <div className="flex items-baseline justify-between">
+                  <p className="text-sm text-slate-500">Total held</p>
+                  <p className="text-xl font-bold text-slate-900 tabular-nums">{fmtMoney(totalDeposits)}</p>
                 </div>
-                {deposits.map((deposit) => (
-                  <div key={deposit.id} className="rounded-lg border border-slate-100 bg-slate-50/60 p-3">
-                    <div className="flex items-center justify-between">
-                      <p className="font-semibold text-slate-900 tabular-nums">
-                        {deposit.currency || currency} {Number(deposit.amount).toLocaleString()}
+                <div className="space-y-2 pt-1">
+                  {deposits.map((deposit) => (
+                    <div key={deposit.id} className="rounded-xl border border-slate-100 p-3">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold text-slate-900 tabular-nums">
+                          {deposit.currency || currency} {Number(deposit.amount).toLocaleString()}
+                        </p>
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                            deposit.status === "PAID"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : deposit.status === "REFUNDED"
+                              ? "bg-slate-100 text-slate-700"
+                              : "bg-amber-100 text-amber-800"
+                          }`}
+                        >
+                          {deposit.status}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {deposit.investedAt ? "Invested" : "Not invested"}
+                        {deposit.createdAt ? ` · ${new Date(deposit.createdAt).toLocaleDateString()}` : ""}
                       </p>
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                          deposit.status === "PAID"
-                            ? "bg-emerald-100 text-emerald-800"
-                            : deposit.status === "REFUNDED"
-                            ? "bg-slate-100 text-slate-700"
-                            : "bg-amber-100 text-amber-800"
-                        }`}
-                      >
-                        {deposit.status}
-                      </span>
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {deposit.investedAt ? "Invested" : "Not invested"}
-                      {deposit.createdAt ? ` · ${new Date(deposit.createdAt).toLocaleDateString()}` : ""}
-                    </p>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-3">
                 <AlertCircle size={16} className="shrink-0" />
                 No security deposit on record.
               </div>
             )}
           </div>
 
-          {/* Rent Due */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-slate-900">Rent Due</h3>
-              {dueRent && dueRent.unpaidMonths.length > 0 && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                  Overdue
+          {/* Agreement — single home for signature status */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-100 text-indigo-600">
+                  <FileSignature size={18} />
                 </span>
-              )}
-            </div>
-
-            {dueRent && dueRent.unpaidMonths.length > 0 ? (
-              <>
-                <div className="rounded-xl bg-gradient-to-br from-red-50 to-red-100/40 border border-red-100 p-4">
-                  <p className="text-xs font-medium text-red-700/80">Total Rent Due</p>
-                  <p className="mt-1 text-3xl font-bold text-red-600 tabular-nums">
-                    {fmtMoney(dueRent.overallTotal)}
-                  </p>
-                  <p className="text-xs text-slate-500 mt-1">
-                    {fmtMoney(dueRent.totalRentDue)} rent · {fmtMoney(dueRent.totalLateFees)} late fees
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 mt-4">
-                  <div className="rounded-lg border border-slate-100 bg-slate-50/70 p-3">
-                    <div className="flex items-center gap-1.5 text-slate-500">
-                      <CalendarClock size={14} />
-                      <p className="text-xs font-medium">Months Unpaid</p>
-                    </div>
-                    <p className="mt-1.5 text-2xl font-bold text-slate-900 tabular-nums">
-                      {dueRent.unpaidMonths.length}
-                    </p>
-                  </div>
-                  <div className="rounded-lg border border-slate-100 bg-slate-50/70 p-3">
-                    <div className="flex items-center gap-1.5 text-slate-500">
-                      <Coins size={14} />
-                      <p className="text-xs font-medium">Late Fees</p>
-                    </div>
-                    <p className="mt-1.5 text-2xl font-bold text-amber-600 tabular-nums">
-                      {fmtMoney(dueRent.totalLateFees)}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setShowUnpaidModal(true)}
-                  className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#3f0ee3] text-white rounded-lg font-semibold hover:bg-[#3f0ee3]/90 transition-colors"
-                >
-                  <ListChecks size={18} />
-                  See all unpaid months
-                </button>
-              </>
-            ) : (
-              <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-3">
-                <CheckCircle2 size={16} className="shrink-0" />
-                No rent due — this tenant is all caught up.
+                <h2 className="text-base font-semibold text-slate-900">Agreement</h2>
               </div>
-            )}
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  agreementSigned ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                }`}
+              >
+                {agreementSigned ? "Signed" : "Pending"}
+              </span>
+            </div>
+            <div className="space-y-2.5">
+              {[
+                { label: "Manager Signed", at: tenancy.mgtSignedAt },
+                { label: "Tenant Signed", at: tenancy.tenantSignedAt },
+              ].map(({ label, at }) => (
+                <div
+                  key={label}
+                  className="flex items-center justify-between gap-3 p-3 rounded-xl border border-slate-100"
+                >
+                  <div className="flex items-center gap-2">
+                    {at ? (
+                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                    ) : (
+                      <Clock size={16} className="text-amber-500 shrink-0" />
+                    )}
+                    <p className="text-sm text-slate-700">{label}</p>
+                  </div>
+                  <p className="text-sm font-medium text-slate-900">
+                    {at ? new Date(at).toLocaleDateString() : "Pending"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Tenancy Details — reference facts */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+            <div className="flex items-center gap-2.5 mb-5">
+              <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 text-slate-500">
+                <Home size={18} />
+              </span>
+              <h2 className="text-base font-semibold text-slate-900">Tenancy Details</h2>
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+              {[
+                { icon: Droplets, label: "Water Meter", value: tenancy.waterMeter || "N/A" },
+                { icon: Zap, label: "YAKA Meter", value: tenancy.yakaMeter || "N/A" },
+                { icon: Trash2, label: "Waste By", value: tenancy.wasteHandledBy || "N/A" },
+                { icon: CalendarClock, label: "Due Day", value: tenancy.paymentDueDay ? `Day ${tenancy.paymentDueDay}` : "N/A" },
+              ].map(({ icon: Icon, label, value }) => (
+                <div key={label} className="min-w-0">
+                  <div className="flex items-center gap-1.5 text-slate-400">
+                    <Icon size={14} />
+                    <p className="text-xs font-medium">{label}</p>
+                  </div>
+                  <p className="mt-1 font-medium text-slate-900 truncate capitalize">{value}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
