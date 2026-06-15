@@ -25,6 +25,37 @@ export interface RentPaymentRecord {
   updatedAt: string;
 }
 
+export interface DueRentMonth {
+  month: number;
+  year: number;
+  monthName: string;
+  dueDate: string;
+  daysLate: number;
+  rentDue: number;
+  lateFee: number;
+  total: number;
+}
+
+export interface DueRentDetails {
+  tenancyId: number;
+  tenant: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+  };
+  propertyName: string;
+  unitName: string;
+  rentAmount: number;
+  late_paymeny_percentage: number;
+  days_of_late_payment: number;
+  unpaidMonths: DueRentMonth[];
+  totalRentDue: number;
+  totalLateFees: number;
+  overallTotal: number;
+}
+
 export interface PaymentStatusUpdate {
   paymentStatus: "PENDING" | "CONFIRMED" | "DISPUTED" | "CANCELLED";
   notes?: string;
@@ -70,6 +101,22 @@ export const rentPaymentsService = {
       return response.data || [];
     } catch (error: any) {
       console.error("Error fetching tenancy rent payments:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Fetch the late / due-rent details for a specific tenancy
+   * GET /rent-payments/due-rent/:tenancyId
+   */
+  getDueRent: async (tenancyId: string): Promise<DueRentDetails> => {
+    try {
+      const response = await apiClient.get(
+        `/rent-payments/due-rent/${tenancyId}`,
+      );
+      return (response.data?.data ?? response.data) as DueRentDetails;
+    } catch (error: any) {
+      console.error("Error fetching due rent details:", error);
       throw error;
     }
   },

@@ -5,10 +5,12 @@ import {
   ArrowLeft, MessageCircle, Mail, Phone, AlertCircle, Edit, Trash2, Banknote,
   CheckCircle2, XCircle, Clock, ShieldCheck, FileSignature, ClipboardCheck,
   Wallet, CalendarClock, Coins, CircleDollarSign, Home, Droplets, Zap,
+  ListChecks, X, AlertTriangle,
 } from "lucide-react";
 import tenancyService from "../../../services/tenancyService";
 import { securityDepositService } from "../../../services/securityDepositService";
 import { rentPaymentsService } from "../../../services/rentPaymentsService";
+import type { DueRentDetails } from "../../../services/rentPaymentsService";
 import { inspectionService } from "../../../services/inspectionService";
 import { toast } from "react-toastify";
 import type { TenancyAgreement, SecurityDepositRecord, RentPayment, InspectionItem } from "../../../types";
@@ -78,6 +80,148 @@ function StatusTile({ icon: Icon, label, value, state }: {
   );
 }
 
+function UnpaidMonthsDrawer({
+  open,
+  onClose,
+  dueRent,
+  fmtMoney,
+}: {
+  open: boolean;
+  onClose: () => void;
+  dueRent: DueRentDetails | null;
+  fmtMoney: (n: number) => string;
+}) {
+  const [render, setRender] = useState(open);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setRender(true);
+      const id = requestAnimationFrame(() => setShown(true));
+      return () => cancelAnimationFrame(id);
+    }
+    setShown(false);
+    const id = setTimeout(() => setRender(false), 300);
+    return () => clearTimeout(id);
+  }, [open]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  if (!render || !dueRent) return null;
+
+  return (
+    <div className="fixed inset-0 z-50">
+      {/* Scrim */}
+      <div
+        onClick={onClose}
+        className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
+          shown ? "opacity-100" : "opacity-0"
+        }`}
+      />
+
+      {/* Panel */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Unpaid months"
+        className={`absolute right-0 top-0 h-full w-full sm:max-w-md bg-slate-50 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
+          shown ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Header */}
+        <div className="bg-gradient-to-r from-[#3f0ee3] to-indigo-600 text-white p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold">Unpaid Months</h2>
+              <p className="text-sm text-white/80 mt-0.5">
+                {dueRent.tenant.firstName} {dueRent.tenant.lastName} · {dueRent.unitName}
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/15 hover:bg-white/25 transition-colors shrink-0"
+            >
+              <X size={18} />
+            </button>
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <p className="text-xs text-white/70">Total Outstanding</p>
+              <p className="text-2xl font-bold tabular-nums">{fmtMoney(dueRent.overallTotal)}</p>
+            </div>
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/15">
+              {dueRent.unpaidMonths.length} month{dueRent.unpaidMonths.length === 1 ? "" : "s"}
+            </span>
+          </div>
+        </div>
+
+        {/* List */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {dueRent.unpaidMonths.map((m) => (
+            <div
+              key={`${m.year}-${m.month}`}
+              className="bg-white rounded-xl border border-slate-200 p-4"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-slate-900">
+                    {m.monthName} {m.year}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Due {new Date(m.dueDate).toLocaleDateString()}
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 shrink-0">
+                  <AlertTriangle size={12} />
+                  {m.daysLate} day{m.daysLate === 1 ? "" : "s"} late
+                </span>
+              </div>
+
+              <div className="mt-3 pt-3 border-t border-slate-100 space-y-1.5 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Rent Due</span>
+                  <span className="font-medium text-slate-900 tabular-nums">{fmtMoney(m.rentDue)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Late Fee</span>
+                  <span className="font-medium text-amber-600 tabular-nums">{fmtMoney(m.lateFee)}</span>
+                </div>
+                <div className="flex justify-between pt-1.5 border-t border-slate-100">
+                  <span className="font-medium text-slate-700">Total</span>
+                  <span className="font-bold text-red-600 tabular-nums">{fmtMoney(m.total)}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer totals */}
+        <div className="border-t border-slate-200 bg-white p-4 space-y-1.5 text-sm">
+          <div className="flex justify-between">
+            <span className="text-slate-500">Total Rent</span>
+            <span className="font-medium text-slate-900 tabular-nums">{fmtMoney(dueRent.totalRentDue)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-slate-500">Total Late Fees</span>
+            <span className="font-medium text-amber-600 tabular-nums">{fmtMoney(dueRent.totalLateFees)}</span>
+          </div>
+          <div className="flex justify-between pt-1.5 border-t border-slate-100">
+            <span className="font-semibold text-slate-700">Grand Total</span>
+            <span className="font-bold text-red-600 text-base tabular-nums">{fmtMoney(dueRent.overallTotal)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TenantProfilePage() {
   const navigate = useNavigate();
   const { tenantId } = Route.useParams();
@@ -85,12 +229,14 @@ function TenantProfilePage() {
   const [deposits, setDeposits] = useState<SecurityDepositRecord[]>([]);
   const [payments, setPayments] = useState<RentPayment[]>([]);
   const [inspections, setInspections] = useState<InspectionItem[]>([]);
+  const [dueRent, setDueRent] = useState<DueRentDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [showTextModal, setShowTextModal] = useState(false);
   const [textMessage, setTextMessage] = useState("");
   const [sendingText, setSendingText] = useState(false);
   const [showTerminateModal, setShowTerminateModal] = useState(false);
   const [terminatingId, setTerminatingId] = useState<string | null>(null);
+  const [showUnpaidModal, setShowUnpaidModal] = useState(false);
 
   useEffect(() => {
     loadTenantData();
@@ -99,17 +245,19 @@ function TenantProfilePage() {
   const loadTenantData = async () => {
     try {
       setLoading(true);
-      const [tenancyRes, depositsRes, paymentsRes, inspectionsRes] = await Promise.all([
+      const [tenancyRes, depositsRes, paymentsRes, inspectionsRes, dueRentRes] = await Promise.all([
         tenancyService.getTenancy(tenantId),
         securityDepositService.getTenancyDeposit(tenantId),
         rentPaymentsService.getTenancyRentPayments(tenantId),
         inspectionService.getTenancyInspection(tenantId),
+        rentPaymentsService.getDueRent(tenantId).catch(() => null),
       ]);
 
       setTenancy(tenancyRes.data || tenancyRes);
       setDeposits((depositsRes?.data || []) as SecurityDepositRecord[]);
       setPayments(paymentsRes as any[]);
       setInspections((inspectionsRes?.data || inspectionsRes || []) as InspectionItem[]);
+      setDueRent(dueRentRes);
     } catch (error) {
       console.error(error);
       toast.error("Failed to load tenant data");
@@ -181,15 +329,22 @@ function TenantProfilePage() {
   }
 
   const currency = tenancy.propertyAgreement?.currency || "UGX";
-  const monthlyRent = Number(tenancy.rentAmount) || 0;
+  const monthlyRent = Number(dueRent?.rentAmount ?? tenancy.rentAmount) || 0;
+  // Prefer the authoritative due-rent endpoint, fall back to tenancy fields
   const outstandingBalance =
-    Number(tenancy.outstanding_rent_balance ?? 0) || parseFloat(tenancy.outstandingBalance || "0");
+    Number(dueRent?.totalRentDue ?? NaN) ||
+    Number(tenancy.outstanding_rent_balance ?? 0) ||
+    parseFloat(tenancy.outstandingBalance || "0");
   const totalDeposits = deposits.reduce((sum, d) => sum + parseFloat(d.amount?.toString() || "0"), 0);
   const totalPayments = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
   // At-a-glance landlord metrics
   const monthsUnpaid =
-    monthlyRent > 0 && outstandingBalance > 0 ? Math.ceil(outstandingBalance / monthlyRent) : 0;
+    dueRent?.unpaidMonths != null
+      ? dueRent.unpaidMonths.length
+      : monthlyRent > 0 && outstandingBalance > 0
+      ? Math.ceil(outstandingBalance / monthlyRent)
+      : 0;
   const isUpToDate = outstandingBalance <= 0;
   const depositPaid = !!tenancy.securityDepositPaidAt || deposits.some((d) => d.status === "PAID");
   const agreementSigned = !!tenancy.tenantSignedAt && !!tenancy.mgtSignedAt;
@@ -568,32 +723,75 @@ function TenantProfilePage() {
             )}
           </div>
 
-          {/* Agreement Status */}
+          {/* Rent Due */}
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="font-semibold text-slate-900 mb-4">Agreement Status</h3>
-            <div className="space-y-3 text-sm">
-              {[
-                { label: "Manager Signed", at: tenancy.mgtSignedAt },
-                { label: "Tenant Signed", at: tenancy.tenantSignedAt },
-              ].map(({ label, at }) => (
-                <div key={label} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {at ? (
-                      <CheckCircle2 size={16} className="text-emerald-600" />
-                    ) : (
-                      <Clock size={16} className="text-amber-500" />
-                    )}
-                    <p className="text-slate-700">{label}</p>
-                  </div>
-                  <p className="font-medium text-slate-900">
-                    {at ? new Date(at).toLocaleDateString() : "Pending"}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-slate-900">Rent Due</h3>
+              {dueRent && dueRent.unpaidMonths.length > 0 && (
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                  Overdue
+                </span>
+              )}
+            </div>
+
+            {dueRent && dueRent.unpaidMonths.length > 0 ? (
+              <>
+                <div className="rounded-xl bg-gradient-to-br from-red-50 to-red-100/40 border border-red-100 p-4">
+                  <p className="text-xs font-medium text-red-700/80">Total Rent Due</p>
+                  <p className="mt-1 text-3xl font-bold text-red-600 tabular-nums">
+                    {fmtMoney(dueRent.overallTotal)}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {fmtMoney(dueRent.totalRentDue)} rent · {fmtMoney(dueRent.totalLateFees)} late fees
                   </p>
                 </div>
-              ))}
-            </div>
+
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <div className="rounded-lg border border-slate-100 bg-slate-50/70 p-3">
+                    <div className="flex items-center gap-1.5 text-slate-500">
+                      <CalendarClock size={14} />
+                      <p className="text-xs font-medium">Months Unpaid</p>
+                    </div>
+                    <p className="mt-1.5 text-2xl font-bold text-slate-900 tabular-nums">
+                      {dueRent.unpaidMonths.length}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-slate-100 bg-slate-50/70 p-3">
+                    <div className="flex items-center gap-1.5 text-slate-500">
+                      <Coins size={14} />
+                      <p className="text-xs font-medium">Late Fees</p>
+                    </div>
+                    <p className="mt-1.5 text-2xl font-bold text-amber-600 tabular-nums">
+                      {fmtMoney(dueRent.totalLateFees)}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setShowUnpaidModal(true)}
+                  className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#3f0ee3] text-white rounded-lg font-semibold hover:bg-[#3f0ee3]/90 transition-colors"
+                >
+                  <ListChecks size={18} />
+                  See all unpaid months
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                <CheckCircle2 size={16} className="shrink-0" />
+                No rent due — this tenant is all caught up.
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Unpaid Months Drawer */}
+      <UnpaidMonthsDrawer
+        open={showUnpaidModal}
+        onClose={() => setShowUnpaidModal(false)}
+        dueRent={dueRent}
+        fmtMoney={fmtMoney}
+      />
 
       {/* Send Text Modal */}
       {showTextModal && (
