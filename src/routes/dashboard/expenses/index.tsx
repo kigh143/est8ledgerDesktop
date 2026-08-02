@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, X, Plus, DollarSign, Edit2, Trash2, BarChart3, HandCoins, Clock, CircleCheck, Wallet, Coins } from "lucide-react";
+import { Eye, Plus, Edit2, Trash2, BarChart3, HandCoins, Clock, CircleCheck, Wallet, Coins } from "lucide-react";
 import { expenseService } from "../../../services/expenseService";
 import { useAppStore } from "../../../store";
 import { toast } from "react-toastify";
 import { PageHeader, StatCard } from "../../../componennts/dashboard/ui";
+import SlideOver from "../../../componennts/SlideOver";
 import type { Expense, ExpenseStatus, ExpenseCategory } from "../../../types";
 
 interface ExpenseSummary {
@@ -394,92 +395,14 @@ function ExpensesPage() {
       </div>
 
       {/* Detail Modal */}
-      {isDetailOpen && selectedExpense && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 border-b border-slate-200 bg-white px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <DollarSign size={24} className="text-[#3f0ee3]" />
-                <h2 className="text-xl font-bold text-slate-900">Expense Details</h2>
-              </div>
-              <button
-                onClick={() => setIsDetailOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {/* Category & Amount */}
-              <div>
-                <h3 className="font-semibold text-slate-900 mb-3">Overview</h3>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-slate-600">Category</p>
-                    <p className={`font-medium mt-1 ${getCategoryColor(selectedExpense.category)}`}>
-                      {selectedExpense.category}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Description</p>
-                    <p className="font-medium text-slate-900">{selectedExpense.description}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Amount</p>
-                    <p className="text-2xl font-bold text-slate-900">
-                      {selectedExpense.currency} {selectedExpense.amount.toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Status & Dates */}
-              <div className="border-t border-slate-200 pt-4">
-                <h3 className="font-semibold text-slate-900 mb-3">Status & Dates</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-600 mb-2">Status</p>
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                        selectedExpense.status
-                      )}`}
-                    >
-                      {selectedExpense.status}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Date</p>
-                    <p className="font-medium text-slate-900 mt-1">
-                      {new Date(selectedExpense.date).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Notes */}
-              {selectedExpense.notes && (
-                <div className="border-t border-slate-200 pt-4">
-                  <h3 className="font-semibold text-slate-900 mb-3">Notes</h3>
-                  <p className="text-slate-700 whitespace-pre-wrap">{selectedExpense.notes}</p>
-                </div>
-              )}
-
-              {/* Created By */}
-              {selectedExpense.createdBy && (
-                <div className="border-t border-slate-200 pt-4">
-                  <h3 className="font-semibold text-slate-900 mb-3">Created By</h3>
-                  <div>
-                    <p className="font-medium text-slate-900">
-                      {selectedExpense.createdBy.firstName} {selectedExpense.createdBy.lastName}
-                    </p>
-                    <p className="text-sm text-slate-500">{selectedExpense.createdBy.email}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="border-t border-slate-200 px-6 py-4 flex gap-3 justify-between">
+      <SlideOver
+        open={isDetailOpen && !!selectedExpense}
+        onClose={() => setIsDetailOpen(false)}
+        title="Expense Details"
+        widthClass="max-w-lg"
+        footer={
+          selectedExpense && (
+            <div className="flex gap-3 justify-between">
               <div className="flex gap-3">
                 {selectedExpense.status === "PENDING" && (
                   <>
@@ -540,9 +463,80 @@ function ExpensesPage() {
                 </button>
               </div>
             </div>
+          )
+        }
+      >
+        {selectedExpense && (
+          <div className="space-y-6">
+            {/* Category & Amount */}
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-3">Overview</h3>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm text-slate-600">Category</p>
+                  <p className={`font-medium mt-1 ${getCategoryColor(selectedExpense.category)}`}>
+                    {selectedExpense.category}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Description</p>
+                  <p className="font-medium text-slate-900">{selectedExpense.description}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Amount</p>
+                  <p className="text-2xl font-bold text-slate-900 tabular-nums">
+                    {selectedExpense.currency} {selectedExpense.amount.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Status & Dates */}
+            <div className="border-t border-slate-200 pt-4">
+              <h3 className="font-semibold text-slate-900 mb-3">Status & Dates</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-slate-600 mb-2">Status</p>
+                  <span
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                      selectedExpense.status
+                    )}`}
+                  >
+                    {selectedExpense.status}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Date</p>
+                  <p className="font-medium text-slate-900 mt-1">
+                    {new Date(selectedExpense.date).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Notes */}
+            {selectedExpense.notes && (
+              <div className="border-t border-slate-200 pt-4">
+                <h3 className="font-semibold text-slate-900 mb-3">Notes</h3>
+                <p className="text-slate-700 whitespace-pre-wrap">{selectedExpense.notes}</p>
+              </div>
+            )}
+
+            {/* Created By */}
+            {selectedExpense.createdBy && (
+              <div className="border-t border-slate-200 pt-4">
+                <h3 className="font-semibold text-slate-900 mb-3">Created By</h3>
+                <div>
+                  <p className="font-medium text-slate-900">
+                    {selectedExpense.createdBy.firstName} {selectedExpense.createdBy.lastName}
+                  </p>
+                  <p className="text-sm text-slate-500">{selectedExpense.createdBy.email}</p>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </SlideOver>
     </div>
   );
 }

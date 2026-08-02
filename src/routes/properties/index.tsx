@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
-import { Building2, DoorOpen, Users, TrendingUp, Search, MapPin, ArrowRight, HousePlus } from 'lucide-react'
+import { Building2, DoorOpen, Users, TrendingUp, Search, MapPin, ArrowRight, HousePlus, Percent } from 'lucide-react'
 import { useAppStore } from '../../store';
 import PropertiesLayout from '../../componennts/PropertiesLayout';
 import type { PropertyAgreement } from '../../types';
@@ -35,22 +35,87 @@ const occupancyTone = (pct: number) =>
     ? { bar: "bg-amber-500", text: "text-amber-700" }
     : { bar: "bg-red-500", text: "text-red-700" };
 
-function KpiCard({ icon: Icon, label, value, tint }: {
+function KpiCard({ icon: Icon, label, value, gradient, iconTint, glow, featured }: {
   icon: typeof Building2;
   label: string;
   value: string;
-  tint: string;
+  gradient: string;
+  iconTint: string;
+  glow: string;
+  featured?: boolean;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-      <div className="flex items-center gap-3">
-        <span className={`flex items-center justify-center w-10 h-10 rounded-lg shrink-0 ${tint}`}>
+    <div
+      className={`group relative overflow-hidden rounded-2xl border p-5 transition-all duration-300 hover:-translate-y-0.5 ${
+        featured
+          ? `${gradient} border-transparent text-white shadow-lg ${glow}`
+          : "bg-white border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300"
+      }`}
+    >
+      {/* Decorative glow blob */}
+      <div
+        className={`pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full blur-2xl transition-opacity duration-300 ${
+          featured ? "bg-white/25 opacity-100" : `${iconTint} opacity-0 group-hover:opacity-20`
+        }`}
+      />
+
+      <div className="relative flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className={`text-xs font-semibold capitalize tracking-wide truncate ${featured ? "text-white/80" : "text-slate-500"}`}>
+            {label}
+          </p>
+          <p className={`mt-2 text-md font-bold tabular-nums truncate ${featured ? "text-white" : "text-slate-900"}`}>
+            {value}
+          </p>
+        </div>
+        <span
+          className={`flex items-center justify-center w-11 h-11 rounded-xl shrink-0 transition-transform duration-300 group-hover:scale-105 ${
+            featured ? "bg-white/20 text-white" : iconTint
+          }`}
+        >
           <Icon size={20} />
         </span>
-        <div className="min-w-0">
-          <p className="text-xs font-medium text-slate-500">{label}</p>
-          <p className="text-xl font-bold text-slate-900 tabular-nums truncate">{value}</p>
-        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Two related metrics sharing one card, split by a vertical divider. */
+function CombinedStatCard({ items }: {
+  items: {
+    icon: typeof Building2;
+    label: string;
+    value: string;
+    iconTint: string;
+  }[];
+}) {
+  return (
+    <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300 col-span-2 lg:col-span-1">
+      <div className="relative flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch gap-4 sm:gap-0 lg:gap-4 xl:gap-0">
+        {items.map((item, i) => (
+          <div
+            key={item.label}
+            className={`flex-1 flex items-start gap-3 min-w-0 ${
+              i > 0
+                ? "sm:pl-4 sm:ml-4 sm:border-l lg:pl-0 lg:ml-0 lg:border-l-0 lg:pt-4 lg:mt-4 lg:border-t xl:pl-4 xl:ml-4 xl:border-l xl:pt-0 xl:mt-0 xl:border-t-0 border-slate-200"
+                : ""
+            }`}
+          >
+            <span
+              className={`flex items-center justify-center w-11 h-11 rounded-xl shrink-0 transition-transform duration-300 group-hover:scale-105 ${item.iconTint}`}
+            >
+              <item.icon size={20} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold capitalize tracking-wide text-slate-500 truncate">
+                {item.label}
+              </p>
+              <p className="mt-2 text-md font-bold tabular-nums text-slate-900 truncate">
+                {item.value}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -72,6 +137,9 @@ function RouteComponent() {
   const totalUnits = properties.reduce((a: number, p: PropertyAgreement) => a + p.numberOfUnits, 0);
   const totalTenants = properties.reduce((a: number, p: PropertyAgreement) => a + p.tenancies.length, 0);
   const totalRevenue = properties.reduce((a: number, p: PropertyAgreement) => a + revenueOf(p), 0);
+  const avgOccupancy = properties.length > 0
+    ? Math.round(properties.reduce((a: number, p: PropertyAgreement) => a + occupancyOf(p), 0) / properties.length)
+    : 0;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -89,12 +157,31 @@ function RouteComponent() {
     <PropertiesLayout pageTitle={`${properties.length} Properties`} subTitle='All properties with agreement details'>
       <div className="space-y-6 pb-4">
         {/* Aggregate analytics */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <KpiCard icon={Building2} label="Properties" value={fmt(properties.length)} tint="bg-[#3f0ee3]/10 text-[#3f0ee3]" />
-          <KpiCard icon={DoorOpen} label="Total Units" value={fmt(totalUnits)} tint="bg-sky-100 text-sky-700" />
-          <KpiCard icon={Users} label="Total Tenants" value={fmt(totalTenants)} tint="bg-violet-100 text-violet-700" />
-          {/* <KpiCard icon={Percent} label="Avg. Occupancy" value={`${avgOccupancy}%`} tint="bg-emerald-100 text-emerald-700" /> */}
-          <KpiCard icon={TrendingUp} label="Monthly Revenue" value={`${currency} ${fmt(totalRevenue)}`} tint="bg-amber-100 text-amber-700" />
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+         
+          <CombinedStatCard
+            items={[
+              { icon: DoorOpen, label: "Units", value: fmt(totalUnits), iconTint: "bg-sky-100 text-sky-700" },
+              { icon: Users, label: "Tenants", value: fmt(totalTenants), iconTint: "bg-violet-100 text-violet-700" },
+            ]}
+          />
+          <KpiCard
+            icon={Percent}
+            label="Avg. Occupancy"
+            value={`${avgOccupancy}%`}
+            iconTint="bg-emerald-100 text-emerald-700"
+            gradient=""
+            glow=""
+          />
+          <KpiCard
+            icon={TrendingUp}
+            label="Monthly Revenue"
+            value={`${currency} ${fmt(totalRevenue)}`}
+            gradient="bg-gradient-to-br from-[#3f0ee3] to-[#552ae7]"
+            iconTint=""
+            glow="shadow-[#3f0ee3]/30"
+            featured
+          />
         </div>
 
         {/* Properties table */}

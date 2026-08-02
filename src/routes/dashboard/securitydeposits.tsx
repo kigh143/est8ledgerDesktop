@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, X, Vault, Wallet, CheckCircle2, TrendingUp } from "lucide-react";
+import { Eye, Vault, Wallet, CheckCircle2, TrendingUp } from "lucide-react";
 import { securityDepositService } from "../../services/securityDepositService";
 import { useAppStore } from "../../store";
 import { PageHeader, StatCard, EmptyState } from "../../componennts/dashboard/ui";
+import SlideOver from "../../componennts/SlideOver";
 import type { SecurityDepositRecord } from "../../types";
 
 export const Route = createFileRoute("/dashboard/securitydeposits")({
@@ -148,119 +149,113 @@ function SecurityDepositsPage() {
       </div>
 
       {/* Detail Modal */}
-      {isDetailOpen && selectedDeposit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 border-b border-slate-200 bg-white px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900">Deposit Details</h2>
-              <button
-                onClick={() => setIsDetailOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {/* Tenant Info */}
-              <div>
-                <h3 className="font-semibold text-slate-900 mb-3">Tenant Information</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-600">Name</p>
-                    <p className="font-medium text-slate-900">
-                      {selectedDeposit.tenancy?.tenant.firstName} {selectedDeposit.tenancy?.tenant.lastName}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Email</p>
-                    <p className="font-medium text-slate-900">{selectedDeposit.tenancy?.tenant.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Unit</p>
-                    <p className="font-medium text-slate-900">{selectedDeposit.tenancy?.unitName}</p>
-                  </div>
+      <SlideOver
+        open={isDetailOpen && !!selectedDeposit}
+        onClose={() => setIsDetailOpen(false)}
+        title="Deposit Details"
+        widthClass="max-w-lg"
+        footer={
+          <div className="flex justify-end">
+            <button
+              onClick={() => setIsDetailOpen(false)}
+              className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        }
+      >
+        {selectedDeposit && (
+          <div className="space-y-6">
+            {/* Tenant Info */}
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-3">Tenant Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-slate-600">Name</p>
+                  <p className="font-medium text-slate-900">
+                    {selectedDeposit.tenancy?.tenant.firstName} {selectedDeposit.tenancy?.tenant.lastName}
+                  </p>
                 </div>
-              </div>
-
-              {/* Deposit Info */}
-              <div className="border-t border-slate-200 pt-4">
-                <h3 className="font-semibold text-slate-900 mb-3">Deposit Information</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-600">Amount</p>
-                    <p className="font-medium text-slate-900">
-                      {selectedDeposit.currency} {selectedDeposit.amount}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Status</p>
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${getStatusColor(selectedDeposit.status)}`}>
-                      {selectedDeposit.status}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Created Date</p>
-                    <p className="font-medium text-slate-900">
-                      {new Date(selectedDeposit.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Reference</p>
-                    <p className="font-medium text-slate-900">{selectedDeposit.reference || "-"}</p>
-                  </div>
+                <div>
+                  <p className="text-sm text-slate-600">Email</p>
+                  <p className="font-medium text-slate-900">{selectedDeposit.tenancy?.tenant.email}</p>
                 </div>
-              </div>
-
-              {/* Investment Info */}
-              <div className="border-t border-slate-200 pt-4">
-                <h3 className="font-semibold text-slate-900 mb-3">Investment Status</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-600">Invested At</p>
-                    <p className="font-medium text-slate-900">
-                      {selectedDeposit.investedAt ? new Date(selectedDeposit.investedAt).toLocaleDateString() : "-"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Tenant Opted In</p>
-                    <p className="font-medium text-slate-900">
-                      {selectedDeposit.tenantOptedIntoInvestmentAt ? new Date(selectedDeposit.tenantOptedIntoInvestmentAt).toLocaleDateString() : "-"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Mgt Opted In</p>
-                    <p className="font-medium text-slate-900">
-                      {selectedDeposit.mgtOptedIntoInvestmentAt ? new Date(selectedDeposit.mgtOptedIntoInvestmentAt).toLocaleDateString() : "-"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Tenant Share</p>
-                    <p className="font-medium text-slate-900">{selectedDeposit.tenantShare || "-"}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Mgt Share</p>
-                    <p className="font-medium text-slate-900">{selectedDeposit.mgtShare || "-"}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Deposit Fees</p>
-                    <p className="font-medium text-slate-900">{selectedDeposit.depositFees || "-"}</p>
-                  </div>
+                <div>
+                  <p className="text-sm text-slate-600">Unit</p>
+                  <p className="font-medium text-slate-900">{selectedDeposit.tenancy?.unitName}</p>
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-slate-200 px-6 py-4 flex justify-end">
-              <button
-                onClick={() => setIsDetailOpen(false)}
-                className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
-              >
-                Close
-              </button>
+            {/* Deposit Info */}
+            <div className="border-t border-slate-200 pt-4">
+              <h3 className="font-semibold text-slate-900 mb-3">Deposit Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-slate-600">Amount</p>
+                  <p className="font-medium text-slate-900">
+                    {selectedDeposit.currency} {selectedDeposit.amount}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Status</p>
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${getStatusColor(selectedDeposit.status)}`}>
+                    {selectedDeposit.status}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Created Date</p>
+                  <p className="font-medium text-slate-900">
+                    {new Date(selectedDeposit.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Reference</p>
+                  <p className="font-medium text-slate-900">{selectedDeposit.reference || "-"}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Investment Info */}
+            <div className="border-t border-slate-200 pt-4">
+              <h3 className="font-semibold text-slate-900 mb-3">Investment Status</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-slate-600">Invested At</p>
+                  <p className="font-medium text-slate-900">
+                    {selectedDeposit.investedAt ? new Date(selectedDeposit.investedAt).toLocaleDateString() : "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Tenant Opted In</p>
+                  <p className="font-medium text-slate-900">
+                    {selectedDeposit.tenantOptedIntoInvestmentAt ? new Date(selectedDeposit.tenantOptedIntoInvestmentAt).toLocaleDateString() : "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Mgt Opted In</p>
+                  <p className="font-medium text-slate-900">
+                    {selectedDeposit.mgtOptedIntoInvestmentAt ? new Date(selectedDeposit.mgtOptedIntoInvestmentAt).toLocaleDateString() : "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Tenant Share</p>
+                  <p className="font-medium text-slate-900">{selectedDeposit.tenantShare || "-"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Mgt Share</p>
+                  <p className="font-medium text-slate-900">{selectedDeposit.mgtShare || "-"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Deposit Fees</p>
+                  <p className="font-medium text-slate-900">{selectedDeposit.depositFees || "-"}</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </SlideOver>
     </div>
   );
 }

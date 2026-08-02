@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, X, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, X, ChevronLeft, ChevronRight, Image as ImageIcon, ShieldCheck, Loader2 } from "lucide-react";
 import { inspectionService } from "../../../services/inspectionService";
 import type { InspectionItem } from "../../../types";
+import { toast } from "react-toastify";
 
 interface InspectionDetails extends InspectionItem {
   images?: Array<{
@@ -37,10 +38,27 @@ export const Route = createFileRoute("/dashboard/inspections/$inspectionId")({
 
 function InspectionDetailPage() {
   const navigate = useNavigate();
-  const { inspection } = Route.useLoaderData();
+  const { inspection: loadedInspection } = Route.useLoaderData();
+  const [inspection, setInspection] = useState(loadedInspection);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const [allImages, setAllImages] = useState<Array<{ id: number; url: string; fileName: string }>>([]);
+  const [approving, setApproving] = useState(false);
+
+  const handleManagerApprove = async () => {
+    if (!inspection) return;
+    setApproving(true);
+    try {
+      await inspectionService.approveInspectionByManagement(inspection.id.toString());
+      setInspection({ ...inspection, managerApprovedAt: new Date().toISOString() });
+      toast.success("Inspection approved");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to approve inspection");
+    } finally {
+      setApproving(false);
+    }
+  };
 
   const getStatusColor = (status?: string) => {
     switch (status) {
@@ -189,9 +207,19 @@ function InspectionDetailPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-slate-300 rounded-full"></div>
-                <p className="font-medium text-slate-600">Pending</p>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-slate-300 rounded-full"></div>
+                  <p className="font-medium text-slate-600">Pending</p>
+                </div>
+                <button
+                  onClick={handleManagerApprove}
+                  disabled={approving}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-[#3f0ee3] text-white rounded-lg text-xs font-semibold hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {approving ? <Loader2 size={14} className="animate-spin" /> : <ShieldCheck size={14} />}
+                  Approve as Manager
+                </button>
               </div>
             )}
           </div>

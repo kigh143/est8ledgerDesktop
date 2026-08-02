@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Eye, X, Plus, Settings, Check, Calendar, Users, RotateCcw, Inbox } from "lucide-react";
+import { Eye, Plus, Settings, Check, Calendar, Users, RotateCcw, Inbox } from "lucide-react";
 import { rentPaymentsService } from "../../../services/rentPaymentsService";
 import { useAppStore } from "../../../store";
+import SlideOver from "../../../componennts/SlideOver";
 import { toast } from "react-toastify";
 import type { RentPaymentRecord } from "../../../services/rentPaymentsService";
 
@@ -374,78 +375,14 @@ function RentTrackingPage() {
       </div>
 
       {/* Detail Modal */}
-      {isDetailOpen && selectedPayment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 border-b border-slate-200 bg-white px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900">Payment Details</h2>
-              <button
-                onClick={() => setIsDetailOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {/* Tenant Info */}
-              <div>
-                <h3 className="font-semibold text-slate-900 mb-3">Tenant Information</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-600">Name</p>
-                    <p className="font-medium text-slate-900">
-                      {(selectedPayment as any)?.tenancy?.tenant?.firstName || 'N/A'} {(selectedPayment as any)?.tenancy?.tenant?.lastName || ''}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Unit</p>
-                    <p className="font-medium text-slate-900">{(selectedPayment as any)?.tenancy?.unitName || '-'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Rent Amount</p>
-                    <p className="font-medium text-slate-900">{(selectedPayment as any)?.tenancy?.rentAmount || '-'}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Info */}
-              <div className="border-t border-slate-200 pt-4">
-                <h3 className="font-semibold text-slate-900 mb-3">Payment Information</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-600">Period</p>
-                    <p className="font-medium text-slate-900">
-                      {formatMonth(selectedPayment.monthPaidFor, selectedPayment.yearPaidFor)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Amount</p>
-                    <p className="font-medium text-slate-900">
-                      {selectedPayment.currency} {selectedPayment.amount}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Status</p>
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${getStatusColor(selectedPayment.status)}`}>
-                      {selectedPayment.status}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Payment Date</p>
-                    <p className="font-medium text-slate-900">
-                      {new Date(selectedPayment.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-sm text-slate-600">Reference</p>
-                    <p className="font-medium text-slate-900">{selectedPayment.paymentReference}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-slate-200 px-6 py-4 flex justify-end gap-3">
+      <SlideOver
+        open={isDetailOpen && !!selectedPayment}
+        onClose={() => setIsDetailOpen(false)}
+        title="Payment Details"
+        widthClass="max-w-lg"
+        footer={
+          selectedPayment && (
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsDetailOpen(false)}
                 className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
@@ -463,9 +400,69 @@ function RentTrackingPage() {
                 </button>
               )}
             </div>
+          )
+        }
+      >
+        {selectedPayment && (
+          <div className="space-y-6">
+            {/* Tenant Info */}
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-3">Tenant Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-slate-600">Name</p>
+                  <p className="font-medium text-slate-900">
+                    {(selectedPayment as any)?.tenancy?.tenant?.firstName || 'N/A'} {(selectedPayment as any)?.tenancy?.tenant?.lastName || ''}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Unit</p>
+                  <p className="font-medium text-slate-900">{(selectedPayment as any)?.tenancy?.unitName || '-'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Rent Amount</p>
+                  <p className="font-medium text-slate-900">{(selectedPayment as any)?.tenancy?.rentAmount || '-'}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Info */}
+            <div className="border-t border-slate-200 pt-4">
+              <h3 className="font-semibold text-slate-900 mb-3">Payment Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-slate-600">Period</p>
+                  <p className="font-medium text-slate-900">
+                    {formatMonth(selectedPayment.monthPaidFor, selectedPayment.yearPaidFor)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Amount</p>
+                  <p className="font-medium text-slate-900">
+                    {selectedPayment.currency} {selectedPayment.amount}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Status</p>
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${getStatusColor(selectedPayment.status)}`}>
+                    {selectedPayment.status}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600">Payment Date</p>
+                  <p className="font-medium text-slate-900">
+                    {new Date(selectedPayment.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-sm text-slate-600">Reference</p>
+                  <p className="font-medium text-slate-900">{selectedPayment.paymentReference}</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </SlideOver>
     </div>
   );
 }

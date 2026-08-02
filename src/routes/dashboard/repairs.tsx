@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, X, Wrench, CheckCircle, Clock, AlertTriangle, Loader, CircleCheck, Coins } from "lucide-react";
+import { Eye, Wrench, CheckCircle, Clock, AlertTriangle, Loader, CircleCheck, Coins } from "lucide-react";
 import { repairService } from "../../services/repairService";
 import { useAppStore } from "../../store";
 import { toast } from "react-toastify";
 import { PageHeader, StatCard, EmptyState } from "../../componennts/dashboard/ui";
+import SlideOver from "../../componennts/SlideOver";
 import type { RepairRequest, RepairStatus } from "../../types";
 
 type RepairRequestDetail = RepairRequest & {
@@ -290,23 +291,34 @@ function RepairsPage() {
       </div>
 
       {/* Detail Modal */}
-      {isDetailOpen && selectedRepair && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 border-b border-slate-200 bg-white px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Wrench size={24} className="text-[#3f0ee3]" />
-                <h2 className="text-xl font-bold text-slate-900">Repair Details</h2>
-              </div>
-              <button
-                onClick={() => setIsDetailOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
+      <SlideOver
+        open={isDetailOpen && !!selectedRepair}
+        onClose={() => {
+          setIsDetailOpen(false);
+          setReviewMode(false);
+          setAssignMode(false);
+          setApplyMode(false);
+        }}
+        title="Repair Details"
+        widthClass="max-w-xl"
+        footer={
+          <div className="flex justify-end">
+            <button
+              onClick={() => {
+                setIsDetailOpen(false);
+                setReviewMode(false);
+                setAssignMode(false);
+                setApplyMode(false);
+              }}
+              className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        }
+      >
+        {selectedRepair && (
+            <div className="space-y-6">
               {/* Title & Description */}
               <div>
                 <h3 className="font-semibold text-slate-900 mb-3">Details</h3>
@@ -669,23 +681,8 @@ function RepairsPage() {
                 </div>
               )}
             </div>
-
-            <div className="border-t border-slate-200 px-6 py-4 flex justify-end">
-              <button
-                onClick={() => {
-                  setIsDetailOpen(false);
-                  setReviewMode(false);
-                  setAssignMode(false);
-                  setApplyMode(false);
-                }}
-                className="px-6 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
+      </SlideOver>
     </div>
   );
 }

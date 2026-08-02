@@ -11,6 +11,7 @@ import { securityDepositService } from "../../../services/securityDepositService
 import { rentPaymentsService } from "../../../services/rentPaymentsService";
 import type { DueRentDetails } from "../../../services/rentPaymentsService";
 import { inspectionService } from "../../../services/inspectionService";
+import SlideOver from "../../../componennts/SlideOver";
 import { toast } from "react-toastify";
 import type { TenancyAgreement, SecurityDepositRecord, RentPayment, InspectionItem } from "../../../types";
 
@@ -755,97 +756,83 @@ function TenantProfilePage() {
       />
 
       {/* Send Text Modal */}
-      {showTextModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg max-w-md w-full mx-4">
-            <div className="flex items-center justify-between p-6 border-b border-slate-200">
-              <h2 className="text-lg font-semibold text-slate-900">Send Text Message</h2>
-              <button
-                onClick={() => setShowTextModal(false)}
-                className="text-slate-400 hover:text-slate-600"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <p className="text-sm text-slate-600 mb-2">To: {tenancy.tenant.phoneNumber}</p>
-              </div>
-              <textarea
-                value={textMessage}
-                onChange={(e) => setTextMessage(e.target.value)}
-                placeholder="Type your message..."
-                rows={4}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
-              />
-              <div className="flex gap-3 justify-end pt-4">
-                <button
-                  onClick={() => setShowTextModal(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSendText}
-                  disabled={sendingText}
-                  className="px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {sendingText ? "Sending..." : "Send"}
-                </button>
-              </div>
-            </div>
+      <SlideOver
+        open={showTextModal}
+        onClose={() => setShowTextModal(false)}
+        title="Send Text Message"
+        widthClass="max-w-md"
+        footer={
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={() => setShowTextModal(false)}
+              className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSendText}
+              disabled={sendingText}
+              className="px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {sendingText ? "Sending..." : "Send"}
+            </button>
           </div>
+        }
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600">To: {tenancy.tenant.phoneNumber}</p>
+          <textarea
+            value={textMessage}
+            onChange={(e) => setTextMessage(e.target.value)}
+            placeholder="Type your message..."
+            rows={4}
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+          />
         </div>
-      )}
+      </SlideOver>
 
       {/* Terminate Tenancy Modal */}
-      {showTerminateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg max-w-md w-full mx-4">
-            <div className="flex items-center justify-between p-6 border-b border-slate-200">
-              <h2 className="text-lg font-semibold text-slate-900">Terminate Tenancy</h2>
-              <button
-                onClick={() => setShowTerminateModal(false)}
-                className="text-slate-400 hover:text-slate-600"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-sm text-red-900">
-                  <strong>Warning:</strong> This will send a termination request for this tenancy. The tenant will be notified and the request will require confirmation.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm text-slate-600">Tenant Name:</p>
-                <p className="font-medium text-slate-900">
-                  {tenancy.tenant.firstName} {tenancy.tenant.lastName}
-                </p>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm text-slate-600">Unit:</p>
-                <p className="font-medium text-slate-900">{tenancy.unitName}</p>
-              </div>
-              <div className="flex gap-3 justify-end pt-4">
-                <button
-                  onClick={() => setShowTerminateModal(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleTerminateTenancy}
-                  disabled={terminatingId !== null}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {terminatingId ? "Terminating..." : "Confirm Termination"}
-                </button>
-              </div>
-            </div>
+      <SlideOver
+        open={showTerminateModal}
+        onClose={() => setShowTerminateModal(false)}
+        title="Terminate Tenancy"
+        widthClass="max-w-md"
+        footer={
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={() => setShowTerminateModal(false)}
+              className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleTerminateTenancy}
+              disabled={terminatingId !== null}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {terminatingId ? "Terminating..." : "Confirm Termination"}
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-sm text-red-900">
+              <strong>Warning:</strong> This will send a termination request for this tenancy. The tenant will be notified and the request will require confirmation.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm text-slate-600">Tenant Name:</p>
+            <p className="font-medium text-slate-900">
+              {tenancy.tenant.firstName} {tenancy.tenant.lastName}
+            </p>
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm text-slate-600">Unit:</p>
+            <p className="font-medium text-slate-900">{tenancy.unitName}</p>
           </div>
         </div>
-      )}
+      </SlideOver>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Lock, LogOut, Shield, Mail, Phone, FileText, Eye, EyeOff } from "lucide-react";
 import { useAppStore } from "../../store";
 import PropertiesLayout from "../../componennts/PropertiesLayout";
+import SlideOver from "../../componennts/SlideOver";
 import { toast } from "react-toastify";
 
 export const Route = createFileRoute("/properties/settings")({
@@ -107,14 +108,7 @@ function SettingsPage() {
                 <p className="text-xs text-slate-600 uppercase font-semibold tracking-wide">Phone</p>
                 <p className="text-slate-900 font-semibold mt-2">{user?.phoneNumber || "N/A"}</p>
               </div>
-              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-                <p className="text-xs text-slate-600 uppercase font-semibold tracking-wide">Country</p>
-                <p className="text-slate-900 font-semibold mt-2">{user?.countryId || "N/A"}</p>
-              </div>
-              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-                <p className="text-xs text-slate-600 uppercase font-semibold tracking-wide">User ID</p>
-                <p className="text-slate-900 font-mono text-xs break-all">{user?.id || "N/A"}</p>
-              </div>
+            
             </div>
 
             <div className="border-t border-slate-200 pt-6">
@@ -281,15 +275,16 @@ function SettingsPage() {
       </div>
 
       {/* Change PIN Modal */}
-      {showChangePinModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg max-w-md w-full mx-4 p-6">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <Lock size={24} />
-              Change Security PIN
-            </h2>
-
-            <form onSubmit={handleChangePinSubmit} className="space-y-4">
+      <SlideOver
+        open={showChangePinModal}
+        onClose={() => {
+          setShowChangePinModal(false);
+          setPinForm({ currentPin: "", newPin: "", confirmPin: "" });
+        }}
+        title="Change Security PIN"
+        widthClass="max-w-md"
+      >
+        <form onSubmit={handleChangePinSubmit} className="space-y-4">
               {/* Current PIN */}
               <div>
                 <label className="block text-sm font-medium text-slate-900 mb-2">
@@ -378,9 +373,7 @@ function SettingsPage() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </SlideOver>
     </PropertiesLayout>
   );
 }
