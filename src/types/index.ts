@@ -394,7 +394,7 @@ export interface SecurityDepositRecord {
   id: string;
   tenancyId: string;
   amount: number;
-  status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
+  paymentStatus: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
   paymentMethod: string;
   reference?: string;
   createdAt: string;

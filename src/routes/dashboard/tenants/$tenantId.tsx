@@ -646,7 +646,7 @@ function TenantProfilePage() {
       ? Math.ceil(outstandingBalance / monthlyRent)
       : 0;
   const isUpToDate = outstandingBalance <= 0;
-  const depositPaid = !!tenancy.securityDepositPaidAt || deposits.some((d) => d.status === "COMPLETED");
+  const depositPaid = !!tenancy.securityDepositPaidAt || deposits.some((d) => d.paymentStatus === "COMPLETED");
   const agreementSigned = !!tenancy.tenantSignedAt && !!tenancy.mgtSignedAt;
   const completedInspections = inspections.filter(
     (i) => i.status === "COMPLETED" || i.status === "APPROVED"
@@ -1011,14 +1011,14 @@ function TenantProfilePage() {
                         </p>
                         <span
                           className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                            deposit.status === "COMPLETED"
+                            deposit.paymentStatus === "COMPLETED"
                               ? "bg-emerald-100 text-emerald-800"
-                              : deposit.status === "REFUNDED"
+                              : deposit.paymentStatus === "REFUNDED"
                               ? "bg-slate-100 text-slate-700"
                               : "bg-amber-100 text-amber-800"
                           }`}
                         >
-                          {deposit.status}
+                          {deposit.paymentStatus}
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 mt-1">

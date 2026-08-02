@@ -56,8 +56,6 @@ function SecurityDepositsPage() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [optingIn, setOptingIn] = useState(false);
 
-  console.log({ deposits })
-
   const handleOptIntoInvestment = async () => {
     if (!selectedDeposit) return;
     setOptingIn(true);
@@ -75,7 +73,7 @@ function SecurityDepositsPage() {
 
   const totalDeposits = deposits.length;
   const totalAmount = deposits.reduce((sum: number, d: SecurityDepositRecord) => sum + parseFloat(d.amount?.toString() || "0"), 0);
-  const paidCount = deposits.filter((d: SecurityDepositRecord) => d.status === "COMPLETED").length;
+  const paidCount = deposits.filter((d: SecurityDepositRecord) => d.paymentStatus === "COMPLETED").length;
   const investedCount = deposits.filter((d: SecurityDepositRecord) => d.investedAt !== null).length;
 
   const getStatusColor = (status: string) => {
@@ -170,8 +168,8 @@ function SecurityDepositsPage() {
                       {deposit.currency} {Number(deposit.amount).toLocaleString()}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(deposit.status)}`}>
-                        {deposit.status}
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(deposit.paymentStatus)}`}>
+                        {deposit.paymentStatus}
                       </span>
                     </td>
                     <td className="px-6 py-4">{getInvestmentStatus(deposit)}</td>
@@ -246,8 +244,8 @@ function SecurityDepositsPage() {
                 </div>
                 <div>
                   <p className="text-sm text-slate-600">Status</p>
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${getStatusColor(selectedDeposit.status)}`}>
-                    {selectedDeposit.status}
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${getStatusColor(selectedDeposit.paymentStatus)}`}>
+                    {selectedDeposit.paymentStatus}
                   </span>
                 </div>
                 <div>

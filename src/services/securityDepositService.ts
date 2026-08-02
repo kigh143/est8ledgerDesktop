@@ -30,7 +30,7 @@ export interface SecurityDepositResponse {
   id: string;
   tenancyId: string;
   amount: number;
-  status: string;
+  paymentStatus: string;
   paymentMethod: string;
   reference?: string;
   createdAt: string;

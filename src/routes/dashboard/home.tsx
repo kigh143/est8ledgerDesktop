@@ -152,10 +152,10 @@ function DashboardHome() {
       const depositsResponse = await securityDepositService.getPropertyDeposits(propertyId)
       const deposits = Array.isArray(depositsResponse) ? depositsResponse : depositsResponse.data || []
       const securityDepositsPaid = deposits.filter(
-        (d: any) => d.status === 'completed' || d.status === 'COMPLETED'
+        (d: any) => d.paymentStatus === 'completed' || d.paymentStatus === 'COMPLETED'
       ).length
       const securityDepositsCollecting = deposits.filter(
-        (d: any) => d.status === 'pending' || d.status === 'PENDING'
+        (d: any) => d.paymentStatus === 'pending' || d.paymentStatus === 'PENDING'
       ).length
 
       // Repairs

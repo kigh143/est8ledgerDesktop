@@ -270,7 +270,7 @@ function RentTrackingPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg border border-slate-200 p-6">
           <p className="text-sm font-medium text-slate-600">Rent Collected</p>
-          <p className="mt-2 text-2xl font-bold text-slate-900 tabular-nums">
+          <p className="mt-2 text-xl font-bold text-slate-900 tabular-nums">
             {new Intl.NumberFormat("en-US", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -280,7 +280,7 @@ function RentTrackingPage() {
         </div>
         <div className="bg-white rounded-lg border border-slate-200 p-6">
           <p className="text-sm font-medium text-slate-600">Average Rent</p>
-          <p className="mt-2 text-2xl font-bold text-slate-900 tabular-nums">
+          <p className="mt-2 text-xl font-bold text-slate-900 tabular-nums">
             {new Intl.NumberFormat("en-US", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -290,11 +290,11 @@ function RentTrackingPage() {
         </div>
         <div className="bg-white rounded-lg border border-slate-200 p-6">
           <p className="text-sm font-medium text-slate-600">Confirmed Payments</p>
-          <p className="mt-2 text-2xl font-bold text-emerald-600 tabular-nums">{confirmedCount}</p>
+          <p className="mt-2 text-xl font-bold text-emerald-600 tabular-nums">{confirmedCount}</p>
         </div>
         <div className="bg-white rounded-lg border border-slate-200 p-6">
           <p className="text-sm font-medium text-slate-600">Pending</p>
-          <p className="mt-2 text-2xl font-bold text-[#3f0ee3] tabular-nums">{pendingCount}</p>
+          <p className="mt-2 text-xl font-bold text-[#3f0ee3] tabular-nums">{pendingCount}</p>
         </div>
       </div>
 
