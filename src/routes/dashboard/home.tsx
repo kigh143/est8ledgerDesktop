@@ -332,12 +332,12 @@ function DashboardHome() {
               const s = severityStyle[item.severity]
               const content = (
                 <div className={`flex items-start gap-3 px-5 sm:px-6 py-4 border-l-4 transition-colors ${s.card}`}>
-                  <span className={`flex items-center justify-center w-10 h-10 rounded-xl shrink-0 ${s.iconWrap} ${s.icon}`}>
+                  <span className={`flex items-center justify-center w-5 h-5 rounded-xl shrink-0 ${s.iconWrap} ${s.icon}`}>
                     <item.icon size={19} />
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <p className={`font-semibold ${s.title}`}>{item.title}</p>
-                    <p className="text-sm text-slate-600 mt-0.5">{item.message}</p>
+                  <div className="min-w-0">
+                    {/* <p className={`font-semibold ${s.title}`}>{item.title}</p> */}
+                    <p className="text-xs text-slate-600 mt-0.5">{item.message}</p>
                   </div>
                   {item.to && <ArrowRight size={18} className="text-slate-400 shrink-0 mt-2" />}
                 </div>
@@ -363,7 +363,7 @@ function DashboardHome() {
               <Wallet size={17} />
             </span>
           </div>
-          <p className="mt-3 text-2xl font-bold text-slate-900 tabular-nums truncate">{currency} {fmt(stats.expectedMonthlyRevenue)}</p>
+          <p className="mt-3 text-xl font-bold text-slate-900 tabular-nums truncate">{currency} {fmt(stats.expectedMonthlyRevenue)}</p>
           <p className="text-xs text-slate-400 mt-1">Per month, from {stats.occupiedUnits} occupied unit{stats.occupiedUnits !== 1 ? 's' : ''}</p>
         </div>
 
@@ -374,7 +374,7 @@ function DashboardHome() {
               <AlertTriangle size={17} />
             </span>
           </div>
-          <p className={`mt-3 text-2xl font-bold tabular-nums truncate ${stats.outstandingBalance > 0 ? 'text-red-600' : 'text-slate-900'}`}>
+          <p className={`mt-3 text-xl font-bold tabular-nums truncate ${stats.outstandingBalance > 0 ? 'text-red-600' : 'text-slate-900'}`}>
             {currency} {fmt(stats.outstandingBalance)}
           </p>
           <p className="text-xs text-slate-400 mt-1">{stats.lateTenancies.length} tenant{stats.lateTenancies.length !== 1 ? 's' : ''} behind on rent</p>
@@ -387,7 +387,7 @@ function DashboardHome() {
               <TrendingDown size={17} />
             </span>
           </div>
-          <p className="mt-3 text-2xl font-bold text-slate-900 tabular-nums truncate">{currency} {fmt(stats.monthlyExpenses)}</p>
+          <p className="mt-3 text-xl font-bold text-slate-900 tabular-nums truncate">{currency} {fmt(stats.monthlyExpenses)}</p>
           <p className="text-xs text-slate-400 mt-1">{new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
         </Link>
 
@@ -398,7 +398,7 @@ function DashboardHome() {
               {netOperatingIncome >= 0 ? <TrendingUp size={17} /> : <TrendingDown size={17} />}
             </span>
           </div>
-          <p className="mt-3 text-2xl font-bold tabular-nums truncate">{currency} {fmt(Math.abs(netOperatingIncome))}</p>
+          <p className="mt-3 text-xl font-bold tabular-nums truncate">{currency} {fmt(Math.abs(netOperatingIncome))}</p>
           <p className="text-xs text-white/70 mt-1">{netOperatingIncome >= 0 ? 'Revenue exceeds expenses' : 'Expenses exceed revenue'}</p>
         </div>
       </div>

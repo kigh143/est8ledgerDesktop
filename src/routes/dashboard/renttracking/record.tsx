@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { useAppStore } from "../../../store";
 import { tenancyService } from "../../../services/tenancyService";
 import { rentPaymentsService } from "../../../services/rentPaymentsService";
+import type { RentPaymentAccount } from "../../../services/rentPaymentsService";
 import { toast } from "react-toastify";
 import type { Tenancy } from "../../../types";
 
@@ -25,6 +26,7 @@ function RecordPaymentPage() {
   const [loading, setLoading] = useState(false);
   const [formLoading, setFormLoading] = useState(true);
   const [tenancies, setTenancies] = useState<Tenancy[]>([]);
+  const [accounts, setAccounts] = useState<RentPaymentAccount[]>([]);
 
   const [formData, setFormData] = useState({
     tenancyId: searchParams.tenancyId || "",
@@ -32,6 +34,7 @@ function RecordPaymentPage() {
     year: new Date().getFullYear(),
     amount: "",
     paymentReference: "",
+    rentPaymentAccountId: "",
   });
 
   useEffect(() => {
@@ -55,6 +58,12 @@ function RecordPaymentPage() {
         ? tenanciesResponse
         : tenanciesResponse.data || [];
       setTenancies(tenanciesData);
+
+      // Fetch payment accounts to collect this payment against
+      const accountsResponse = await rentPaymentsService.getRentPaymentAccounts(
+        activeProperty.id.toString()
+      );
+      setAccounts(accountsResponse || []);
 
       // Pre-fill the rent amount when a tenant was pre-selected (e.g. from a tenant profile)
       if (searchParams.tenancyId) {
@@ -96,7 +105,8 @@ function RecordPaymentPage() {
     if (
       !formData.tenancyId ||
       !formData.amount ||
-      !formData.paymentReference
+      !formData.paymentReference ||
+      !formData.rentPaymentAccountId
     ) {
       toast.error("Please fill in all required fields");
       return;
@@ -117,6 +127,7 @@ function RecordPaymentPage() {
         currency: activeProperty.currency || "UGX",
         propertyAgreementId: activeProperty.id,
         paymentReference: formData.paymentReference,
+        rentPaymentAccountId: parseInt(formData.rentPaymentAccountId),
       });
 
       toast.success("Payment recorded successfully");
@@ -157,6 +168,12 @@ function RecordPaymentPage() {
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
+
+  const accountTypeLabels: Record<string, string> = {
+    MTN_MOMO: "MTN Mobile Money",
+    AIRTEL_MONEY: "Airtel Money",
+    BANK_ACCOUNT: "Bank Account",
+  };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -257,6 +274,46 @@ function RecordPaymentPage() {
               onChange={(e) => handleInputChange("paymentReference", e.target.value)}
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
             />
+          </div>
+
+          {/* Account Received Into */}
+          <div>
+            <label className="block text-sm font-medium text-slate-900 mb-2">
+              Account Received Into <span className="text-red-500">*</span>
+            </label>
+            {accounts.length > 0 ? (
+              <select
+                value={formData.rentPaymentAccountId}
+                onChange={(e) =>
+                  handleInputChange("rentPaymentAccountId", e.target.value)
+                }
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+              >
+                <option value="">Select account</option>
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.accountName} —{" "}
+                    {accountTypeLabels[account.accountType] || account.accountType} (
+                    {account.accountNumber})
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="flex items-center justify-between gap-3 px-4 py-3 border border-dashed border-slate-300 rounded-lg bg-slate-50">
+                <p className="text-sm text-slate-600">
+                  No payment accounts set up yet for this property.
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    navigate({ to: "/dashboard/renttracking/accounts" })
+                  }
+                  className="text-sm font-medium text-[#3f0ee3] hover:underline whitespace-nowrap"
+                >
+                  Add Account
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Buttons */}

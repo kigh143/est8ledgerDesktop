@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Eye, Plus, Settings, Check, Calendar, Users, RotateCcw, Inbox } from "lucide-react";
+import { Eye, Plus, Settings, Check, X, Calendar, Users, RotateCcw, Inbox } from "lucide-react";
 import { rentPaymentsService } from "../../../services/rentPaymentsService";
 import { useAppStore } from "../../../store";
 import SlideOver from "../../../componennts/SlideOver";
@@ -27,6 +27,7 @@ function RentTrackingPage() {
   const [selectedPayment, setSelectedPayment] = useState<RentPaymentRecord | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
+  const [isDeclining, setIsDeclining] = useState(false);
 
   const now = new Date();
   // Default the view to the current month and year
@@ -135,6 +136,26 @@ function RentTrackingPage() {
       toast.error("Failed to approve payment");
     } finally {
       setIsApproving(false);
+    }
+  };
+
+  const handleDeclinePayment = async () => {
+    if (!selectedPayment) return;
+
+    setIsDeclining(true);
+    try {
+      await rentPaymentsService.updatePaymentStatus(selectedPayment.id, {
+        paymentStatus: "DISPUTED",
+      });
+
+      toast.success("Payment declined");
+      setIsDetailOpen(false);
+      setSelectedPayment(null);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to decline payment");
+    } finally {
+      setIsDeclining(false);
     }
   };
 
@@ -390,14 +411,24 @@ function RentTrackingPage() {
                 Close
               </button>
               {selectedPayment.status === "PENDING" && (
-                <button
-                  onClick={handleApprovePayment}
-                  disabled={isApproving}
-                  className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Check size={18} />
-                  {isApproving ? "Approving..." : "Approve Payment"}
-                </button>
+                <>
+                  <button
+                    onClick={handleDeclinePayment}
+                    disabled={isApproving || isDeclining}
+                    className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <X size={18} />
+                    {isDeclining ? "Declining..." : "Decline"}
+                  </button>
+                  <button
+                    onClick={handleApprovePayment}
+                    disabled={isApproving || isDeclining}
+                    className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Check size={18} />
+                    {isApproving ? "Approving..." : "Approve Payment"}
+                  </button>
+                </>
               )}
             </div>
           )

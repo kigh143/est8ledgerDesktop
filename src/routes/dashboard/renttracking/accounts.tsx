@@ -132,11 +132,9 @@ function ManageAccountsPage() {
   }
 
   const accountTypes = [
-    { value: "MOBILE_MONEY", label: "Mobile Money" },
-    { value: "BANK", label: "Bank Transfer" },
-    { value: "CASH", label: "Cash Payment" },
-    { value: "CHEQUE", label: "Cheque" },
-    { value: "OTHER", label: "Other" },
+    { value: "MTN_MOMO", label: "MTN Mobile Money" },
+    { value: "AIRTEL_MONEY", label: "Airtel Money" },
+    { value: "BANK_ACCOUNT", label: "Bank Account" },
   ];
 
   return (

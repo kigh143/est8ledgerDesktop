@@ -9,6 +9,7 @@ export interface RentPaymentData {
   tenancyId: string | number;
   propertyAgreementId: string | number;
   paymentReference: string;
+  rentPaymentAccountId: number;
 }
 
 export interface RentPaymentRecord {
