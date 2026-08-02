@@ -28,7 +28,8 @@ export interface Withdrawal {
   payeeNote?: string;
   withdrawalStatus: WithdrawalStatus;
   currency: string;
-  fee: number;
+  transactionFee: number;
+
   netAmount: number;
   createdAt: string;
   updatedAt: string;

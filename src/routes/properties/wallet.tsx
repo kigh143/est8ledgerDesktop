@@ -265,10 +265,10 @@ function WalletPage() {
               <table className="w-full text-sm">
                 <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                   <tr>
+                    <th className="px-6 py-3 text-left font-semibold">Name</th>
                     <th className="px-6 py-3 text-left font-semibold">Method</th>
                     <th className="px-6 py-3 text-right font-semibold">Amount</th>
                     <th className="px-6 py-3 text-right font-semibold">Fee</th>
-                    <th className="px-6 py-3 text-right font-semibold">Net</th>
                     <th className="px-6 py-3 text-left font-semibold">Status</th>
                     <th className="px-6 py-3 text-left font-semibold">Date</th>
                     <th className="px-6 py-3 text-center font-semibold">Action</th>
@@ -277,16 +277,18 @@ function WalletPage() {
                 <tbody className="divide-y divide-slate-100">
                   {withdrawals.map((w) => (
                     <tr key={w.id} className="hover:bg-[#3f0ee3]/[0.03] transition-colors">
-                      <td className="px-6 py-4 text-slate-900 font-medium">{w.cashOutMethodUsed}</td>
+                      <td className="px-6 py-4 text-slate-900 font-medium">{`${w.accountName}`}</td>
+                      <td className="px-6 py-4 text-slate-900">
+                        <span className="font-medium">{w.accountNumber}</span><br/>
+                        <small>{w.cashOutMethodUsed}</small>
+                      </td>
                       <td className="px-6 py-4 text-right text-slate-900 tabular-nums">
                         {w.currency} {Number(w.amount).toLocaleString()}
                       </td>
                       <td className="px-6 py-4 text-right text-slate-600 tabular-nums">
-                        {Number(w.fee).toLocaleString()}
+                        {Number(w.transactionFee).toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 text-right font-medium text-slate-900 tabular-nums">
-                        {Number(w.netAmount).toLocaleString()}
-                      </td>
+                    
                       <td className="px-6 py-4">
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${statusColor(w.withdrawalStatus)}`}>
                           {w.withdrawalStatus}
@@ -296,7 +298,7 @@ function WalletPage() {
                         {new Date(w.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-center">
-                        {w.withdrawalStatus === "PENDING" && (
+                        {w.withdrawalStatus === "PENDING" ? (
                           <button
                             onClick={() => handleCancel(w.id)}
                             disabled={cancellingId === w.id}
@@ -309,6 +311,8 @@ function WalletPage() {
                               <Ban size={16} />
                             )}
                           </button>
+                        ):(
+                          <span>No Action Needed</span>
                         )}
                       </td>
                     </tr>
