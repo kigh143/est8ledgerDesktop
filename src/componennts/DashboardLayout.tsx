@@ -10,7 +10,6 @@ import {
   HandCoins,
   Megaphone,
   Menu,
-  Building2,
 } from "lucide-react";
 import { useAppStore } from "../store";
 import { useNavigate } from "@tanstack/react-router";
@@ -37,7 +36,6 @@ const sections: NavSection[] = [
   {
     id: "tenancies",
     title: "Tenancies",
-    icon: <Building2 size={18} />,
     items: [
       {
         icon: <UsersRound size={20} />,
@@ -64,7 +62,6 @@ const sections: NavSection[] = [
   {
     id: "operations",
     title: "Property Operations",
-    icon: <ToolCase size={18} />,
     items: [
       {
         icon: <ToolCase size={20} />,
@@ -121,7 +118,6 @@ export default function DashboardLayout({ children}: LayoutProps) {
           collapsed={collapsed}
           onToggleCollapsed={() => setCollapsed((c) => !c)}
           sections={sections}
-          defaultExpandedSectionId="tenancies"
           backAction={{
             label: "Back to Properties",
             onClick: () => {
