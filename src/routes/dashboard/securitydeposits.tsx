@@ -23,7 +23,7 @@ export const Route = createFileRoute("/dashboard/securitydeposits")({
       tenancyService.getPropertyTenancies(propertyId).catch(() => []),
     ]);
 
-    const rawDeposits = depositsResponse;
+    const rawDeposits = depositsResponse as unknown as SecurityDepositRecord[];
 
     const tenancies = Array.isArray(tenanciesResponse)
       ? tenanciesResponse
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/dashboard/securitydeposits")({
 
     // The deposits endpoint doesn't always include the nested tenant/unit info,
     // so cross-reference the property's tenancies to fill it in.
-    const deposits: SecurityDepositRecord[] = rawDeposits.map((d) => {
+    const deposits: SecurityDepositRecord[] = rawDeposits.map((d:any) => {
       const tenancy = tenancyMap.get(d.tenancyId?.toString());
       return {
         ...d,
