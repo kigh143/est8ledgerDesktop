@@ -3,6 +3,8 @@
 @theme {
   --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-document: "Lora", Georgia, "Times New Roman", serif;
+  --font-signature: "Dancing Script", cursive;
 }
 
 body {
@@ -12,4 +14,14 @@ body {
 /* Numeric/stat figures use a distinct display font wherever tabular-nums marks them as data. */
 .tabular-nums {
   font-family: var(--font-display);
+}
+
+/* Formal document surfaces (e.g. the tenancy agreement) use a serif font, distinct from the app UI. */
+.font-document {
+  font-family: var(--font-document);
+}
+
+/* Signature renderings on agreements use a calligraphic script, alongside the printed full name. */
+.font-signature {
+  font-family: var(--font-signature);
 }

@@ -119,11 +119,7 @@ function Sidebar({ isOpen, onClose, collapsed, onToggleCollapsed }: { isOpen: bo
   }
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 flex ${collapsed ? 'md:w-20' : 'w-72'} w-72 flex-col overflow-hidden border-r border-white/10 bg-gradient-to-b from-slate-900 via-slate-900 to-[#1a1233] px-4 py-6 sm:px-6 md:relative md:py-8 transition-[transform,width] duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-xl`}>
-      {/* Decorative brand glow */}
-      <div className="pointer-events-none absolute -top-24 -left-16 w-64 h-64 rounded-full bg-[#552ae7]/25 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 -right-16 w-56 h-56 rounded-full bg-[#7fe502]/10 blur-3xl" />
-
+    <aside className={`fixed inset-y-0 left-0 z-50 flex ${collapsed ? 'md:w-20' : 'w-72'} w-72 flex-col overflow-hidden border-r border-white/10 bg-slate-900 px-4 py-6 sm:px-6 md:relative md:py-8 transition-[transform,width] duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-xl`}>
       {/* Close Button (Mobile) */}
       <button
         onClick={onClose}
@@ -144,7 +140,7 @@ function Sidebar({ isOpen, onClose, collapsed, onToggleCollapsed }: { isOpen: bo
       {/* Logo Section */}
       <div className={`relative mb-8 mt-8 md:mt-0 ${collapsed ? 'md:flex md:justify-center' : ''}`}>
         <div className={`flex items-center gap-2 bg-white rounded-xl shadow-lg shadow-black/20 ${collapsed ? 'md:p-2' : 'p-3'}`}>
-          <div className={`w-8 h-8 rounded-lg bg-linear-to-br from-[#552ae7] to-[#7fe502] items-center justify-center shadow-md shrink-0 ${collapsed ? 'md:flex hidden' : 'hidden'}`}>
+          <div className={`w-8 h-8 rounded-lg bg-[#3f0ee3] items-center justify-center shadow-md shrink-0 ${collapsed ? 'md:flex hidden' : 'hidden'}`}>
             <span className="text-white font-bold text-sm">E8</span>
           </div>
           <img src="/long_logo.png" alt="est8Ledger" className={`h-6 ${collapsed ? 'md:hidden' : ''}`} />
@@ -179,11 +175,11 @@ function Sidebar({ isOpen, onClose, collapsed, onToggleCollapsed }: { isOpen: bo
                     collapsed ? 'md:justify-center md:px-0 md:gap-0' : ''
                   } ${
                     isFirstItemActive
-                      ? 'border-[#7fe502] text-white bg-gradient-to-r from-[#552ae7]/30 to-transparent'
+                      ? 'border-[#3f0ee3] text-white bg-[#3f0ee3]/15'
                       : 'border-transparent text-slate-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <span className={isFirstItemActive ? 'text-[#7fe502]' : 'text-slate-500 group-hover:text-slate-200'}>{section.items[0].icon}</span>
+                  <span className={isFirstItemActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-200'}>{section.items[0].icon}</span>
                   <span className={collapsed ? 'md:hidden' : ''}>{section.items[0].label}</span>
                 </Link>
               ) : (
@@ -217,11 +213,11 @@ function Sidebar({ isOpen, onClose, collapsed, onToggleCollapsed }: { isOpen: bo
                               onClick={onClose}
                               className={`flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-all border-l-2 md:rounded-lg group ${
                                 itemActive
-                                  ? 'border-[#7fe502] text-white bg-gradient-to-r from-[#552ae7]/30 to-transparent'
+                                  ? 'border-[#3f0ee3] text-white bg-[#3f0ee3]/15'
                                   : 'border-transparent text-slate-400 hover:text-white hover:bg-white/5'
                               }`}
                             >
-                              <span className={itemActive ? 'text-[#7fe502]' : 'text-slate-500 group-hover:text-slate-200'}>{item.icon}</span>
+                              <span className={itemActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-200'}>{item.icon}</span>
                               <span>{item.label}</span>
                             </Link>
                           );
@@ -242,11 +238,11 @@ function Sidebar({ isOpen, onClose, collapsed, onToggleCollapsed }: { isOpen: bo
                           title={item.label}
                           className={`flex items-center justify-center rounded-lg px-0 py-3 text-sm font-medium transition-all border-l-2 group ${
                             itemActive
-                              ? 'border-[#7fe502] text-white bg-gradient-to-r from-[#552ae7]/30 to-transparent'
+                              ? 'border-[#3f0ee3] text-white bg-[#3f0ee3]/15'
                               : 'border-transparent text-slate-400 hover:text-white hover:bg-white/5'
                           }`}
                         >
-                          <span className={itemActive ? 'text-[#7fe502]' : 'text-slate-500 group-hover:text-slate-200'}>{item.icon}</span>
+                          <span className={itemActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-200'}>{item.icon}</span>
                         </Link>
                       );
                     })}
@@ -261,7 +257,7 @@ function Sidebar({ isOpen, onClose, collapsed, onToggleCollapsed }: { isOpen: bo
       {/* User Section */}
       <div className={`relative border-t border-white/10 pt-4 space-y-3 ${collapsed ? 'md:flex md:justify-center' : ''}`}>
         <div className={`hidden md:flex items-center gap-3 ${collapsed ? 'md:gap-0' : ''}`}>
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#552ae7] to-[#7fe502] flex items-center justify-center text-white font-semibold text-sm shrink-0">
+          <div className="w-9 h-9 rounded-full bg-[#3f0ee3] flex items-center justify-center text-white font-semibold text-sm shrink-0">
             {(state.user?.firstName?.[0] || "U").toUpperCase()}
           </div>
           <div className={`min-w-0 ${collapsed ? 'md:hidden' : ''}`}>

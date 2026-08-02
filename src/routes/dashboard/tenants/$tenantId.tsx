@@ -4,7 +4,7 @@ import {
   ArrowLeft, MessageCircle, Mail, Phone, AlertCircle, Edit, Trash2, Banknote,
   CheckCircle2, Clock, ShieldCheck, FileSignature, ClipboardCheck,
   Wallet, CalendarClock, Coins, CircleDollarSign, Home, Droplets, Zap,
-  ListChecks, X, AlertTriangle,
+  ListChecks, X, AlertTriangle, Download,
 } from "lucide-react";
 import tenancyService from "../../../services/tenancyService";
 import { securityDepositService } from "../../../services/securityDepositService";
@@ -12,8 +12,367 @@ import { rentPaymentsService } from "../../../services/rentPaymentsService";
 import type { DueRentDetails } from "../../../services/rentPaymentsService";
 import { inspectionService } from "../../../services/inspectionService";
 import SlideOver from "../../../componennts/SlideOver";
+import { useAppStore } from "../../../store";
 import { toast } from "react-toastify";
-import type { TenancyAgreement, SecurityDepositRecord, RentPayment, InspectionItem } from "../../../types";
+import type { TenancyAgreement, SecurityDepositRecord, RentPayment, InspectionItem, PropertyClause } from "../../../types";
+
+const esc = (s: unknown) =>
+  String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const formattedDate = (iso: string | null | undefined) =>
+  iso ? new Date(iso).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" }) : "";
+
+function TenancyAgreementDrawer({
+  open,
+  onClose,
+  tenancy,
+  fmtMoney,
+}: {
+  open: boolean;
+  onClose: () => void;
+  tenancy: TenancyAgreement;
+  fmtMoney: (n: number) => string;
+}) {
+  const { activeProperty } = useAppStore();
+  const clauses = (activeProperty?.propertyClauses || []) as PropertyClause[];
+  const owner = activeProperty?.owner;
+
+  const financialTerms = [
+    { label: "Monthly Rent", value: fmtMoney(Number(tenancy.rentAmount) || 0) },
+    { label: "Security Deposit", value: fmtMoney(Number(tenancy.securityDeposit) || 0) },
+    { label: "Payment Due Day", value: tenancy.paymentDueDay ? `Day ${tenancy.paymentDueDay} of each month` : "Not specified" },
+    { label: "Grace Period", value: `${tenancy.gracePeriodDays} days` },
+    ...(activeProperty
+      ? [
+          { label: "Initial Advance", value: `${activeProperty.initialAdvanceMonths} months' rent` },
+          { label: "Termination Notice Period", value: `${activeProperty.terminationNoticeDays} days` },
+          { label: "Rent Increase Notice Period", value: `${activeProperty.rentIncreaseNoticeDays} days` },
+          { label: "Eviction Process", value: String(activeProperty.evictionProcess) },
+        ]
+      : []),
+  ];
+
+  const handleDownload = () => {
+    const win = window.open("", "_blank", "width=900,height=1000");
+    if (!win) {
+      toast.error("Please allow pop-ups to download the agreement");
+      return;
+    }
+
+    const termRows = financialTerms
+      .map(
+        (t, i) =>
+          `<div class="row"><span class="num">3.${i + 1}</span><span class="lbl">${esc(t.label)}</span><span class="val">${esc(t.value)}</span></div>`
+      )
+      .join("");
+
+    const clauseBlocks = clauses
+      .map(
+        (pc, i) => `<div class="clause">
+          <h4>4.${i + 1}&nbsp; ${esc(pc.clause?.title)}${pc.isCustom ? " <em>(Custom)</em>" : ""}</h4>
+          <p>${esc(pc.clause?.body || pc.clause?.description)}</p>
+        </div>`
+      )
+      .join("");
+
+    const sigBlock = (label: string, fullName: string, signedAt: string | null | undefined) =>
+      signedAt
+        ? `<div><p class="sig-script">${esc(fullName)}</p><p class="sig-printed-name">${esc(fullName)}</p><p class="sig-label">${esc(label)}</p><p class="sig-date">Signed ${esc(formattedDate(signedAt))}</p></div>`
+        : `<div><div class="sig-line"></div><p class="sig-label">${esc(label)}</p><p class="date-label">PENDING SIGNATURE</p></div>`;
+
+    win.document.write(`<!doctype html><html><head><meta charset="utf-8" />
+      <title>Tenancy Agreement — ${esc(tenancy.tenant.firstName)} ${esc(tenancy.tenant.lastName)}</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@400;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
+      <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Lora', Georgia, serif; color: #1e293b; margin: 0; padding: 56px; line-height: 1.7; font-size: 15px; }
+        .letterhead { text-align: center; padding-bottom: 28px; margin-bottom: 32px; border-bottom: 2px solid #1e293b; }
+        .brand { font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: .2em; font-size: 11px; color: #94a3b8; font-weight: 600; margin: 0 0 10px; }
+        .letterhead h1 { margin: 0; font-size: 30px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+        .letterhead .sub { font-family: 'Poppins', sans-serif; color: #64748b; font-size: 12px; margin-top: 10px; }
+        .preamble { margin-bottom: 36px; text-align: justify; }
+        section { margin-bottom: 36px; }
+        h2 { font-family: 'Poppins', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px; margin: 0 0 16px; }
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+        .doc-label { font-family: 'Poppins', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; margin: 0 0 4px; font-weight: 600; }
+        .doc-value-lg { font-size: 17px; font-weight: 600; margin: 0 0 2px; }
+        .doc-value { margin: 0 0 2px; color: #334155; }
+        .row { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #e2e8f0; align-items: baseline; }
+        .row .num { font-family: 'Poppins', sans-serif; font-size: 11px; color: #94a3b8; width: 32px; flex-shrink: 0; }
+        .row .lbl { color: #475569; flex: 1; }
+        .row .val { font-weight: 600; text-align: right; }
+        .clause { padding: 14px 0; border-bottom: 1px solid #e2e8f0; }
+        .clause h4 { margin: 0 0 6px; font-size: 15px; font-weight: 700; }
+        .clause em { font-style: italic; color: #94a3b8; font-weight: 400; font-size: 13px; }
+        .clause p { margin: 0; color: #334155; white-space: pre-wrap; text-align: justify; }
+        .witness { font-style: italic; color: #64748b; margin-bottom: 32px; }
+        .sigs { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 8px; }
+        .sig-line { border-bottom: 1px solid #475569; height: 44px; }
+        .sig-script { font-family: 'Dancing Script', cursive; font-size: 30px; color: #1e293b; line-height: 1.2; }
+        .sig-printed-name { font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; color: #334155; margin-top: 6px; }
+        .sig-label { font-family: 'Poppins', sans-serif; font-size: 12px; color: #64748b; margin-top: 2px; }
+        .date-label { font-family: 'Poppins', sans-serif; font-size: 10px; color: #d97706; margin-top: 6px; font-weight: 600; letter-spacing: .05em; }
+        .sig-date { font-family: 'Poppins', sans-serif; font-size: 11px; color: #059669; margin-top: 4px; }
+        .foot { font-family: 'Poppins', sans-serif; margin-top: 48px; padding-top: 16px; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 11px; text-align: center; }
+        @media print { body { padding: 32px; } }
+      </style></head><body>
+      <div class="letterhead">
+        <p class="brand">est8Ledger · Property Management</p>
+        <h1>Tenancy Agreement</h1>
+        <div class="sub">Agreement Ref. #${esc(tenancy.id)} &nbsp;·&nbsp; Prepared ${esc(formattedDate(tenancy.createdAt))}</div>
+      </div>
+
+      <p class="preamble">This Tenancy Agreement (the &ldquo;<strong>Agreement</strong>&rdquo;) is made and entered into by and between <strong>${esc(owner?.firstName)} ${esc(owner?.lastName)}</strong> (the &ldquo;<strong>Landlord</strong>&rdquo;) and <strong>${esc(tenancy.tenant.firstName)} ${esc(tenancy.tenant.lastName)}</strong> (the &ldquo;<strong>Tenant</strong>&rdquo;) in respect of Unit ${esc(tenancy.unitName)} at ${esc(activeProperty?.propertyName)}, ${esc(activeProperty?.propertyAddress)}.</p>
+
+      <section>
+        <h2>1. The Parties</h2>
+        <div class="grid2">
+          <div>
+            <p class="doc-label">The Landlord / Management</p>
+            <p class="doc-value-lg">${esc(owner?.firstName)} ${esc(owner?.lastName)}</p>
+            <p class="doc-value">${esc(owner?.email)}</p>
+          </div>
+          <div>
+            <p class="doc-label">The Tenant</p>
+            <p class="doc-value-lg">${esc(tenancy.tenant.firstName)} ${esc(tenancy.tenant.lastName)}</p>
+            <p class="doc-value">${esc(tenancy.tenant.email)}</p>
+            <p class="doc-value">${esc(tenancy.tenant.phoneNumber)}</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>2. Property &amp; Unit</h2>
+        <div class="grid2">
+          <div>
+            <p class="doc-label">Property</p>
+            <p class="doc-value-lg">${esc(activeProperty?.propertyName)}</p>
+            <p class="doc-value">${esc(activeProperty?.propertyAddress)}, ${esc(activeProperty?.city)}, ${esc(activeProperty?.district)}</p>
+          </div>
+          <div>
+            <p class="doc-label">Unit</p>
+            <p class="doc-value-lg">${esc(tenancy.unitName)}</p>
+            <p class="doc-value">Water Meter: ${esc(tenancy.waterMeter || "N/A")} &nbsp;·&nbsp; YAKA Meter: ${esc(tenancy.yakaMeter || "N/A")}</p>
+            <p class="doc-value">Waste handled by: ${esc(tenancy.wasteHandledBy)}</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>3. Financial Terms</h2>
+        ${termRows}
+      </section>
+
+      ${clauses.length ? `<section><h2>4. Additional Clauses</h2>${clauseBlocks}</section>` : ""}
+
+      <section>
+        <p class="witness">IN WITNESS WHEREOF, the parties have executed this Agreement as evidenced by the signatures below.</p>
+        <div class="sigs">
+          ${sigBlock("Landlord / Management Signature", `${owner?.firstName ?? ""} ${owner?.lastName ?? ""}`, tenancy.mgtSignedAt)}
+          ${sigBlock("Tenant Signature", `${tenancy.tenant.firstName} ${tenancy.tenant.lastName}`, tenancy.tenantSignedAt)}
+        </div>
+      </section>
+
+      <div class="foot">Document generated via est8Ledger &nbsp;·&nbsp; Last updated ${esc(formattedDate(tenancy.updatedAt))}</div>
+      </body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 250);
+  };
+
+  return (
+    <SlideOver
+      open={open}
+      onClose={onClose}
+      title="Tenancy Agreement"
+      subtitle={`${tenancy.tenant.firstName} ${tenancy.tenant.lastName} · ${tenancy.unitName}`}
+      widthClass="max-w-3xl"
+      footer={
+        <div className="flex justify-end">
+          <button
+            onClick={handleDownload}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#3f0ee3] text-white rounded-lg font-semibold hover:bg-[#3f0ee3]/90 transition-colors"
+          >
+            <Download size={17} />
+            Download Agreement
+          </button>
+        </div>
+      }
+    >
+      <div className="font-document">
+        {/* Letterhead */}
+        <div className="text-center pb-8 mb-8 border-b-2 border-slate-800">
+          <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-slate-400 font-semibold mb-3">
+            est8Ledger · Property Management
+          </p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 uppercase tracking-wide">
+            Tenancy Agreement
+          </h1>
+          <p className="font-sans text-xs text-slate-500 mt-3">
+            Agreement Ref. #{tenancy.id} &nbsp;·&nbsp; Prepared {formattedDate(tenancy.createdAt)}
+          </p>
+        </div>
+
+        {/* Preamble */}
+        <p className="text-slate-700 leading-relaxed mb-10 text-justify">
+          This Tenancy Agreement (the &ldquo;<strong>Agreement</strong>&rdquo;) is made and entered into by and
+          between <strong>{owner?.firstName} {owner?.lastName}</strong> (the &ldquo;<strong>Landlord</strong>
+          &rdquo;) and <strong>{tenancy.tenant.firstName} {tenancy.tenant.lastName}</strong> (the &ldquo;
+          <strong>Tenant</strong>&rdquo;) in respect of Unit {tenancy.unitName} at{" "}
+          {activeProperty?.propertyName}, {activeProperty?.propertyAddress}.
+        </p>
+
+        {/* 1. Parties */}
+        <section className="mb-10">
+          <h2 className="font-sans text-xs font-bold uppercase tracking-[0.1em] text-slate-900 border-b border-slate-300 pb-2 mb-5">
+            1. The Parties
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <div>
+              <p className="font-sans text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">
+                The Landlord / Management
+              </p>
+              <p className="text-lg font-semibold text-slate-900">
+                {owner?.firstName} {owner?.lastName}
+              </p>
+              <p className="text-slate-600">{owner?.email}</p>
+            </div>
+            <div>
+              <p className="font-sans text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">
+                The Tenant
+              </p>
+              <p className="text-lg font-semibold text-slate-900">
+                {tenancy.tenant.firstName} {tenancy.tenant.lastName}
+              </p>
+              <p className="text-slate-600">{tenancy.tenant.email}</p>
+              <p className="text-slate-600">{tenancy.tenant.phoneNumber}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* 2. Property & Unit */}
+        <section className="mb-10">
+          <h2 className="font-sans text-xs font-bold uppercase tracking-[0.1em] text-slate-900 border-b border-slate-300 pb-2 mb-5">
+            2. Property &amp; Unit
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <div>
+              <p className="font-sans text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">
+                Property
+              </p>
+              <p className="text-lg font-semibold text-slate-900">{activeProperty?.propertyName}</p>
+              <p className="text-slate-600">
+                {activeProperty?.propertyAddress}, {activeProperty?.city}, {activeProperty?.district}
+              </p>
+            </div>
+            <div>
+              <p className="font-sans text-[10px] uppercase tracking-wide text-slate-400 font-semibold mb-1">
+                Unit
+              </p>
+              <p className="text-lg font-semibold text-slate-900">{tenancy.unitName}</p>
+              <p className="text-slate-600">
+                Water Meter: {tenancy.waterMeter || "N/A"} · YAKA Meter: {tenancy.yakaMeter || "N/A"}
+              </p>
+              <p className="text-slate-600 capitalize">Waste handled by: {tenancy.wasteHandledBy?.toLowerCase()}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* 3. Financial Terms */}
+        <section className="mb-10">
+          <h2 className="font-sans text-xs font-bold uppercase tracking-[0.1em] text-slate-900 border-b border-slate-300 pb-2 mb-2">
+            3. Financial Terms
+          </h2>
+          <dl className="divide-y divide-slate-200">
+            {financialTerms.map((t, i) => (
+              <div key={t.label} className="flex items-baseline gap-3 py-3">
+                <span className="font-sans text-[11px] text-slate-400 w-8 shrink-0">3.{i + 1}</span>
+                <dt className="text-slate-600 flex-1">{t.label}</dt>
+                <dd className="font-semibold text-slate-900 text-right">{t.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        {/* 4. Additional Clauses */}
+        {clauses.length > 0 && (
+          <section className="mb-10">
+            <h2 className="font-sans text-xs font-bold uppercase tracking-[0.1em] text-slate-900 border-b border-slate-300 pb-2 mb-5">
+              4. Additional Clauses
+            </h2>
+            <div className="divide-y divide-slate-200">
+              {clauses.map((pc, i) => (
+                <div key={pc.id} className="py-4">
+                  <h3 className="font-semibold text-slate-900 mb-1.5">
+                    <span className="font-sans text-[11px] text-slate-400 mr-1.5">4.{i + 1}</span>
+                    {pc.clause?.title}
+                    {pc.isCustom && (
+                      <em className="font-sans not-italic text-slate-400 font-normal text-xs ml-2">(custom)</em>
+                    )}
+                  </h3>
+                  <p className="text-slate-700 whitespace-pre-wrap text-justify leading-relaxed">
+                    {pc.clause?.body || pc.clause?.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 5. Signatures */}
+        <section className="pt-8 border-t-2 border-slate-800">
+          <p className="italic text-slate-500 mb-10">
+            IN WITNESS WHEREOF, the parties have executed this Agreement as evidenced by the signatures below.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+            {[
+              {
+                label: "Landlord / Management Signature",
+                fullName: `${owner?.firstName ?? ""} ${owner?.lastName ?? ""}`.trim(),
+                at: tenancy.mgtSignedAt,
+              },
+              {
+                label: "Tenant Signature",
+                fullName: `${tenancy.tenant.firstName} ${tenancy.tenant.lastName}`.trim(),
+                at: tenancy.tenantSignedAt,
+              },
+            ].map(({ label, fullName, at }) =>
+              at ? (
+                <div key={label}>
+                  <p className="font-signature text-3xl text-slate-800 leading-tight border-b border-slate-400 pb-1">
+                    {fullName}
+                  </p>
+                  <p className="font-sans text-xs font-semibold text-slate-700 mt-2">{fullName}</p>
+                  <p className="font-sans text-xs text-slate-500">{label}</p>
+                  <p className="font-sans text-xs text-emerald-600 font-semibold mt-1">
+                    Signed {formattedDate(at)}
+                  </p>
+                </div>
+              ) : (
+                <div key={label}>
+                  <div className="h-11 border-b border-slate-400" />
+                  <p className="font-sans text-xs text-slate-500 mt-2">{label}</p>
+                  <p className="font-sans text-[10px] uppercase tracking-wide text-amber-600 font-semibold mt-2">
+                    Pending signature
+                  </p>
+                </div>
+              )
+            )}
+          </div>
+        </section>
+
+        {/* Footer */}
+        <div className="font-sans mt-12 pt-6 border-t border-slate-200 text-center">
+          <p className="text-xs text-slate-400">
+            Document generated via est8Ledger · Last updated {formattedDate(tenancy.updatedAt)}
+          </p>
+        </div>
+      </div>
+    </SlideOver>
+  );
+}
 
 export const Route = createFileRoute("/dashboard/tenants/$tenantId")({
   component: TenantProfilePage,
@@ -177,6 +536,7 @@ function TenantProfilePage() {
   const [showTerminateModal, setShowTerminateModal] = useState(false);
   const [terminatingId, setTerminatingId] = useState<string | null>(null);
   const [showUnpaidModal, setShowUnpaidModal] = useState(false);
+  const [showAgreementDrawer, setShowAgreementDrawer] = useState(false);
 
   useEffect(() => {
     loadTenantData();
@@ -717,6 +1077,13 @@ function TenantProfilePage() {
                 </div>
               ))}
             </div>
+            <button
+              onClick={() => setShowAgreementDrawer(true)}
+              className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors"
+            >
+              <FileSignature size={16} />
+              View Tenancy Agreement
+            </button>
           </div>
 
           {/* Tenancy Details — reference facts */}
@@ -752,6 +1119,14 @@ function TenantProfilePage() {
         open={showUnpaidModal}
         onClose={() => setShowUnpaidModal(false)}
         dueRent={dueRent}
+        fmtMoney={fmtMoney}
+      />
+
+      {/* Tenancy Agreement Drawer */}
+      <TenancyAgreementDrawer
+        open={showAgreementDrawer}
+        onClose={() => setShowAgreementDrawer(false)}
+        tenancy={tenancy}
         fmtMoney={fmtMoney}
       />
 

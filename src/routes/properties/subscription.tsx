@@ -9,6 +9,12 @@ import {
   Users,
   Copy,
   Check,
+  Sparkles,
+  Smartphone,
+  Landmark,
+  Mail,
+  ArrowRight,
+  ChevronDown,
 } from "lucide-react";
 import PropertiesLayout from "../../componennts/PropertiesLayout";
 import { toast } from "react-toastify";
@@ -19,40 +25,41 @@ export const Route = createFileRoute("/properties/subscription")({
 });
 
 const PRICE_PER_UNIT = 5000;
+const SUPPORT_EMAIL = "info@est8Ledger.com";
 
 const features = [
   {
-    icon: <Bell className="w-6 h-6" />,
+    icon: <Bell className="w-5 h-5" />,
     title: "Automatic Reminders",
     description: "Send automatic payment reminders to tenants via SMS",
     color: "bg-blue-100 text-blue-600",
   },
   {
-    icon: <CheckCircle2 className="w-6 h-6" />,
+    icon: <CheckCircle2 className="w-5 h-5" />,
     title: "Background Checks",
     description: "Verify tenant information and conduct background verification",
     color: "bg-green-100 text-green-600",
   },
   {
-    icon: <Home className="w-6 h-6" />,
+    icon: <Home className="w-5 h-5" />,
     title: "Auto-Listing Empty Units",
     description: "Automatically list vacant units to attract new tenants",
     color: "bg-purple-100 text-purple-600",
   },
   {
-    icon: <Wrench className="w-6 h-6" />,
+    icon: <Wrench className="w-5 h-5" />,
     title: "Repair Team Recommendations",
     description: "Get recommended trusted repair and maintenance teams",
     color: "bg-orange-100 text-orange-600",
   },
   {
-    icon: <DollarSign className="w-6 h-6" />,
+    icon: <DollarSign className="w-5 h-5" />,
     title: "Late Fee Automation",
     description: "Automatically calculate and apply late payment fees",
     color: "bg-red-100 text-red-600",
   },
   {
-    icon: <Users className="w-6 h-6" />,
+    icon: <Users className="w-5 h-5" />,
     title: "Tenant Portal",
     description: "Provide tenants with a dedicated portal for payments and requests",
     color: "bg-indigo-100 text-indigo-600",
@@ -61,24 +68,29 @@ const features = [
 
 const paymentMethods = [
   {
-    name: "MTN Mobile Money",
     shortName: "MTN",
+    name: "MTN Mobile Money",
+    shortNote: "Dial *165# or use the MyMTN app",
     number: "0712 345 678",
     instructions:
       "Dial *165# or use MyMTN app. Select Send Money → Business/Merchant → Enter merchant details",
-    color: "bg-yellow-50 border-yellow-200",
+    icon: <Smartphone size={20} />,
+    tint: "bg-amber-100 text-amber-700",
   },
   {
-    name: "Airtel Money",
     shortName: "Airtel",
+    name: "Airtel Money",
+    shortNote: "Dial *185# or use the Airtel Money app",
     number: "0701 234 567",
     instructions:
       "Dial *185# or use Airtel Money app. Select Send Money → Enter merchant number",
-    color: "bg-red-50 border-red-200",
+    icon: <Smartphone size={20} />,
+    tint: "bg-red-100 text-red-700",
   },
   {
-    name: "Bank Transfer",
     shortName: "Bank",
+    name: "Bank Transfer",
+    shortNote: "Transfer via mobile banking or in-branch",
     details: {
       accountName: "est8Ledger Limited",
       accountNumber: "1234567890",
@@ -87,7 +99,8 @@ const paymentMethods = [
     },
     instructions:
       "Use your bank mobile app or visit a branch. Provide the account details below.",
-    color: "bg-blue-50 border-blue-200",
+    icon: <Landmark size={20} />,
+    tint: "bg-sky-100 text-sky-700",
   },
 ];
 
@@ -122,6 +135,7 @@ function SubscriptionPage() {
     0
   );
   const totalPrice = totalUnits * PRICE_PER_UNIT;
+  const fmt = (n: number) => new Intl.NumberFormat("en-US").format(n);
 
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -130,16 +144,49 @@ function SubscriptionPage() {
     toast.success(`${label} copied!`);
   };
 
+  const CopyField = ({
+    label,
+    value,
+    mono = false,
+  }: {
+    label: string;
+    value: string;
+    mono?: boolean;
+  }) => (
+    <div>
+      <p className="text-xs text-slate-500 uppercase font-semibold tracking-wide">{label}</p>
+      <div className="flex items-center gap-2 mt-1">
+        <p className={`font-medium text-slate-900 ${mono ? "font-mono tabular-nums" : ""}`}>{value}</p>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCopy(value, label);
+          }}
+          className="p-1.5 hover:bg-slate-200 rounded-md transition-colors"
+          aria-label={`Copy ${label}`}
+        >
+          {copiedText === label ? (
+            <Check size={15} className="text-emerald-600" />
+          ) : (
+            <Copy size={15} className="text-slate-400" />
+          )}
+        </button>
+      </div>
+    </div>
+  );
+
   if (loading) {
     return (
       <PropertiesLayout
         pageTitle="Subscription"
         subTitle="Choose your plan and start managing properties efficiently"
       >
-        <div className="flex items-center justify-center py-16">
-          <div className="text-center">
-            <div className="inline-block w-12 h-12 border-4 border-[#552ae7]/20 border-t-[#552ae7] rounded-full animate-spin mb-4" />
-            <p className="text-slate-600 font-medium">Loading subscription details...</p>
+        <div className="space-y-6 animate-pulse">
+          <div className="h-40 bg-slate-200 rounded-2xl" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-24 bg-slate-200 rounded-2xl" />
+            ))}
           </div>
         </div>
       </PropertiesLayout>
@@ -152,290 +199,202 @@ function SubscriptionPage() {
       subTitle="Choose your plan and start managing properties efficiently"
     >
       <div className="space-y-8">
-        {/* Features Grid */}
+        {/* Plan Hero */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#3f0ee3] via-[#552ae7] to-[#3f0ee3] p-8 sm:p-10 text-white shadow-xl shadow-[#3f0ee3]/25">
+          <div className="pointer-events-none absolute -top-20 -right-10 w-64 h-64 rounded-full bg-[#7fe502]/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-10 w-56 h-56 rounded-full bg-white/10 blur-3xl" />
+
+          <div className="relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+            <div className="max-w-lg">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-xs font-semibold uppercase tracking-wide">
+                <Sparkles size={13} />
+                Premium Plan
+              </span>
+              <h1 className="mt-4 text-2xl sm:text-3xl font-bold">
+                Unlock the full est8Ledger toolkit
+              </h1>
+              <p className="mt-2 text-white/70">
+                Simple usage-based pricing — pay only for the units you manage across all your properties.
+              </p>
+              {totalUnits > 0 && (
+                <a
+                  href="#payment"
+                  className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-white text-[#3f0ee3] rounded-xl font-semibold hover:shadow-lg transition-all active:scale-[0.98]"
+                >
+                  Complete Payment
+                  <ArrowRight size={16} />
+                </a>
+              )}
+            </div>
+            <div className="text-left lg:text-right shrink-0">
+              <p className="text-xs uppercase tracking-wide text-white/60 font-semibold">Total Due</p>
+              <p className="text-4xl sm:text-5xl font-bold tabular-nums mt-1">
+                UGX {fmt(totalPrice)}
+              </p>
+              <p className="text-sm text-white/70 mt-1">
+                {totalUnits} unit{totalUnits !== 1 ? "s" : ""} × UGX {fmt(PRICE_PER_UNIT)}/unit
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Features */}
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">
-            Premium Features Included
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">
+            Everything included in your plan
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md transition-shadow"
+                className="flex items-start gap-3 bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md hover:border-slate-300 transition-all"
               >
                 <div
-                  className={`w-12 h-12 rounded-lg ${feature.color} flex items-center justify-center mb-4`}
+                  className={`w-10 h-10 rounded-lg ${feature.color} flex items-center justify-center shrink-0`}
                 >
                   {feature.icon}
                 </div>
-                <h3 className="font-semibold text-slate-900 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-slate-600">{feature.description}</p>
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-slate-900 text-sm">{feature.title}</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">{feature.description}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Pricing Calculation */}
-        <div className="bg-gradient-to-r from-[#552ae7] to-[#552ae7]/80 rounded-lg p-8 text-white">
-          <div className="max-w-2xl">
-            <h2 className="text-2xl font-bold mb-6">Pricing Calculation</h2>
+        {/* Payment + Order Summary */}
+        <div id="payment" className="grid grid-cols-1 lg:grid-cols-3 gap-6 scroll-mt-6">
+          {/* Payment Methods */}
+          <div className="lg:col-span-2 space-y-4">
+            <h2 className="text-lg font-semibold text-slate-900">Choose a payment method</h2>
 
-            <div className="space-y-4 mb-8">
-              <div className="flex justify-between items-center pb-4 border-b border-white/20">
-                <span className="text-lg">Price per unit (UGX)</span>
-                <span className="font-semibold text-xl">
-                  {new Intl.NumberFormat("en-US").format(PRICE_PER_UNIT)}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center pb-4 border-b border-white/20">
-                <span className="text-lg">Total units across all properties</span>
-                <span className="font-semibold text-xl">{totalUnits}</span>
-              </div>
-
-              <div className="flex justify-between items-center text-xl font-bold pt-4">
-                <span>Total Amount to Pay</span>
-                <span className="text-2xl">
-                  UGX {new Intl.NumberFormat("en-US").format(totalPrice)}
-                </span>
-              </div>
-            </div>
-
-            {/* Properties Breakdown */}
-            {properties.length > 0 && (
-              <div className="bg-white/10 rounded-lg p-4">
-                <h3 className="font-semibold mb-3">Breakdown by Property</h3>
-                <div className="space-y-2">
-                  {properties.map((prop) => (
-                    <div
-                      key={prop.id}
-                      className="flex justify-between text-sm items-center"
-                    >
-                      <span>{prop.propertyName}</span>
-                      <span className="text-right">
-                        {prop.numberOfUnits} units × {new Intl.NumberFormat("en-US").format(PRICE_PER_UNIT)} UGX ={" "}
-                        <span className="font-semibold">
-                          {new Intl.NumberFormat("en-US").format(
-                            prop.numberOfUnits * PRICE_PER_UNIT
-                          )}{" "}
-                          UGX
-                        </span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Payment Methods */}
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">
-            Payment Methods
-          </h2>
-
-          <div className="space-y-6">
-            {paymentMethods.map((method, index) => (
-              <div
-                key={index}
-                className={`border-2 rounded-lg p-6 cursor-pointer transition-all ${
-                  selectedPaymentMethod === method.shortName
-                    ? "border-[#552ae7] bg-[#552ae7]/5"
-                    : `${method.color} border-slate-200`
-                }`}
-                onClick={() => setSelectedPaymentMethod(method.shortName)}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="font-bold text-lg text-slate-900">
-                      {method.name}
-                    </h3>
-                    <p className="text-sm text-slate-600 mt-1">
-                      {method.instructions}
-                    </p>
-                  </div>
+            <div className="space-y-3">
+              {paymentMethods.map((method) => {
+                const active = selectedPaymentMethod === method.shortName;
+                return (
                   <div
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                      selectedPaymentMethod === method.shortName
-                        ? "border-[#552ae7] bg-[#552ae7]"
-                        : "border-slate-300"
+                    key={method.shortName}
+                    className={`rounded-xl border-2 overflow-hidden transition-all ${
+                      active ? "border-[#3f0ee3] shadow-sm shadow-[#3f0ee3]/10" : "border-slate-200"
                     }`}
                   >
-                    {selectedPaymentMethod === method.shortName && (
-                      <Check size={16} className="text-white" />
+                    <button
+                      onClick={() =>
+                        setSelectedPaymentMethod(active ? null : method.shortName)
+                      }
+                      className="w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-4 min-w-0">
+                        <span
+                          className={`flex items-center justify-center w-11 h-11 rounded-xl shrink-0 ${method.tint}`}
+                        >
+                          {method.icon}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-900">{method.name}</p>
+                          <p className="text-xs text-slate-500 mt-0.5 truncate">{method.shortNote}</p>
+                        </div>
+                      </div>
+                      <ChevronDown
+                        size={18}
+                        className={`text-slate-400 shrink-0 transition-transform duration-200 ${
+                          active ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    {active && (
+                      <div className="border-t border-slate-200 bg-slate-50/60 p-5 space-y-4">
+                        {method.details ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <CopyField label="Account Name" value={method.details.accountName} />
+                            <CopyField label="Account Number" value={method.details.accountNumber} mono />
+                            <div>
+                              <p className="text-xs text-slate-500 uppercase font-semibold tracking-wide">
+                                Bank Name
+                              </p>
+                              <p className="font-medium text-slate-900 mt-1">{method.details.bankName}</p>
+                            </div>
+                            <CopyField label="Swift Code" value={method.details.swiftCode} mono />
+                          </div>
+                        ) : (
+                          <CopyField label="Merchant Number" value={method.number} mono />
+                        )}
+                        <p className="text-sm text-slate-600 pt-3 border-t border-slate-200">
+                          {method.instructions}
+                        </p>
+                      </div>
                     )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Order Summary (sticky) */}
+          <div className="lg:col-span-1">
+            <div className="lg:sticky lg:top-6 space-y-4">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                <h3 className="font-semibold text-slate-900 mb-4">Order Summary</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Price per unit</span>
+                    <span className="font-medium text-slate-900 tabular-nums">
+                      UGX {fmt(PRICE_PER_UNIT)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Total units</span>
+                    <span className="font-medium text-slate-900 tabular-nums">{totalUnits}</span>
                   </div>
                 </div>
 
-                {/* Payment Details */}
-                {method.details ? (
-                  // Bank Transfer Details
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-200">
-                    <div>
-                      <p className="text-xs text-slate-600 uppercase font-semibold">
-                        Account Name
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <p className="font-medium text-slate-900">
-                          {method.details.accountName}
-                        </p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCopy(
-                              method.details.accountName,
-                              "Account name"
-                            );
-                          }}
-                          className="p-1 hover:bg-slate-200 rounded"
-                        >
-                          {copiedText === "Account name" ? (
-                            <Check size={16} className="text-emerald-600" />
-                          ) : (
-                            <Copy size={16} className="text-slate-400" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-600 uppercase font-semibold">
-                        Account Number
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <p className="font-medium text-slate-900 font-mono">
-                          {method.details.accountNumber}
-                        </p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCopy(
-                              method.details.accountNumber,
-                              "Account number"
-                            );
-                          }}
-                          className="p-1 hover:bg-slate-200 rounded"
-                        >
-                          {copiedText === "Account number" ? (
-                            <Check size={16} className="text-emerald-600" />
-                          ) : (
-                            <Copy size={16} className="text-slate-400" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-600 uppercase font-semibold">
-                        Bank Name
-                      </p>
-                      <p className="font-medium text-slate-900 mt-1">
-                        {method.details.bankName}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-600 uppercase font-semibold">
-                        Swift Code
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <p className="font-medium text-slate-900 font-mono">
-                          {method.details.swiftCode}
-                        </p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCopy(
-                              method.details.swiftCode,
-                              "Swift code"
-                            );
-                          }}
-                          className="p-1 hover:bg-slate-200 rounded"
-                        >
-                          {copiedText === "Swift code" ? (
-                            <Check size={16} className="text-emerald-600" />
-                          ) : (
-                            <Copy size={16} className="text-slate-400" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  // Mobile Money Details
-                  <div className="mt-4 pt-4 border-t border-slate-200">
-                    <p className="text-xs text-slate-600 uppercase font-semibold">
-                      Merchant Number
+                <div className="flex justify-between items-baseline border-t border-slate-200 mt-4 pt-4">
+                  <span className="font-semibold text-slate-900">Total</span>
+                  <span className="text-2xl font-bold text-[#3f0ee3] tabular-nums">
+                    UGX {fmt(totalPrice)}
+                  </span>
+                </div>
+
+                {properties.length > 0 && (
+                  <div className="mt-5 pt-5 border-t border-slate-200">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-2">
+                      Breakdown by property
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <p className="font-medium text-slate-900 font-mono text-lg">
-                        {method.number}
-                      </p>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCopy(method.number, `${method.shortName} number`);
-                        }}
-                        className="p-1 hover:bg-slate-200 rounded"
-                      >
-                        {copiedText === `${method.shortName} number` ? (
-                          <Check size={16} className="text-emerald-600" />
-                        ) : (
-                          <Copy size={16} className="text-slate-400" />
-                        )}
-                      </button>
+                    <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                      {properties.map((prop) => (
+                        <div key={prop.id} className="flex justify-between gap-2 text-xs">
+                          <span className="text-slate-600 truncate">{prop.propertyName}</span>
+                          <span className="text-slate-900 font-medium tabular-nums shrink-0">
+                            {prop.numberOfUnits} × {fmt(PRICE_PER_UNIT)}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Payment Instructions */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-semibold text-blue-900 mb-3">Payment Instructions</h3>
-          <ol className="space-y-2 text-sm text-blue-800 list-decimal list-inside">
-            <li>Select your preferred payment method above</li>
-            <li>Copy the merchant details using the copy buttons</li>
-            <li>
-              Initiate the payment using your mobile money app or bank
-              application
-            </li>
-            <li>
-              Send proof of payment to info@est8Ledger.com with your name and
-              email
-            </li>
-            <li>
-              Your subscription will be activated within 24 hours after payment
-              verification
-            </li>
-          </ol>
-        </div>
-
-        {/* Summary Card */}
-        {totalPrice > 0 && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-emerald-900 font-semibold text-lg">
-                  Ready to upgrade?
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5">
+                <p className="text-sm font-semibold text-emerald-900 flex items-center gap-2">
+                  <Mail size={16} />
+                  Next step
                 </p>
-                <p className="text-emerald-800 text-sm mt-1">
-                  You have {totalUnits} units across {properties.length} properties
+                <p className="text-xs text-emerald-800 mt-1.5 leading-relaxed">
+                  After paying, email your proof of payment with your name and property details. Your subscription activates within 24 hours of verification.
                 </p>
-              </div>
-              <div className="text-right">
-                <p className="text-emerald-600 text-xs uppercase font-semibold">
-                  Total Amount
-                </p>
-                <p className="text-3xl font-bold text-emerald-900">
-                  UGX {new Intl.NumberFormat("en-US").format(totalPrice)}
-                </p>
+                <a
+                  href={`mailto:${SUPPORT_EMAIL}`}
+                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 hover:text-emerald-900 transition-colors"
+                >
+                  {SUPPORT_EMAIL}
+                  <ArrowRight size={14} />
+                </a>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </PropertiesLayout>
   );
