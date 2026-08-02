@@ -37,6 +37,15 @@ export interface SecurityDepositResponse {
   updatedAt: string;
 }
 
+export interface MyTotalBalance {
+  role: "TENANT" | "MGT";
+  totalSecurityDeposit: number;
+  currency: string;
+  count: number;
+  walletAddress?: string;
+  ugeBalance?: number;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -214,6 +223,22 @@ export const securityDepositService = {
       return response.data;
     } catch (error: any) {
       console.error("Error opting into investment:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get the current user's total security deposit / wallet balance
+   * GET /security-deposit/my-total
+   */
+  getMyTotal: async (): Promise<MyTotalBalance> => {
+    try {
+      const response = await apiClient.get("/security-deposit/my-total", {
+        headers: { "Cache-Control": "no-cache" },
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error("Error fetching balance:", error.response?.data?.message);
       throw error;
     }
   },

@@ -9,12 +9,8 @@ interface CreateListingData {
 }
 
 const propertyListingService = {
-  createListing: async (formData: FormData) => {
-    const response = await apiClient.post('/property-listings', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  createListing: async (data: CreateListingData) => {
+    const response = await apiClient.post('/property-listings', data);
     return response.data;
   },
 

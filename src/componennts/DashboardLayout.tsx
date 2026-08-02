@@ -8,6 +8,7 @@ import {
   NotebookText,
   ToolCase,
   HandCoins,
+  Megaphone,
   Menu,
   Building2,
 } from "lucide-react";
@@ -79,6 +80,11 @@ const sections: NavSection[] = [
         icon: <FolderOpenDot size={20} />,
         label: "Rent Tracking",
         route: '/dashboard/renttracking'
+      },
+      {
+        icon: <Megaphone size={20} />,
+        label: "Advertise",
+        route: '/dashboard/advertise'
       }
     ]
   },

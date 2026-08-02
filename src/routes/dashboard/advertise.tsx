@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Upload, X, Check, Loader, AlertCircle, Image as ImageIcon } from 'lucide-react';
 
 import agreementService from '../../services/agreementService';
+import propertyListingService from '../../services/propertyApi';
 import listingService from '../../services/listingService';
 import { toast } from 'react-toastify';
 
@@ -137,20 +138,20 @@ function AdvertisePage() {
 
     setLoading(true);
     try {
-      // Upload images to bunny.net
+      // Upload images to bunny.net (mocked for now — see integration notes below)
       const imageFiles = formData.images.map(img => img.file);
       const uploadedImageUrls = await listingService.uploadImagesToBunny(imageFiles);
 
       const listingData = {
-        propertyAgreementId: parseInt(formData.propertyAgreementId),
-        monthlyRent: parseFloat(formData.monthlyRent),
+        propertyAgreementId: formData.propertyAgreementId,
+        monthlyRent: formData.monthlyRent,
         currency: formData.currency,
         description: formData.description,
-        imageUrls: uploadedImageUrls,
+        images: uploadedImageUrls,
       };
 
       // Create listing in database
-      await listingService.createListing(listingData);
+      await propertyListingService.createListing(listingData);
 
       toast.success('Property listing created successfully!');
 

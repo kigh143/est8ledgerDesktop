@@ -4,6 +4,7 @@ import {
   HousePlus,
   Settings,
   CreditCard,
+  Wallet,
   Menu,
 } from "lucide-react";
 import { useAppStore } from "../store";
@@ -23,6 +24,11 @@ const sections: NavSection[] = [
   {
     id: "main",
     items: [
+      {
+        icon: <Wallet size={20} />,
+        label: "Wallet",
+        route: '/properties/wallet'
+      },
       {
         icon: <House size={20} />,
         label: "My Properties",

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as PropertiesIndexRouteImport } from './routes/properties/index'
 import { Route as authIndexRouteImport } from './routes/(auth)/index'
+import { Route as PropertiesWalletRouteImport } from './routes/properties/wallet'
 import { Route as PropertiesSubscriptionRouteImport } from './routes/properties/subscription'
 import { Route as PropertiesSettingsRouteImport } from './routes/properties/settings'
 import { Route as PropertiesAddRouteImport } from './routes/properties/add'
@@ -58,6 +59,11 @@ const PropertiesIndexRoute = PropertiesIndexRouteImport.update({
 const authIndexRoute = authIndexRouteImport.update({
   id: '/(auth)/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesWalletRoute = PropertiesWalletRouteImport.update({
+  id: '/properties/wallet',
+  path: '/properties/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PropertiesSubscriptionRoute = PropertiesSubscriptionRouteImport.update({
@@ -253,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/properties/add': typeof PropertiesAddRoute
   '/properties/settings': typeof PropertiesSettingsRoute
   '/properties/subscription': typeof PropertiesSubscriptionRoute
+  '/properties/wallet': typeof PropertiesWalletRoute
   '/': typeof authIndexRoute
   '/properties/': typeof PropertiesIndexRoute
   '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
@@ -286,6 +293,7 @@ export interface FileRoutesByTo {
   '/properties/add': typeof PropertiesAddRoute
   '/properties/settings': typeof PropertiesSettingsRoute
   '/properties/subscription': typeof PropertiesSubscriptionRoute
+  '/properties/wallet': typeof PropertiesWalletRoute
   '/': typeof authIndexRoute
   '/properties': typeof PropertiesIndexRoute
   '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
@@ -324,6 +332,7 @@ export interface FileRoutesById {
   '/properties/add': typeof PropertiesAddRoute
   '/properties/settings': typeof PropertiesSettingsRoute
   '/properties/subscription': typeof PropertiesSubscriptionRoute
+  '/properties/wallet': typeof PropertiesWalletRoute
   '/(auth)/': typeof authIndexRoute
   '/properties/': typeof PropertiesIndexRoute
   '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
@@ -363,6 +372,7 @@ export interface FileRouteTypes {
     | '/properties/add'
     | '/properties/settings'
     | '/properties/subscription'
+    | '/properties/wallet'
     | '/'
     | '/properties/'
     | '/dashboard/tenants/edit'
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
     | '/properties/add'
     | '/properties/settings'
     | '/properties/subscription'
+    | '/properties/wallet'
     | '/'
     | '/properties'
     | '/dashboard/tenants/edit'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/properties/add'
     | '/properties/settings'
     | '/properties/subscription'
+    | '/properties/wallet'
     | '/(auth)/'
     | '/properties/'
     | '/dashboard/tenants/edit'
@@ -461,6 +473,7 @@ export interface RootRouteChildren {
   PropertiesAddRoute: typeof PropertiesAddRoute
   PropertiesSettingsRoute: typeof PropertiesSettingsRoute
   PropertiesSubscriptionRoute: typeof PropertiesSubscriptionRoute
+  PropertiesWalletRoute: typeof PropertiesWalletRoute
   authIndexRoute: typeof authIndexRoute
   PropertiesIndexRoute: typeof PropertiesIndexRoute
   PropertiesPropertyIdEditRoute: typeof PropertiesPropertyIdEditRoute
@@ -487,6 +500,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof authIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/wallet': {
+      id: '/properties/wallet'
+      path: '/properties/wallet'
+      fullPath: '/properties/wallet'
+      preLoaderRoute: typeof PropertiesWalletRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/properties/subscription': {
@@ -851,6 +871,7 @@ const rootRouteChildren: RootRouteChildren = {
   PropertiesAddRoute: PropertiesAddRoute,
   PropertiesSettingsRoute: PropertiesSettingsRoute,
   PropertiesSubscriptionRoute: PropertiesSubscriptionRoute,
+  PropertiesWalletRoute: PropertiesWalletRoute,
   authIndexRoute: authIndexRoute,
   PropertiesIndexRoute: PropertiesIndexRoute,
   PropertiesPropertyIdEditRoute: PropertiesPropertyIdEditRoute,

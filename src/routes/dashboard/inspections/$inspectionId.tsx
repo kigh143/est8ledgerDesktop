@@ -1,9 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, X, ChevronLeft, ChevronRight, Image as ImageIcon, ShieldCheck, Loader2 } from "lucide-react";
+import { ArrowLeft, X, ChevronLeft, ChevronRight, Image as ImageIcon, ShieldCheck, Loader2, Plus, Trash2, Wrench } from "lucide-react";
 import { inspectionService } from "../../../services/inspectionService";
+import repairBreakdownService, { type RepairBreakdown } from "../../../services/repairBreakdownService";
 import type { InspectionItem } from "../../../types";
 import { toast } from "react-toastify";
+
+type BreakdownItemDraft = {
+  name: string;
+  price: string;
+  description: string;
+};
 
 interface InspectionDetails extends InspectionItem {
   images?: Array<{
@@ -44,6 +51,61 @@ function InspectionDetailPage() {
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const [allImages, setAllImages] = useState<Array<{ id: number; url: string; fileName: string }>>([]);
   const [approving, setApproving] = useState(false);
+  const [breakdownItems, setBreakdownItems] = useState<BreakdownItemDraft[]>([
+    { name: "", price: "", description: "" },
+  ]);
+  const [creatingBreakdown, setCreatingBreakdown] = useState(false);
+  const [breakdown, setBreakdown] = useState<RepairBreakdown | null>(null);
+
+  const addBreakdownItem = () => {
+    setBreakdownItems((prev) => [...prev, { name: "", price: "", description: "" }]);
+  };
+
+  const removeBreakdownItem = (index: number) => {
+    setBreakdownItems((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateBreakdownItem = (index: number, field: keyof BreakdownItemDraft, value: string) => {
+    setBreakdownItems((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+    );
+  };
+
+  const breakdownTotal = breakdownItems.reduce(
+    (sum, item) => sum + (parseFloat(item.price) || 0),
+    0
+  );
+
+  const handleCreateBreakdown = async () => {
+    if (!inspection) return;
+
+    const validItems = breakdownItems.filter((item) => item.name.trim() && parseFloat(item.price) > 0);
+    if (validItems.length === 0) {
+      toast.error("Add at least one item with a name and price");
+      return;
+    }
+
+    setCreatingBreakdown(true);
+    try {
+      const created = await repairBreakdownService.createBreakdown({
+        moveOutInspectionId: inspection.id,
+        tenancyId: inspection.tenancyId,
+        amount: validItems.reduce((sum, item) => sum + parseFloat(item.price), 0),
+        items: validItems.map((item) => ({
+          name: item.name.trim(),
+          price: parseFloat(item.price),
+          description: item.description.trim(),
+        })),
+      });
+      setBreakdown(created);
+      toast.success("Repair cost breakdown created");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create repair cost breakdown");
+    } finally {
+      setCreatingBreakdown(false);
+    }
+  };
 
   const handleManagerApprove = async () => {
     if (!inspection) return;
@@ -225,6 +287,114 @@ function InspectionDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Repair Cost Breakdown (move-out inspections only) */}
+      {inspection.type === "MOVE_OUT" && (
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <Wrench size={20} />
+            Repair Cost Breakdown
+          </h2>
+
+          {breakdown ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                  breakdown.status === "APPROVED"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : breakdown.status === "DISPUTED"
+                    ? "bg-red-100 text-red-800"
+                    : "bg-amber-100 text-amber-800"
+                }`}>
+                  {breakdown.status}
+                </span>
+                <p className="font-bold text-slate-900">
+                  Total: {breakdown.amount.toLocaleString()}
+                </p>
+              </div>
+              <div className="divide-y divide-slate-100 border rounded-lg">
+                {breakdown.items.map((item, idx) => (
+                  <div key={idx} className="p-3 flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-medium text-slate-900 text-sm">{item.name}</p>
+                      {item.description && (
+                        <p className="text-xs text-slate-500 mt-0.5">{item.description}</p>
+                      )}
+                    </div>
+                    <p className="text-sm font-semibold text-slate-900 whitespace-nowrap">
+                      {item.price.toLocaleString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="space-y-3">
+                {breakdownItems.map((item, idx) => (
+                  <div key={idx} className="grid grid-cols-1 md:grid-cols-[2fr_1fr_2fr_auto] gap-2 items-start">
+                    <input
+                      type="text"
+                      placeholder="Item name (e.g. Broken window)"
+                      value={item.name}
+                      onChange={(e) => updateBreakdownItem(idx, "name", e.target.value)}
+                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Price"
+                      min="0"
+                      value={item.price}
+                      onChange={(e) => updateBreakdownItem(idx, "price", e.target.value)}
+                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Description (optional)"
+                      value={item.description}
+                      onChange={(e) => updateBreakdownItem(idx, "description", e.target.value)}
+                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeBreakdownItem(idx)}
+                      disabled={breakdownItems.length === 1}
+                      aria-label="Remove item"
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={addBreakdownItem}
+                className="flex items-center gap-2 text-sm font-medium text-[#3f0ee3] hover:underline"
+              >
+                <Plus size={16} />
+                Add item
+              </button>
+
+              <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+                <p className="font-semibold text-slate-900">
+                  Total: {breakdownTotal.toLocaleString()}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleCreateBreakdown}
+                  disabled={creatingBreakdown}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg text-sm font-semibold hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {creatingBreakdown ? <Loader2 size={16} className="animate-spin" /> : <Wrench size={16} />}
+                  {creatingBreakdown ? "Creating..." : "Create Breakdown"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Inspection Sections with Images */}
       {inspection.sections && inspection.sections.length > 0 && (

@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Eye, Vault, Wallet, CheckCircle2, TrendingUp } from "lucide-react";
+import { Eye, Vault, Wallet, CheckCircle2, TrendingUp, Loader2 } from "lucide-react";
 import { securityDepositService } from "../../services/securityDepositService";
+import { tenancyService } from "../../services/tenancyService";
 import { useAppStore } from "../../store";
 import { PageHeader, StatCard, EmptyState } from "../../componennts/dashboard/ui";
 import SlideOver from "../../componennts/SlideOver";
+import { toast } from "react-toastify";
 import type { SecurityDepositRecord } from "../../types";
 
 export const Route = createFileRoute("/dashboard/securitydeposits")({
@@ -13,10 +15,34 @@ export const Route = createFileRoute("/dashboard/securitydeposits")({
     if (!activeProperty) {
       return { deposits: [] };
     }
-    const response = await securityDepositService.getPropertyDeposits(
-      activeProperty.id.toString()
-    );
-    const deposits = (response.data || []) as SecurityDepositRecord[];
+
+    const propertyId = activeProperty.id.toString();
+    const [depositsResponse, tenanciesResponse] = await Promise.all([
+      securityDepositService.getPropertyDeposits(propertyId),
+      tenancyService.getPropertyTenancies(propertyId).catch(() => []),
+    ]);
+
+    const rawDeposits = (depositsResponse.data || []) as SecurityDepositRecord[];
+    const tenancies = Array.isArray(tenanciesResponse)
+      ? tenanciesResponse
+      : tenanciesResponse.data || [];
+    const tenancyMap = new Map<string, any>(tenancies.map((t: any) => [t.id.toString(), t]));
+
+    // The deposits endpoint doesn't always include the nested tenant/unit info,
+    // so cross-reference the property's tenancies to fill it in.
+    const deposits: SecurityDepositRecord[] = rawDeposits.map((d) => {
+      const tenancy = tenancyMap.get(d.tenancyId?.toString());
+      return {
+        ...d,
+        currency: d.currency || activeProperty.currency || "UGX",
+        tenancy:
+          d.tenancy ||
+          (tenancy
+            ? { id: tenancy.id, tenant: tenancy.tenant, unitName: tenancy.unitName }
+            : undefined),
+      };
+    });
+
     return { deposits };
   },
   component: SecurityDepositsPage,
@@ -26,21 +52,37 @@ function SecurityDepositsPage() {
   const { deposits } = Route.useLoaderData();
   const [selectedDeposit, setSelectedDeposit] = useState<SecurityDepositRecord | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [optingIn, setOptingIn] = useState(false);
+
+  const handleOptIntoInvestment = async () => {
+    if (!selectedDeposit) return;
+    setOptingIn(true);
+    try {
+      await securityDepositService.managementOptIntoInvestment(selectedDeposit.id.toString());
+      setSelectedDeposit({ ...selectedDeposit, mgtOptedIntoInvestmentAt: new Date().toISOString() });
+      toast.success("Opted into investment");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to opt into investment");
+    } finally {
+      setOptingIn(false);
+    }
+  };
 
   const totalDeposits = deposits.length;
   const totalAmount = deposits.reduce((sum: number, d: SecurityDepositRecord) => sum + parseFloat(d.amount?.toString() || "0"), 0);
-  const paidCount = deposits.filter((d: SecurityDepositRecord) => d.status === "PAID").length;
+  const paidCount = deposits.filter((d: SecurityDepositRecord) => d.status === "COMPLETED").length;
   const investedCount = deposits.filter((d: SecurityDepositRecord) => d.investedAt !== null).length;
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "PAID":
+      case "COMPLETED":
         return "bg-emerald-100 text-emerald-800";
       case "PENDING":
         return "bg-amber-100 text-amber-800";
       case "REFUNDED":
         return "bg-blue-100 text-blue-800";
-      case "DISPUTED":
+      case "FAILED":
         return "bg-red-100 text-red-800";
       default:
         return "bg-slate-100 text-slate-800";
@@ -235,9 +277,20 @@ function SecurityDepositsPage() {
                 </div>
                 <div>
                   <p className="text-sm text-slate-600">Mgt Opted In</p>
-                  <p className="font-medium text-slate-900">
-                    {selectedDeposit.mgtOptedIntoInvestmentAt ? new Date(selectedDeposit.mgtOptedIntoInvestmentAt).toLocaleDateString() : "-"}
-                  </p>
+                  {selectedDeposit.mgtOptedIntoInvestmentAt ? (
+                    <p className="font-medium text-slate-900">
+                      {new Date(selectedDeposit.mgtOptedIntoInvestmentAt).toLocaleDateString()}
+                    </p>
+                  ) : (
+                    <button
+                      onClick={handleOptIntoInvestment}
+                      disabled={optingIn}
+                      className="mt-1 flex items-center gap-2 px-3 py-1.5 bg-[#3f0ee3] text-white rounded-lg text-xs font-semibold hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {optingIn ? <Loader2 size={14} className="animate-spin" /> : <TrendingUp size={14} />}
+                      {optingIn ? "Opting in..." : "Opt into Investment"}
+                    </button>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm text-slate-600">Tenant Share</p>
