@@ -58,9 +58,9 @@ export function StatCard({ icon: Icon, label, value, hint, tone = "slate", value
         <span className={`flex items-center justify-center w-10 h-10 rounded-lg shrink-0 ${toneChip[tone]}`}>
           <Icon size={20} />
         </span>
-        <p className="text-sm font-medium text-slate-600">{label}</p>
+        <p className="text-sm font-normal text-slate-600">{label}</p>
       </div>
-      <p className={`mt-3 text-2xl font-bold tabular-nums ${valueClass ?? "text-slate-900"}`}>{value}</p>
+      <p className={`mt-3 text-xl font-bold tabular-nums ${valueClass ?? "text-slate-900"}`}>{value}</p>
       {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
     </div>
   );

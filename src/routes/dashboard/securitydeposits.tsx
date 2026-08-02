@@ -17,12 +17,14 @@ export const Route = createFileRoute("/dashboard/securitydeposits")({
     }
 
     const propertyId = activeProperty.id.toString();
+
     const [depositsResponse, tenanciesResponse] = await Promise.all([
       securityDepositService.getPropertyDeposits(propertyId),
       tenancyService.getPropertyTenancies(propertyId).catch(() => []),
     ]);
 
-    const rawDeposits = (depositsResponse.data || []) as SecurityDepositRecord[];
+    const rawDeposits = depositsResponse;
+
     const tenancies = Array.isArray(tenanciesResponse)
       ? tenanciesResponse
       : tenanciesResponse.data || [];
@@ -53,6 +55,8 @@ function SecurityDepositsPage() {
   const [selectedDeposit, setSelectedDeposit] = useState<SecurityDepositRecord | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [optingIn, setOptingIn] = useState(false);
+
+  console.log({ deposits })
 
   const handleOptIntoInvestment = async () => {
     if (!selectedDeposit) return;
