@@ -121,7 +121,7 @@ function RouteComponent() {
       <p className="text-center text-slate-600 text-sm mt-12">
         Don't have an account?
         <Link to='/register'>
-          <span className="ml-1 text-[#3f0ee3] font-semibold hover:text-[#3f0ee3]/80 transition-colors">
+          <span className="ml-1 text-[#3f0ee3] font-bold hover:text-[#3f0ee3]/80 transition-colors">
             Register
           </span>
         </Link>
