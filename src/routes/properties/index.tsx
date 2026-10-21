@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
-import { Building2, Search, MapPin, ArrowRight, HousePlus } from 'lucide-react'
+import { Building2, Search, MapPin, ArrowRight, HousePlus, FileUp } from 'lucide-react'
 import { useAppStore } from '../../store';
 import PropertiesLayout from '../../componennts/PropertiesLayout';
 import type { PropertyAgreement } from '../../types';
@@ -78,10 +78,16 @@ function RouteComponent() {
       pageTitle="Your properties"
       subTitle={`${properties.length} ${properties.length === 1 ? "property" : "properties"} under management`}
       action={
-        <Link to="/properties/add" className="btn btn-primary">
-          <HousePlus size={16} />
-          Add property
-        </Link>
+        <>
+          <Link to="/properties/import" className="btn btn-secondary">
+            <FileUp size={16} />
+            Import
+          </Link>
+          <Link to="/properties/add" className="btn btn-primary">
+            <HousePlus size={16} />
+            Add property
+          </Link>
+        </>
       }
     >
       <div className="space-y-10">

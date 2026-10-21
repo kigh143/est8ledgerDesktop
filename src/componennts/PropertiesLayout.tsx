@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { House, HousePlus, Settings, CreditCard, Wallet, ReceiptText } from "lucide-react";
+import { House, HousePlus, Settings, CreditCard, Wallet, ReceiptText, FileUp } from "lucide-react";
 import AppShell from "./AppShell";
 import type { NavSection } from "./Sidebar";
 
@@ -18,6 +18,7 @@ const sections: NavSection[] = [
     items: [
       { icon: <House {...icon} />, label: "My Properties", route: "/properties" },
       { icon: <HousePlus {...icon} />, label: "Add Property", route: "/properties/add" },
+      { icon: <FileUp {...icon} />, label: "Import Data", route: "/properties/import" },
       { icon: <Wallet {...icon} />, label: "Wallet", route: "/properties/wallet" },
     ],
   },

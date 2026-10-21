@@ -540,6 +540,17 @@ export interface RentPaymentAccount {
 }
 
 // Inspections
+export type InspectionCondition = "GOOD" | "FAIR" | "DAMAGED";
+
+/** One room/area captured during an inspection; photos are Bunny CDN urls. */
+export interface InspectionSection {
+  id: number;
+  title?: string | null;
+  photos?: string[];
+  comments?: string | null;
+  condition_status?: InspectionCondition | null;
+}
+
 export interface InspectionItem {
   id: number;
   tenancyId: number;
@@ -548,6 +559,7 @@ export interface InspectionItem {
   status?: "PENDING" | "COMPLETED" | "APPROVED";
   tenantApprovedAt?: string | null;
   managerApprovedAt?: string | null;
+  inspectionSections?: InspectionSection[];
   createdAt: string;
   updatedAt: string;
   tenancy?: {

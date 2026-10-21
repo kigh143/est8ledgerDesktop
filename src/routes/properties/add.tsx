@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
   ChevronRight,
@@ -316,6 +316,12 @@ function AddPropertyPage() {
     <PropertiesLayout
       pageTitle="Add Property"
       subTitle="Create a new property and configure its agreement terms"
+      action={
+        <Link to="/properties/import-agreement" className="btn btn-secondary">
+          <FileText size={16} />
+          Use a signed agreement PDF
+        </Link>
+      }
     >
       <div className="space-y-8">
         {/* Enhanced Progress Steps */}

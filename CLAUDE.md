@@ -76,6 +76,10 @@ Prefer these over re-spelling long utility strings.
 ### Shared UI (`src/componennts/dashboard/ui.tsx`)
 `PageHeader` (large title), `StatCard`, `EmptyState`, `Badge`, `Segmented`, `DetailRow`, `LoadingState`, `ConfirmDialog` (alert dialog, optional reason input).
 `SlideOver` is the sheet for forms/details. `AppShell` provides the light sidebar + translucent toolbar for both layouts.
+The dashboard sidebar header is `PropertySwitcher`; `AccountMenu` sits at its foot. Popovers anchored in the sidebar use `useAnchoredPopover` and render through a portal (the sidebar's `translate` would otherwise clip them).
+
+### Image uploads
+Use `uploadImages(files, category, entityId)` from `src/utils/presignedUpload.ts`: it compresses to JPEG, asks the backend for presigned Bunny URLs (`POST /uploads/presigned-urls`) and PUTs each file directly. Never put Bunny credentials in the client.
 
 ## 🔐 Authentication Flow
 

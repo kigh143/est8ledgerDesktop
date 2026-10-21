@@ -1,14 +1,13 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Menu } from "lucide-react";
 import Sidebar, { type NavSection } from "./Sidebar";
-import { useAppStore } from "../store";
 
 const SIDEBAR_COLLAPSED_KEY = "el_sidebar_collapsed";
 
 type AppShellProps = {
   sections: NavSection[];
-  backAction?: { label: string; onClick: () => void };
-  property?: { name: string; address?: string | null; image?: string | null };
+  /** Rendered under the logo; receives the rail state and a callback that closes the mobile drawer. */
+  sidebarHeader?: (collapsed: boolean, closeSidebar: () => void) => ReactNode;
   /** Compact title shown in the translucent toolbar. */
   toolbarTitle?: ReactNode;
   toolbarActions?: ReactNode;
@@ -18,13 +17,11 @@ type AppShellProps = {
 /** Sidebar + translucent toolbar + scrolling canvas shared by every signed-in screen. */
 export default function AppShell({
   sections,
-  backAction,
-  property,
+  sidebarHeader,
   toolbarTitle,
   toolbarActions,
   children,
 }: AppShellProps) {
-  const user = useAppStore((state) => state.user);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
@@ -43,6 +40,20 @@ export default function AppShell({
     }
   }, [collapsed]);
 
+  // ⌘\ (Ctrl+\ elsewhere) toggles the rail, as in Apple's apps.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "\\" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setCollapsed((c) => !c);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50">
       {/* Mobile backdrop */}
@@ -55,14 +66,11 @@ export default function AppShell({
 
       <Sidebar
         isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
+        onClose={closeSidebar}
         collapsed={collapsed}
         onToggleCollapsed={() => setCollapsed((c) => !c)}
         sections={sections}
-        backAction={backAction}
-        property={property}
-        userFirstName={user?.firstName}
-        userEmail={user?.email}
+        header={sidebarHeader?.(collapsed, closeSidebar)}
       />
 
       <main

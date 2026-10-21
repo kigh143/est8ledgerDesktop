@@ -1,30 +1,8 @@
-import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
-import notificationService from "../services/notificationService";
-import type { AppNotification } from "../types";
 
 /** Toolbar bell with the property's unread notification count. */
-export default function NotificationBell({ propertyId }: { propertyId?: number | string }) {
-  const [unread, setUnread] = useState(0);
-
-  useEffect(() => {
-    if (!propertyId) return;
-    let cancelled = false;
-    notificationService
-      .getPropertyNotifications(propertyId.toString())
-      .then((res) => {
-        const list: AppNotification[] = Array.isArray(res) ? res : res?.data ?? [];
-        if (!cancelled) setUnread(list.filter((n) => !n.isRead).length);
-      })
-      .catch(() => {
-        // The badge is a hint; the notifications page surfaces real errors.
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [propertyId]);
-
+export default function NotificationBell({ unread }: { unread: number }) {
   return (
     <Link
       to="/dashboard/notifications"
