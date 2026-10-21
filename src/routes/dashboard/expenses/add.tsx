@@ -125,17 +125,17 @@ function AddExpensePage() {
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-lg border border-slate-200 p-6">
+      <div className="card p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="label">
               Category <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.category}
               onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
             >
               {categories.map((cat) => (
                 <option key={cat.value} value={cat.value}>
@@ -147,7 +147,7 @@ function AddExpensePage() {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="label">
               Description <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -155,13 +155,13 @@ function AddExpensePage() {
               onChange={(e) => handleInputChange("description", e.target.value)}
               placeholder="e.g., Roof repair, water tank replacement"
               rows={4}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
             />
           </div>
 
           {/* Amount */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="label">
               Amount <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-2">
@@ -175,21 +175,21 @@ function AddExpensePage() {
                 placeholder="0.00"
                 step="0.01"
                 min="0"
-                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
               />
             </div>
           </div>
 
           {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="label">
               Date <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
               value={formData.date}
               onChange={(e) => handleInputChange("date", e.target.value)}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
             />
           </div>
 
@@ -200,7 +200,7 @@ function AddExpensePage() {
                 type="checkbox"
                 checked={formData.isPaid}
                 onChange={(e) => handleInputChange("isPaid", e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-[#3f0ee3] focus:ring-2 focus:ring-[#3f0ee3]"
+                className="w-4 h-4 rounded border-slate-300 text-[#3f0ee3] focus:ring-4 focus:ring-[#3f0ee3]/12"
               />
               <span className="text-sm font-medium text-slate-900">Mark as paid</span>
             </label>
@@ -208,13 +208,13 @@ function AddExpensePage() {
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">Notes</label>
+            <label className="label">Notes</label>
             <textarea
               value={formData.notes}
               onChange={(e) => handleInputChange("notes", e.target.value)}
               placeholder="Additional notes (optional)"
               rows={3}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
             />
           </div>
 
@@ -238,7 +238,7 @@ function AddExpensePage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating..." : "Create Expense"}
             </button>

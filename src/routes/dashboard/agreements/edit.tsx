@@ -149,7 +149,7 @@ function EditAgreementPage() {
       )}
 
       {/* Clauses Selection */}
-      <div className="bg-white rounded-lg border border-slate-200 p-6">
+      <div className="card p-6">
         <h2 className="text-lg font-semibold text-slate-900 mb-6">Select Agreement Clauses</h2>
         <p className="text-sm text-slate-600 mb-6">
           Check the clauses you want to include in this property agreement.
@@ -216,7 +216,7 @@ function EditAgreementPage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? "Saving..." : "Save Changes"}
         </button>

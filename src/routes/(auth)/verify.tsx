@@ -81,44 +81,44 @@ function RouteComponent() {
   return <AuthLayout showBackBtn={true}>
     <div className="w-full max-w-md">
       <h2
-        className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 to-[#3f0ee3] bg-clip-text text-transparent leading-tight"
+        className="text-[32px] font-semibold leading-tight tracking-[-0.03em] text-slate-900"
       >
-        Verify Code
+        Enter your code
       </h2>
 
-      <p className="mt-4 text-slate-600 text-sm sm:text-base font-medium">
+      <p className="mt-2 text-[15px] leading-relaxed text-slate-500">
         We sent a 6-digit code to <span className="font-semibold text-slate-900">{authData.loginWith === 'email' ? authData.email : `+${authData.country?.dialingCode}${authData.phoneNumber}`}</span>
       </p>
 
-      <div className="mt-10 space-y-6">
+      <form className="mt-8 space-y-5" onSubmit={(e) => { e.preventDefault(); handleVerifyOtp(); }}>
 
         <Input
           type='text'
           value={otp}
           onChange={(otp) => setOtp(otp)}
-          placeholder='Enter 6-digit code'
+          placeholder='6-digit code'
           label='Verification Code'
         />
 
         <button
-          onClick={handleVerifyOtp}
+          type="submit"
           disabled={loading}
-          className="w-full h-14 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 text-white rounded-xl text-base font-semibold shadow-lg shadow-[#3f0ee3]/40 hover:shadow-[#3f0ee3]/60 transition-all hover:from-[#3f0ee3] hover:to-[#3f0ee3] disabled:opacity-70 disabled:cursor-not-allowed"
+          className="btn btn-primary btn-lg w-full"
         >
-          {loading ? 'Verifying ...' : 'Verify Code'}
+          {loading ? 'Verifying…' : 'Verify'}
         </button>
-      </div>
+      </form>
 
       {
         timer > 0 ?
-          <p className="text-center text-slate-600 text-sm mt-10 font-medium">
-            {Resending ? '⏳ Resending code ...' : `⏱️ Code expires in ${timer}s`}
+          <p className="text-center text-slate-500 text-sm mt-8 tabular-nums">
+            {Resending ? 'Sending a new code…' : `You can request a new code in ${timer}s`}
           </p>
           :
-          <p className="text-center text-slate-600 text-sm mt-10">
+          <p className="text-center text-slate-500 text-sm mt-8">
             Didn't receive the code?{' '}
-            <button onClick={handleResendCode} className="text-[#3f0ee3] font-semibold hover:text-[#3f0ee3]/80 transition-colors">
-              Resend Code
+            <button onClick={handleResendCode} className="text-[#3f0ee3] font-semibold hover:underline">
+              Send a new code
             </button>
           </p>
       }

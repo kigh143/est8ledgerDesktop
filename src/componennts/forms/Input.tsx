@@ -24,16 +24,16 @@ export const Input = ({
     const isPin = type === "pin";
 
     return (
-        <div className="w-full space-y-2">
+        <div className="w-full">
             {label && (
-                <label className="text-sm font-semibold text-slate-900">
+                <label className="label">
                     {label}
                 </label>
             )}
 
-            <div className="relative flex flex-row mt-2 gap-2">
+            <div className="relative flex flex-row gap-2">
                 {
-                    countryCode && <div className="flex justify-center items-center px-4 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-medium">
+                    countryCode && <div className="flex justify-center items-center px-3.5 rounded-xl border border-slate-300 bg-slate-50 text-[15px] text-slate-700 font-medium tabular-nums">
                         +{countryCode}
                     </div>
                 }
@@ -61,13 +61,14 @@ export const Input = ({
                             onChange(e.target.value);
                         }
                     }}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-[#3f0ee3] focus:ring-2 focus:ring-[#3f0ee3]/20"
+                    className={`field h-12 ${isPassword ? "pr-11" : ""} ${isPin ? "tracking-[0.4em] tabular-nums" : ""}`}
                 />
 
                 {isPassword && (
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                     >
                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

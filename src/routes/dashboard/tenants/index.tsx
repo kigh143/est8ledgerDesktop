@@ -48,7 +48,7 @@ function RouteComponent() {
           </div>
           <button
             onClick={() => navigate({ to: "/dashboard/tenants/add" })}
-            className="inline-flex items-center gap-2 px-5 py-2.5 md:px-6 md:py-3 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 text-white rounded-lg font-semibold shadow-lg shadow-[#3f0ee3]/40 hover:shadow-[#3f0ee3]/60 transition-all text-sm md:text-base"
+            className="inline-flex items-center gap-2 px-5 py-2.5 md:px-6 md:py-3 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 text-white rounded-lg font-semibold shadow-lg transition-all text-sm md:text-base"
           >
             <Plus size={20} />
             <span className="hidden sm:inline">Add Tenant</span>
@@ -57,7 +57,7 @@ function RouteComponent() {
 
         {/* Loading State */}
         {loading ? (
-          <div className="flex items-center justify-center py-16 bg-white rounded-lg border border-slate-200">
+          <div className="flex items-center justify-center py-16 card">
             <div className="text-center">
               <div className="inline-block w-12 h-12 border-4 border-[#3f0ee3]/20 border-t-[#3f0ee3] rounded-full animate-spin mb-4" />
               <p className="text-slate-600 font-medium">Loading tenants...</p>
@@ -74,7 +74,7 @@ function RouteComponent() {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-x-auto">
+          <div className="card overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-slate-50 to-slate-50 border-b border-slate-200">
                 <tr>

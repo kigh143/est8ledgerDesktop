@@ -99,7 +99,7 @@ function InspectionsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="card overflow-hidden">
         {inspections.length === 0 ? (
           <EmptyState
             icon={ClipboardCheck}

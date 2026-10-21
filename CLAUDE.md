@@ -62,18 +62,20 @@ est8ledgerDesktop/
 - **Accent**: `#7fe502` (Lime Green)
 - **Neutral**: Slate color palette
 
-### Color Usage
-- Primary purple for main CTAs, focus states, and active navigation
-- Accent lime for secondary actions and highlights
-- Dark sidebar: gradient from slate-900 to slate-800
-- Light backgrounds: slate-50 with subtle purple tint
+### Foundation (`src/index.css`)
+Apple-style neutral system with Airbnb-soft geometry:
+- **Type**: SF Pro (system) with Inter fallback; Lora for agreement documents, Dancing Script for signatures
+- **Neutrals**: Tailwind's `slate` scale is remapped to Apple system grays; canvas is `#f5f5f7`
+- **Radii/shadows**: theme tokens are softened globally (`rounded-lg` = 12px, hairline shadows)
+- **Status colors**: Apple system hues (`#34c759` green, `#ff9500` orange, `#ff3b30` red, `#007aff` blue)
 
-### Components
-All components use consistent styling with:
-- Rounded corners: `rounded-lg` (small) → `rounded-xl` (large)
-- Shadows: `shadow-sm` (subtle) → `shadow-lg` with color glow
-- Hover effects: smooth transitions and opacity changes
-- Responsive design: mobile-first with `sm:`, `md:`, `lg:` breakpoints
+### Component classes
+`card`, `glass`, `field`, `label`, `eyebrow`, `btn` + `btn-primary | btn-secondary | btn-tinted | btn-danger | btn-lg`.
+Prefer these over re-spelling long utility strings.
+
+### Shared UI (`src/componennts/dashboard/ui.tsx`)
+`PageHeader` (large title), `StatCard`, `EmptyState`, `Badge`, `Segmented`, `DetailRow`, `LoadingState`, `ConfirmDialog` (alert dialog, optional reason input).
+`SlideOver` is the sheet for forms/details. `AppShell` provides the light sidebar + translucent toolbar for both layouts.
 
 ## 🔐 Authentication Flow
 
@@ -203,16 +205,10 @@ Used by: login, register, verify, pin screens
 - Responsive mobile view
 
 ### PropertiesLayout
-Used by: properties listing and management pages
-- Dark sidebar with navigation menu
-- Header with page title and logout button
-- Gradient background content area
+Used by: properties listing and account pages. Wraps `AppShell`; renders `pageTitle` as a large title with optional `action`.
 
 ### DashboardLayout
-Used by: property-specific management pages
-- Dark sidebar with context-aware menu
-- Header with property name and notification button
-- Gradient background with responsive padding
+Used by: property-specific pages (applied once in `routes/dashboard/route.tsx`). Wraps `AppShell` with the property identity card and a notification bell.
 
 ## 📝 Form Components
 

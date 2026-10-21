@@ -166,7 +166,7 @@ function InspectionDetailPage() {
         <p className="text-slate-600">Inspection not found</p>
         <button
           onClick={() => navigate({ to: "/dashboard/inspections" })}
-          className="mt-4 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90"
+          className="mt-4 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4]"
         >
           Back to Inspections
         </button>
@@ -194,26 +194,26 @@ function InspectionDetailPage() {
 
       {/* Status Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg border border-slate-200 p-4">
+        <div className="card p-4">
           <p className="text-sm text-slate-600">Type</p>
           <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-2 ${getTypeColor(inspection.type)}`}>
             {inspection.type === "MOVE_IN" ? "Move-In" : "Move-Out"}
           </span>
         </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-4">
+        <div className="card p-4">
           <p className="text-sm text-slate-600">Status</p>
           <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-2 ${getStatusColor(inspection.status)}`}>
             {inspection.status || "PENDING"}
           </span>
         </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-4">
+        <div className="card p-4">
           <p className="text-sm text-slate-600">Unit</p>
           <p className="font-semibold text-slate-900 mt-2">{inspection.tenancy?.unitName || "N/A"}</p>
         </div>
       </div>
 
       {/* Inspection Information */}
-      <div className="bg-white rounded-lg border border-slate-200 p-6">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-slate-900 mb-4">Inspection Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -234,7 +234,7 @@ function InspectionDetailPage() {
       </div>
 
       {/* Approval Status */}
-      <div className="bg-white rounded-lg border border-slate-200 p-6">
+      <div className="card p-6">
         <h2 className="text-xl font-bold text-slate-900 mb-4">Approval Status</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="border rounded-lg p-4 bg-slate-50">
@@ -277,7 +277,7 @@ function InspectionDetailPage() {
                 <button
                   onClick={handleManagerApprove}
                   disabled={approving}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-[#3f0ee3] text-white rounded-lg text-xs font-semibold hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-[#3f0ee3] text-white rounded-lg text-xs font-semibold hover:bg-[#3409c4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {approving ? <Loader2 size={14} className="animate-spin" /> : <ShieldCheck size={14} />}
                   Approve as Manager
@@ -290,7 +290,7 @@ function InspectionDetailPage() {
 
       {/* Repair Cost Breakdown (move-out inspections only) */}
       {inspection.type === "MOVE_OUT" && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
+        <div className="card p-6">
           <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
             <Wrench size={20} />
             Repair Cost Breakdown
@@ -338,7 +338,7 @@ function InspectionDetailPage() {
                       placeholder="Item name (e.g. Broken window)"
                       value={item.name}
                       onChange={(e) => updateBreakdownItem(idx, "name", e.target.value)}
-                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                     />
                     <input
                       type="number"
@@ -346,14 +346,14 @@ function InspectionDetailPage() {
                       min="0"
                       value={item.price}
                       onChange={(e) => updateBreakdownItem(idx, "price", e.target.value)}
-                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                     />
                     <input
                       type="text"
                       placeholder="Description (optional)"
                       value={item.description}
                       onChange={(e) => updateBreakdownItem(idx, "description", e.target.value)}
-                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                     />
                     <button
                       type="button"
@@ -385,7 +385,7 @@ function InspectionDetailPage() {
                   type="button"
                   onClick={handleCreateBreakdown}
                   disabled={creatingBreakdown}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg text-sm font-semibold hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg text-sm font-semibold hover:bg-[#3409c4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {creatingBreakdown ? <Loader2 size={16} className="animate-spin" /> : <Wrench size={16} />}
                   {creatingBreakdown ? "Creating..." : "Create Breakdown"}
@@ -400,7 +400,7 @@ function InspectionDetailPage() {
       {inspection.sections && inspection.sections.length > 0 && (
         <div className="space-y-4">
           {inspection.sections.map((section) => (
-            <div key={section.id} className="bg-white rounded-lg border border-slate-200 p-6">
+            <div key={section.id} className="card p-6">
               <h3 className="text-lg font-bold text-slate-900 mb-2">{section.name}</h3>
               {section.description && (
                 <p className="text-slate-600 text-sm mb-4">{section.description}</p>
@@ -442,7 +442,7 @@ function InspectionDetailPage() {
 
       {/* General Images */}
       {inspection.images && inspection.images.length > 0 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
+        <div className="card p-6">
           <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
             <ImageIcon size={20} />
             Inspection Photos ({inspection.images.length})

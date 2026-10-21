@@ -1,4 +1,5 @@
 import apiClient from "./api";
+import type { DepositDeduction } from "../types";
 
 // TypeScript interfaces for security deposit operations
 export interface SecurityDepositPaymentData {
@@ -211,6 +212,34 @@ export const securityDepositService = {
             console.log("Tenant opted into investment:", error.response?.data?.message);
       throw error;
     }
+  },
+
+  /**
+   * Landlord confirms they received a deposit paid into their own account.
+   * POST /security-deposit/{id}/mgt-approve
+   */
+  mgtApproveDeposit: async (securityDepositId: string | number) => {
+    const response = await apiClient.post(`/security-deposit/${securityDepositId}/mgt-approve`);
+    return response.data;
+  },
+
+  /**
+   * Landlord rejects a pending deposit; the tenant is asked to resubmit.
+   * POST /security-deposit/{id}/reject
+   */
+  rejectDeposit: async (securityDepositId: string | number, reason: string) => {
+    const response = await apiClient.post(`/security-deposit/${securityDepositId}/reject`, { reason });
+    return response.data;
+  },
+
+  /**
+   * Landlord pays a landlord-held deposit back after termination. The refund
+   * is computed server-side as deposit − deductions.
+   * POST /security-deposit/{id}/release
+   */
+  releaseDeposit: async (securityDepositId: string | number, deductions: DepositDeduction[]) => {
+    const response = await apiClient.post(`/security-deposit/${securityDepositId}/release`, { deductions });
+    return response.data;
   },
 
   managementOptIntoInvestment: async (

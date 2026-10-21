@@ -1,67 +1,54 @@
-
-import { ArrowLeft } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { ChevronLeft } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 
 type LayoutProps = {
-    children: any;
+    children: ReactNode;
     showBackBtn?: boolean
 }
 
 const AuthLayout = ({ children, showBackBtn = false }: LayoutProps) => {
     return (
-        <div className="w-full h-screen bg-white overflow-hidden grid grid-cols-1 lg:grid-cols-2">
-            <div className="relative hidden lg:flex flex-col justify-between bg-gradient-to-br from-slate-950 via-slate-900 to-purple-900/40">
-                <img
-                    src="https://images.unsplash.com/photo-1511818966892-d7d671e672a2?q=80&w=1400&auto=format&fit=crop"
-                    alt="Luxury House"
-                    className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay"
-                />
+        <div className="min-h-screen w-full bg-white grid grid-cols-1 lg:grid-cols-[1.05fr_1fr]">
+            {/* Inset photograph, framed like a listing hero */}
+            <div className="relative hidden lg:block p-3">
+                <div className="relative h-full overflow-hidden rounded-[28px] bg-slate-900">
+                    <img
+                        src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1600&auto=format&fit=crop"
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/20 to-slate-950"></div>
-
-                <div className="relative z-10 p-12">
-                    <div className="flex items-center gap-3">
-                       <img src="/long_logo.png" alt="est8Ledger" className="h-11" />
+                    <div className="absolute left-8 top-8 rounded-xl bg-white/90 px-3.5 py-2.5 backdrop-blur-md">
+                        <img src="/long_logo.png" alt="est8Ledger" className="h-5" />
                     </div>
-                </div>
 
-                <div className="relative z-10 px-14 pb-24">
-                    <h2 className="text-5xl font-bold leading-tight text-white max-w-lg">
-                        Manage Properties <span className="bg-linear-to-r from-[#7fe502] via-[#7fe502] to-[#7fe502]/80 bg-clip-text text-transparent">Effortlessly</span>
-                    </h2>
-
-                    <p className="mt-8 text-lg text-white/85 max-w-lg leading-relaxed font-light">
-                        Create and sign digital agreements. Track maintenance. Manage repairs. Keep all your property documentation secure in one place.
-                    </p>
-
-                    <div className="flex items-center gap-3 mt-12">
-                        <div className="h-1 w-16 rounded-full bg-linear-to-r from-[#7fe502] to-[#552ae7]"></div>
-                        <div className="w-2 h-2 rounded-full bg-white/30"></div>
-                        <div className="w-2 h-2 rounded-full bg-white/30"></div>
+                    <div className="absolute inset-x-10 bottom-10 text-white">
+                        <h2 className="max-w-md text-[40px] font-semibold leading-[1.08] tracking-[-0.03em]">
+                            Every tenancy, deposit and repair in one ledger.
+                        </h2>
+                        <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/75">
+                            Sign agreements, collect rent and deposits, and keep inspections on record for each of your properties.
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div className="relative flex flex-col items-center justify-center bg-gradient-to-br from-white via-slate-50 to-[#552ae7]/5 px-6 py-10 sm:px-10 md:px-14 md:py-14">
+            <div className="relative flex flex-col items-center justify-center px-6 py-12 sm:px-12">
                 {showBackBtn && (
-                    <div className="absolute top-6 left-6">
-                        <Link to="/login">
-                            <button className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
-                                <ArrowLeft size={20} />
-                                <span className="text-sm font-medium">Back</span>
-                            </button>
-                        </Link>
-                    </div>
+                    <Link
+                        to="/login"
+                        className="absolute left-5 top-5 flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium text-[#3f0ee3] hover:bg-[#3f0ee3]/[0.06]"
+                    >
+                        <ChevronLeft size={18} strokeWidth={2.25} />
+                        Back
+                    </Link>
                 )}
 
-                <div className="lg:hidden mb-8 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#552ae7] to-[#552ae7]/80 flex items-center justify-center shadow-lg">
-                        <span className="text-white font-bold">E8</span>
-                    </div>
-                    <h1 className="text-xl font-bold text-slate-900">est8Ledger</h1>
-                </div>
+                <img src="/long_logo.png" alt="est8Ledger" className="mb-10 h-6 lg:hidden" />
 
-                {children}
+                <div className="w-full max-w-[400px] animate-fade-up">{children}</div>
             </div>
         </div>
     )

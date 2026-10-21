@@ -20,13 +20,12 @@ function RouteComponent() {
     <div className="w-full max-w-md space-y-8">
       <div className="space-y-4">
         <div className="flex flex-col items-center gap-4">
-          <img src="/long_logo.png" alt="est8Ledger" className="h-10" />
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold text-slate-900">
-              Get Started Today
+                    <div className="text-center space-y-2">
+            <h2 className="text-[32px] font-semibold leading-tight tracking-[-0.03em] text-slate-900">
+              Create your account
             </h2>
-            <p className="text-sm text-slate-600">
-              Download our mobile app to create your account and manage your properties
+            <p className="text-[15px] leading-relaxed text-slate-500">
+              Accounts are created in the est8Ledger mobile app. Once you have one, sign in here to manage your properties on a larger screen.
             </p>
           </div>
         </div>
@@ -72,8 +71,8 @@ function RouteComponent() {
 
       <div className="space-y-3">
         
-        <p className="text-center text-xs text-slate-500">
-          Already have an account? <Link to="/login"> <span className='font-bold text-[#3f0ee3]'>Continue logging in</span></Link>
+        <p className="text-center text-sm text-slate-500">
+          Already have an account? <Link to="/login"> <span className='font-semibold text-[#3f0ee3] hover:underline'>Sign in</span></Link>
         </p>
       </div>
     </div>

@@ -190,7 +190,7 @@ function AdvertisePage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
+        <div className="card p-8 shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Property Selection */}
             <div>
@@ -200,7 +200,7 @@ function AdvertisePage() {
               <select
                 value={formData.propertyAgreementId}
                 onChange={(e) => handleInputChange('propertyAgreementId', e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
               >
                 <option value="">Choose a property...</option>
                 {properties.map((property) => (
@@ -228,7 +228,7 @@ function AdvertisePage() {
                   step="1000"
                   value={formData.monthlyRent}
                   onChange={(e) => handleInputChange('monthlyRent', e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                 />
               </div>
 
@@ -240,7 +240,7 @@ function AdvertisePage() {
                 <select
                   value={formData.currency}
                   onChange={(e) => handleInputChange('currency', e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                 >
                   <option value="UGX">🇺🇬 UGX (Ugandan Shilling)</option>
                   <option value="USD">🇺🇸 USD (US Dollar)</option>
@@ -260,7 +260,7 @@ function AdvertisePage() {
                 rows={6}
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition resize-none"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition resize-none"
               />
               <p className="text-xs text-slate-600 mt-2">Min 50 characters recommended</p>
             </div>
@@ -300,7 +300,7 @@ function AdvertisePage() {
                           </div>
                         </div>
                       ) : (
-                        <label className="block border-2 border-dashed border-slate-300 rounded-lg p-6 h-48 cursor-pointer hover:border-[#552ae7] hover:bg-[#552ae7]/5 transition-all group">
+                        <label className="block border-2 border-dashed border-slate-300 rounded-lg p-6 h-48 cursor-pointer hover:border-[#3f0ee3] hover:bg-[#3f0ee3]/5 transition-all group">
                           <input
                             type="file"
                             accept="image/*"
@@ -309,8 +309,8 @@ function AdvertisePage() {
                             disabled={formData.images.length >= 3}
                           />
                           <div className="flex flex-col items-center justify-center h-full text-center">
-                            <ImageIcon className="w-8 h-8 text-slate-400 mb-2 group-hover:text-[#552ae7] transition-colors" />
-                            <p className="text-sm font-semibold text-slate-700 group-hover:text-[#552ae7] transition-colors">
+                            <ImageIcon className="w-8 h-8 text-slate-400 mb-2 group-hover:text-[#3f0ee3] transition-colors" />
+                            <p className="text-sm font-semibold text-slate-700 group-hover:text-[#3f0ee3] transition-colors">
                               Image {index + 1}
                             </p>
                             <p className="text-xs text-slate-500 mt-1">Click to upload</p>
@@ -351,7 +351,7 @@ function AdvertisePage() {
               <button
                 type="submit"
                 disabled={loading || properties.length === 0}
-                className="w-full flex items-center justify-center gap-2 px-8 py-3 bg-linear-to-r from-[#552ae7] to-[#552ae7]/80 hover:from-[#552ae7]/90 hover:to-[#552ae7]/70 text-white rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg active:scale-95"
+                className="w-full flex items-center justify-center gap-2 px-8 py-3 bg-linear-to-r from-[#3f0ee3] to-[#3f0ee3]/80 hover:from-[#3f0ee3]/90 hover:to-[#3f0ee3]/70 text-white rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg active:scale-95"
               >
                 {loading ? (
                   <>

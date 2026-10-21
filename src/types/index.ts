@@ -394,7 +394,7 @@ export interface SecurityDepositRecord {
   id: string;
   tenancyId: string;
   amount: number;
-  paymentStatus: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
+  paymentStatus: "PENDING" | "MGT_APPROVED" | "COMPLETED" | "REJECTED" | "FAILED" | "REFUNDED";
   paymentMethod: string;
   reference?: string;
   createdAt: string;
@@ -406,6 +406,23 @@ export interface SecurityDepositRecord {
   depositFees: string | null;
   tenantShare: string | null;
   mgtShare: string | null;
+  /** LANDLORD when paid into the landlord's own account; EST8LEDGER (or absent) when held by est8Ledger. */
+  collectedVia?: "LANDLORD" | "EST8LEDGER" | null;
+  paymentReference?: string | null;
+  mgtApprovedAt?: string | null;
+  adminApprovedAt?: string | null;
+  rejectedAt?: string | null;
+  rejectedByRole?: "MGT" | "ADMIN" | null;
+  rejectionReason?: string | null;
+  securityDepositAccount?: { accountName: string; accountNumber: string } | null;
+  account?: { accountName: string; accountNo?: string | null } | null;
+  releaseStatus?: "RELEASED" | "RECEIVED" | "DISPUTED" | null;
+  releasedAmount?: number | string | null;
+  releaseDeductions?: DepositDeduction[] | null;
+  releasedAt?: string | null;
+  releaseReceivedAt?: string | null;
+  releaseDisputedAt?: string | null;
+  releaseDisputeReason?: string | null;
   tenancy?: {
     id: number;
     tenant: {
@@ -418,6 +435,72 @@ export interface SecurityDepositRecord {
 }
 
 export type SecurityDepositResponse = SecurityDepositRecord[];
+
+export interface DepositDeduction {
+  reason: string;
+  amount: number;
+}
+
+export type DepositAccountType = "MTN_MOMO" | "AIRTEL_MONEY" | "BANK_ACCOUNT" | "MOBILE_MONEY_MTN" | "MOBILE_MONEY_AIRTEL";
+
+export interface SecurityDepositAccount {
+  id: number;
+  accountName: string;
+  accountNumber: string;
+  accountType?: DepositAccountType | null;
+  instructions?: string | null;
+  isActive: boolean;
+  propertyAgreementId: number;
+  /** Deposits paid into this account and not yet paid out; while any exist the server refuses edits and removal. */
+  unsettledDepositCount?: number;
+  isLocked?: boolean;
+}
+
+export interface PropertyDepositSetup {
+  collectDepositViaEst8ledger: boolean;
+  /** est8Ledger-held deposits not yet paid out; while > 0 the landlord can't take collection back. */
+  unsettledEst8ledgerDepositCount?: number;
+  accounts: SecurityDepositAccount[];
+}
+
+export interface DepositAccountPayload {
+  accountName: string;
+  accountNumber: string;
+  accountType: DepositAccountType;
+  instructions?: string;
+  isActive?: boolean;
+}
+
+export type TaxpayerType = "COMPANY" | "INDIVIDUAL";
+
+export interface TaxConfig {
+  id: number;
+  mgtId: number;
+  type: TaxpayerType;
+  tin?: string | null;
+  nin?: string | null;
+  productCode: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTaxConfigPayload {
+  type: TaxpayerType;
+  tin?: string;
+  nin?: string;
+  productCode: string;
+}
+
+export interface AppNotification {
+  id: number | string;
+  type?: string | null;
+  title?: string | null;
+  message: string;
+  priority?: "high" | "medium" | "low" | null;
+  isRead: boolean;
+  createdAt?: string | null;
+}
 
 // Rent Payments / Rent Tracking
 export interface RentPayment {

@@ -189,17 +189,17 @@ function RecordPaymentPage() {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg border border-slate-200 p-6">
+      <div className="card p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Tenant Selection */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="label">
               Tenant <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.tenancyId}
               onChange={(e) => handleInputChange("tenancyId", e.target.value)}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
             >
               <option value="">Select tenant</option>
               {tenancies.map((tenancy: Tenancy) => (
@@ -214,13 +214,13 @@ function RecordPaymentPage() {
           {/* Payment Period */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
+              <label className="label">
                 Month <span className="text-red-500">*</span>
               </label>
               <select
                 value={formData.month}
                 onChange={(e) => handleInputChange("month", parseInt(e.target.value))}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
               >
                 {months.map((month) => (
                   <option key={month.value} value={month.value}>
@@ -230,13 +230,13 @@ function RecordPaymentPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
+              <label className="label">
                 Year <span className="text-red-500">*</span>
               </label>
               <select
                 value={formData.year}
                 onChange={(e) => handleInputChange("year", parseInt(e.target.value))}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
               >
                 {years.map((year) => (
                   <option key={year} value={year}>
@@ -249,7 +249,7 @@ function RecordPaymentPage() {
 
           {/* Amount */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="label">
               Amount <span className="text-red-500">*</span>
             </label>
             <input
@@ -258,13 +258,13 @@ function RecordPaymentPage() {
               placeholder="0.00"
               value={formData.amount}
               onChange={(e) => handleInputChange("amount", e.target.value)}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
             />
           </div>
 
           {/* Payment Reference */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="label">
               Payment Reference <span className="text-red-500">*</span>
             </label>
             <input
@@ -272,13 +272,13 @@ function RecordPaymentPage() {
               placeholder="e.g., TXN123456, MTN Mobile Money ref, etc."
               value={formData.paymentReference}
               onChange={(e) => handleInputChange("paymentReference", e.target.value)}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+              className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
             />
           </div>
 
           {/* Account Received Into */}
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-2">
+            <label className="label">
               Account Received Into <span className="text-red-500">*</span>
             </label>
             {accounts.length > 0 ? (
@@ -287,7 +287,7 @@ function RecordPaymentPage() {
                 onChange={(e) =>
                   handleInputChange("rentPaymentAccountId", e.target.value)
                 }
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
               >
                 <option value="">Select account</option>
                 {accounts.map((account) => (
@@ -328,7 +328,7 @@ function RecordPaymentPage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Recording..." : "Record Payment"}
             </button>

@@ -193,7 +193,7 @@ function TenancyAgreementDrawer({
         <div className="flex justify-end">
           <button
             onClick={handleDownload}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#3f0ee3] text-white rounded-lg font-semibold hover:bg-[#3f0ee3]/90 transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#3f0ee3] text-white rounded-lg font-semibold hover:bg-[#3409c4] transition-colors"
           >
             <Download size={17} />
             Download Agreement
@@ -466,7 +466,7 @@ function UnpaidMonthsDrawer({
           {dueRent.unpaidMonths.map((m) => (
             <div
               key={`${m.year}-${m.month}`}
-              className="bg-white rounded-xl border border-slate-200 p-4"
+              className="card p-4"
             >
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -676,7 +676,7 @@ function TenantProfilePage() {
       </button>
 
       {/* Hero header */}
-      <div className="rounded-2xl bg-gradient-to-r from-[#3f0ee3] to-indigo-600 p-6 text-white shadow-lg shadow-[#3f0ee3]/20">
+      <div className="rounded-2xl bg-gradient-to-r from-[#3f0ee3] to-indigo-600 p-6 text-white shadow-lg">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-4 min-w-0">
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white/15 text-xl font-bold backdrop-blur shrink-0">
@@ -751,7 +751,7 @@ function TenantProfilePage() {
       </div>
 
       {/* Financial command center — the single home for all money figures */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+      <div className="card/80 shadow-sm overflow-hidden">
         <div className="flex flex-col lg:flex-row">
           {/* Outstanding focal */}
           <div
@@ -840,7 +840,7 @@ function TenantProfilePage() {
         {/* Left Column — records */}
         <div className="lg:col-span-2 space-y-6">
           {/* Recent Payments */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+          <div className="card/80 shadow-sm p-6">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
                 <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-[#3f0ee3]/10 text-[#3f0ee3]">
@@ -917,7 +917,7 @@ function TenantProfilePage() {
           </div>
 
           {/* Inspections — single home for inspection status + records */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+          <div className="card/80 shadow-sm p-6">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
                 <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-violet-100 text-violet-600">
@@ -980,7 +980,7 @@ function TenantProfilePage() {
         {/* Right Column — status & reference */}
         <div className="space-y-6">
           {/* Security Deposit — single home for deposit status + detail */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+          <div className="card/80 shadow-sm p-6">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
                 <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700">
@@ -1038,7 +1038,7 @@ function TenantProfilePage() {
           </div>
 
           {/* Agreement — single home for signature status */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+          <div className="card/80 shadow-sm p-6">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
                 <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-100 text-indigo-600">
@@ -1087,7 +1087,7 @@ function TenantProfilePage() {
           </div>
 
           {/* Tenancy Details — reference facts */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+          <div className="card/80 shadow-sm p-6">
             <div className="flex items-center gap-2.5 mb-5">
               <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 text-slate-500">
                 <Home size={18} />
@@ -1147,7 +1147,7 @@ function TenantProfilePage() {
             <button
               onClick={handleSendText}
               disabled={sendingText}
-              className="px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {sendingText ? "Sending..." : "Send"}
             </button>
@@ -1161,7 +1161,7 @@ function TenantProfilePage() {
             onChange={(e) => setTextMessage(e.target.value)}
             placeholder="Type your message..."
             rows={4}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
           />
         </div>
       </SlideOver>

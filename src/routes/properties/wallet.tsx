@@ -135,7 +135,7 @@ function WalletPage() {
         <div className="flex justify-end">
           <button
             onClick={() => setShowForm((s) => !s)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors"
           >
             {showForm ? <X size={18} /> : <Plus size={18} />}
             {showForm ? "Cancel" : "Request Withdrawal"}
@@ -167,12 +167,12 @@ function WalletPage() {
 
         {/* Withdrawal Request Form */}
         {showForm && (
-          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <div className="card p-6 shadow-sm">
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Request Withdrawal</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                  <label className="label">
                     Amount <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -181,17 +181,17 @@ function WalletPage() {
                     placeholder="0.00"
                     value={formData.amount}
                     onChange={(e) => handleInputChange("amount", e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                  <label className="label">
                     Cash-out Method <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={formData.cashOutMethodId}
                     onChange={(e) => handleInputChange("cashOutMethodId", e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                   >
                     <option value="">Select method</option>
                     {cashOutMethods.map((method) => (
@@ -202,7 +202,7 @@ function WalletPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                  <label className="label">
                     Account Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -210,11 +210,11 @@ function WalletPage() {
                     placeholder="e.g., Jane Doe"
                     value={formData.accountName}
                     onChange={(e) => handleInputChange("accountName", e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                  <label className="label">
                     Account Number <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -222,11 +222,11 @@ function WalletPage() {
                     placeholder="e.g., 0771234567"
                     value={formData.accountNumber}
                     onChange={(e) => handleInputChange("accountNumber", e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                  <label className="label">
                     MTN Number <span className="text-slate-400 text-xs">(if applicable)</span>
                   </label>
                   <input
@@ -234,7 +234,7 @@ function WalletPage() {
                     placeholder="e.g., 0771234567"
                     value={formData.mtnNumber}
                     onChange={(e) => handleInputChange("mtnNumber", e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                   />
                 </div>
               </div>
@@ -242,7 +242,7 @@ function WalletPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex items-center gap-2 px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
                   {submitting ? "Submitting..." : "Submit Request"}
@@ -253,7 +253,7 @@ function WalletPage() {
         )}
 
         {/* Withdrawal History */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="card overflow-hidden">
           {withdrawals.length === 0 ? (
             <EmptyState
               icon={WalletIcon}

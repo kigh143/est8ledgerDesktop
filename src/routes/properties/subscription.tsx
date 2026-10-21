@@ -200,7 +200,7 @@ function SubscriptionPage() {
     >
       <div className="space-y-8">
         {/* Plan Hero */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#3f0ee3] via-[#552ae7] to-[#3f0ee3] p-8 sm:p-10 text-white shadow-xl shadow-[#3f0ee3]/25">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#3f0ee3] via-[#3f0ee3] to-[#3f0ee3] p-8 sm:p-10 text-white shadow-xl">
           <div className="pointer-events-none absolute -top-20 -right-10 w-64 h-64 rounded-full bg-[#7fe502]/20 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-10 w-56 h-56 rounded-full bg-white/10 blur-3xl" />
 
@@ -247,7 +247,7 @@ function SubscriptionPage() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md hover:border-slate-300 transition-all"
+                className="flex items-start gap-3 card p-4 hover:shadow-md hover:border-slate-300 transition-all"
               >
                 <div
                   className={`w-10 h-10 rounded-lg ${feature.color} flex items-center justify-center shrink-0`}
@@ -276,7 +276,7 @@ function SubscriptionPage() {
                   <div
                     key={method.shortName}
                     className={`rounded-xl border-2 overflow-hidden transition-all ${
-                      active ? "border-[#3f0ee3] shadow-sm shadow-[#3f0ee3]/10" : "border-slate-200"
+                      active ? "border-[#3f0ee3] shadow-sm" : "border-slate-200"
                     }`}
                   >
                     <button
@@ -335,7 +335,7 @@ function SubscriptionPage() {
           {/* Order Summary (sticky) */}
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-6 space-y-4">
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+              <div className="card p-6">
                 <h3 className="font-semibold text-slate-900 mb-4">Order Summary</h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
