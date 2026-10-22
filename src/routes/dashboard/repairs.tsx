@@ -223,7 +223,7 @@ function RepairsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="card overflow-hidden">
         {repairs.length === 0 ? (
           <EmptyState
             icon={Wrench}
@@ -348,7 +348,7 @@ function RepairsPage() {
                         handleStatusUpdate(selectedRepair.id, e.target.value as RepairStatus)
                       }
                       disabled={updatingId === selectedRepair.id}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] disabled:bg-slate-100 disabled:cursor-not-allowed"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 disabled:bg-slate-100 disabled:cursor-not-allowed"
                     >
                       <option value="REPORTED">Reported</option>
                       <option value="IN_PROGRESS">In Progress</option>
@@ -477,7 +477,7 @@ function RepairsPage() {
                     onChange={(e) => setReviewNotes(e.target.value)}
                     placeholder="Enter review notes..."
                     rows={3}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                   />
                   <div className="flex gap-2 mt-2">
                     <button
@@ -522,7 +522,7 @@ function RepairsPage() {
                   <h3 className="font-semibold text-slate-900 mb-3">Assign Contractor</h3>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 mb-2">
+                      <label className="label">
                         Contractor ID
                       </label>
                       <input
@@ -530,11 +530,11 @@ function RepairsPage() {
                         value={contractorId}
                         onChange={(e) => setContractorId(e.target.value)}
                         placeholder="Enter contractor ID"
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 mb-2">
+                      <label className="label">
                         Estimated Amount
                       </label>
                       <input
@@ -543,7 +543,7 @@ function RepairsPage() {
                         onChange={(e) => setEstimatedAmount(e.target.value)}
                         placeholder="Enter estimated amount"
                         step="0.01"
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                       />
                     </div>
                   </div>
@@ -634,7 +634,7 @@ function RepairsPage() {
                   <h3 className="font-semibold text-slate-900 mb-3">Submit Application</h3>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 mb-2">
+                      <label className="label">
                         Quoted Amount
                       </label>
                       <input
@@ -643,11 +643,11 @@ function RepairsPage() {
                         onChange={(e) => setQuotedAmount(e.target.value)}
                         placeholder="Enter your quote"
                         step="0.01"
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-900 mb-2">
+                      <label className="label">
                         Comment
                       </label>
                       <textarea
@@ -655,7 +655,7 @@ function RepairsPage() {
                         onChange={(e) => setComment(e.target.value)}
                         placeholder="Add your comment..."
                         rows={2}
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                       />
                     </div>
                   </div>

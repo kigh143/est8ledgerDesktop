@@ -62,18 +62,30 @@ est8ledgerDesktop/
 - **Accent**: `#7fe502` (Lime Green)
 - **Neutral**: Slate color palette
 
-### Color Usage
-- Primary purple for main CTAs, focus states, and active navigation
-- Accent lime for secondary actions and highlights
-- Dark sidebar: gradient from slate-900 to slate-800
-- Light backgrounds: slate-50 with subtle purple tint
+### Foundation (`src/index.css`)
+Apple-style neutral system with Airbnb-soft geometry:
+- **Type**: SF Pro (system) with Inter fallback; Lora for agreement documents, Dancing Script for signatures
+- **Neutrals**: Tailwind's `slate` scale is remapped to Apple system grays; canvas is `#f5f5f7`
+- **Radii/shadows**: theme tokens are softened globally (`rounded-lg` = 12px, hairline shadows)
+- **Status colors**: Apple system hues (`#34c759` green, `#ff9500` orange, `#ff3b30` red, `#007aff` blue)
 
-### Components
-All components use consistent styling with:
-- Rounded corners: `rounded-lg` (small) → `rounded-xl` (large)
-- Shadows: `shadow-sm` (subtle) → `shadow-lg` with color glow
-- Hover effects: smooth transitions and opacity changes
-- Responsive design: mobile-first with `sm:`, `md:`, `lg:` breakpoints
+### Component classes
+`card`, `glass`, `field`, `label`, `eyebrow`, `btn` + `btn-primary | btn-secondary | btn-tinted | btn-danger | btn-lg`.
+Prefer these over re-spelling long utility strings.
+
+### Shared UI (`src/componennts/dashboard/ui.tsx`)
+`PageHeader` (large title), `StatCard`, `EmptyState`, `Badge`, `Segmented`, `DetailRow`, `LoadingState`, `ConfirmDialog` (alert dialog, optional reason input).
+`SlideOver` is the sheet for forms/details. `AppShell` provides the light sidebar + translucent toolbar for both layouts.
+The dashboard sidebar header is `PropertySwitcher`; `AccountMenu` sits at its foot. Popovers anchored in the sidebar use `useAnchoredPopover` and render through a portal (the sidebar's `translate` would otherwise clip them).
+
+### Image uploads
+Use `uploadImages(files, category, entityId)` from `src/utils/presignedUpload.ts`: it compresses to JPEG, asks the backend for presigned Bunny URLs (`POST /uploads/presigned-urls`) and PUTs each file directly. Never put Bunny credentials in the client.
+
+### Reports
+`/properties/reports` (portfolio, property picker) and `/dashboard/reports` (active property) both render `componennts/reports/ReportView.tsx` from `GET /reports?period=month|quarter|year&year&index&propertyId`. The backend does all the maths; rent counts in the month it covers, and combined figures are grouped per currency, never converted. PDF comes from `GET /reports/pdf`; Excel is built client-side in `utils/reportExcel.ts`. Chart colours live in `utils/reportFormat.ts` (validated colour-blind-safe pair) and match the PDF.
+
+### Tax & pricing insight
+`/dashboard/tax` and `/dashboard/pricing` (active property) call `GET /rental-tax/estimate` and `GET /rental-tax/pricing` via `services/rentalTaxService.ts`. The backend does the URA maths; tax is charged on all of a landlord's rent in a country together, so the tax page splits it per property by rent. When the API returns `needsTaxpayerType`, `componennts/tax/TaxpayerTypePrompt.tsx` asks solo landlord vs business; the choice goes in the URL (`?type=`) and localStorage, and the landlord's tax config wins over it.
 
 ## 🔐 Authentication Flow
 
@@ -203,16 +215,10 @@ Used by: login, register, verify, pin screens
 - Responsive mobile view
 
 ### PropertiesLayout
-Used by: properties listing and management pages
-- Dark sidebar with navigation menu
-- Header with page title and logout button
-- Gradient background content area
+Used by: properties listing and account pages. Wraps `AppShell`; renders `pageTitle` as a large title with optional `action`.
 
 ### DashboardLayout
-Used by: property-specific management pages
-- Dark sidebar with context-aware menu
-- Header with property name and notification button
-- Gradient background with responsive padding
+Used by: property-specific pages (applied once in `routes/dashboard/route.tsx`). Wraps `AppShell` with the property identity card and a notification bell.
 
 ## 📝 Form Components
 

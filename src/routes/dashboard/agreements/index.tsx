@@ -235,7 +235,7 @@ function AgreementsListPage() {
             </button>
             <button
               onClick={() => navigate({ to: "/dashboard/agreements/edit" })}
-              className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors"
             >
               <Edit size={18} />
               Edit Terms
@@ -247,7 +247,7 @@ function AgreementsListPage() {
       {activeProperty ? (
         <div className="rounded-2xl bg-slate-100 border border-slate-200 p-3 sm:p-8 lg:p-12">
           {/* The document "page" */}
-          <div className="mx-auto max-w-3xl bg-white border border-slate-200 rounded-sm shadow-[0_1px_2px_rgba(0,0,0,0.04),0_20px_40px_-12px_rgba(15,23,42,0.18)]">
+          <div className="mx-auto max-w-3xl card rounded-sm shadow-[0_1px_2px_rgba(0,0,0,0.04),0_20px_40px_-12px_rgba(15,23,42,0.18)]">
             <div className="font-document p-6 sm:p-12 lg:p-16">
               {/* Letterhead */}
               <div className="text-center pb-8 mb-8 border-b-2 border-slate-800">
@@ -402,7 +402,7 @@ function AgreementsListPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+        <div className="card">
           <EmptyState icon={FileText} title="No property selected" message="Select a property to view its lease agreement." />
         </div>
       )}

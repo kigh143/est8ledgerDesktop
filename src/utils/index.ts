@@ -14,7 +14,9 @@ export const getNetworkError = (error:any) => {
       if (error.code === 'NETWORK_ERROR' || error.message === 'Network Error') {
         errorMessage = "Network error. Please check your internet connection.";
       } else if (error.response?.status === 400) {
-        errorMessage = error.response?.data?.message || "Sorry something went wrong";
+        const message = error.response?.data?.message;
+        // Nest validation errors arrive as a list of messages.
+        errorMessage = (Array.isArray(message) ? message.join(". ") : message) || "Sorry something went wrong";
       } else if (error.response?.status === 401) {
         errorMessage = "Sorry something went wrong";
       } else if (error.response?.status === 429) {

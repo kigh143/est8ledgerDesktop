@@ -78,13 +78,13 @@ function SettingsPage() {
     <PropertiesLayout pageTitle="Settings" subTitle="Manage your account and preferences">
       <div className="space-y-8">
         {/* User Profile Card */}
-        <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+        <div className="card p-8 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-xl font-bold text-slate-900">Account Information</h2>
               <p className="text-sm text-slate-600 mt-1">Your profile details</p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#552ae7] to-[#552ae7]/80 flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#3f0ee3] to-[#3f0ee3]/80 flex items-center justify-center text-white font-bold text-lg">
               {user?.firstName?.charAt(0) || "U"}
             </div>
           </div>
@@ -114,7 +114,7 @@ function SettingsPage() {
             <div className="border-t border-slate-200 pt-6">
               <button
                 onClick={() => toast.info("Profile editing coming soon")}
-                className="px-6 py-2.5 bg-linear-to-r from-[#552ae7] to-[#552ae7]/80 text-white rounded-lg font-semibold hover:shadow-lg transition-all active:scale-95"
+                className="px-6 py-2.5 bg-linear-to-r from-[#3f0ee3] to-[#3f0ee3]/80 text-white rounded-lg font-semibold hover:shadow-lg transition-all active:scale-95"
               >
                 Edit Profile
               </button>
@@ -123,10 +123,10 @@ function SettingsPage() {
         </div>
 
         {/* Security Section */}
-        <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+        <div className="card p-8 shadow-sm hover:shadow-md transition-shadow">
           <h2 className="text-xl font-bold text-slate-900 mb-8 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-[#552ae7]/20 to-[#552ae7]/10 flex items-center justify-center">
-              <Shield size={20} className="text-[#552ae7]" />
+            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-[#3f0ee3]/20 to-[#3f0ee3]/10 flex items-center justify-center">
+              <Shield size={20} className="text-[#3f0ee3]" />
             </div>
             Security
           </h2>
@@ -135,51 +135,51 @@ function SettingsPage() {
             {/* Change PIN Button */}
             <button
               onClick={() => setShowChangePinModal(true)}
-              className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
+              className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#3f0ee3] hover:bg-slate-50 transition-all group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#552ae7]/10 flex items-center justify-center group-hover:bg-[#552ae7]/20">
-                  <Lock className="w-5 h-5 text-[#552ae7]" />
+                <div className="w-10 h-10 rounded-lg bg-[#3f0ee3]/10 flex items-center justify-center group-hover:bg-[#3f0ee3]/20">
+                  <Lock className="w-5 h-5 text-[#3f0ee3]" />
                 </div>
                 <div className="text-left">
                   <p className="font-semibold text-slate-900">Change Security PIN</p>
                   <p className="text-sm text-slate-600">Update your 4-digit PIN</p>
                 </div>
               </div>
-              <div className="text-slate-400 group-hover:text-[#552ae7] transition-colors">→</div>
+              <div className="text-slate-400 group-hover:text-[#3f0ee3] transition-colors">→</div>
             </button>
 
             {/* Change Password Button */}
             <button
               onClick={() => toast.info("Password change feature coming soon")}
-              className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
+              className="w-full flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#3f0ee3] hover:bg-slate-50 transition-all group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#552ae7]/10 flex items-center justify-center group-hover:bg-[#552ae7]/20">
-                  <Lock className="w-5 h-5 text-[#552ae7]" />
+                <div className="w-10 h-10 rounded-lg bg-[#3f0ee3]/10 flex items-center justify-center group-hover:bg-[#3f0ee3]/20">
+                  <Lock className="w-5 h-5 text-[#3f0ee3]" />
                 </div>
                 <div className="text-left">
                   <p className="font-semibold text-slate-900">Change Password</p>
                   <p className="text-sm text-slate-600">Update your login password</p>
                 </div>
               </div>
-              <div className="text-slate-400 group-hover:text-[#552ae7] transition-colors">→</div>
+              <div className="text-slate-400 group-hover:text-[#3f0ee3] transition-colors">→</div>
             </button>
           </div>
         </div>
 
         {/* Help & Support Section */}
-        <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+        <div className="card p-8 shadow-sm hover:shadow-md transition-shadow">
           <h2 className="text-xl font-bold text-slate-900 mb-8">Help & Support</h2>
 
           <div className="space-y-3">
             {/* Email */}
             <a
               href="mailto:info@est8Ledger.com"
-              className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
+              className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg hover:border-[#3f0ee3] hover:bg-slate-50 transition-all group"
             >
-              <div className="w-12 h-12 rounded-lg bg-[#552ae7]/10 flex items-center justify-center group-hover:bg-[#552ae7]/20">
-                <Mail className="w-6 h-6 text-[#552ae7]" />
+              <div className="w-12 h-12 rounded-lg bg-[#3f0ee3]/10 flex items-center justify-center group-hover:bg-[#3f0ee3]/20">
+                <Mail className="w-6 h-6 text-[#3f0ee3]" />
               </div>
               <div>
                 <p className="font-semibold text-slate-900">Email Support</p>
@@ -190,10 +190,10 @@ function SettingsPage() {
             {/* Phone */}
             <a
               href="tel:+447930068728"
-              className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
+              className="flex items-center gap-4 p-4 border border-slate-200 rounded-lg hover:border-[#3f0ee3] hover:bg-slate-50 transition-all group"
             >
-              <div className="w-12 h-12 rounded-lg bg-[#552ae7]/10 flex items-center justify-center group-hover:bg-[#552ae7]/20">
-                <Phone className="w-6 h-6 text-[#552ae7]" />
+              <div className="w-12 h-12 rounded-lg bg-[#3f0ee3]/10 flex items-center justify-center group-hover:bg-[#3f0ee3]/20">
+                <Phone className="w-6 h-6 text-[#3f0ee3]" />
               </div>
               <div>
                 <p className="font-semibold text-slate-900">Phone Support</p>
@@ -204,10 +204,10 @@ function SettingsPage() {
         </div>
 
         {/* Legal Section */}
-        <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm hover:shadow-md transition-shadow">
+        <div className="card p-8 shadow-sm hover:shadow-md transition-shadow">
           <h2 className="text-xl font-bold text-slate-900 mb-8 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-[#552ae7]/20 to-[#552ae7]/10 flex items-center justify-center">
-              <FileText size={20} className="text-[#552ae7]" />
+            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-[#3f0ee3]/20 to-[#3f0ee3]/10 flex items-center justify-center">
+              <FileText size={20} className="text-[#3f0ee3]" />
             </div>
             Legal
           </h2>
@@ -218,13 +218,13 @@ function SettingsPage() {
               href="https://www.est8ledger.com/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
+              className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#3f0ee3] hover:bg-slate-50 transition-all group"
             >
               <div>
                 <p className="font-semibold text-slate-900">Privacy Policy</p>
                 <p className="text-sm text-slate-600">Read our privacy practices</p>
               </div>
-              <div className="text-slate-400 group-hover:text-[#552ae7] transition-colors">↗</div>
+              <div className="text-slate-400 group-hover:text-[#3f0ee3] transition-colors">↗</div>
             </a>
 
             {/* Terms of Use */}
@@ -232,13 +232,13 @@ function SettingsPage() {
               href="https://www.est8ledger.com/terms-of-use"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#552ae7] hover:bg-slate-50 transition-all group"
+              className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-[#3f0ee3] hover:bg-slate-50 transition-all group"
             >
               <div>
                 <p className="font-semibold text-slate-900">Terms of Use</p>
                 <p className="text-sm text-slate-600">Review our terms and conditions</p>
               </div>
-              <div className="text-slate-400 group-hover:text-[#552ae7] transition-colors">↗</div>
+              <div className="text-slate-400 group-hover:text-[#3f0ee3] transition-colors">↗</div>
             </a>
           </div>
         </div>
@@ -287,7 +287,7 @@ function SettingsPage() {
         <form onSubmit={handleChangePinSubmit} className="space-y-4">
               {/* Current PIN */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Current PIN <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -300,7 +300,7 @@ function SettingsPage() {
                     onChange={(e) =>
                       handlePinInputChange("currentPin", e.target.value.replace(/\D/g, ""))
                     }
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition text-center text-2xl tracking-widest"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition text-center text-2xl tracking-widest"
                   />
                   <button
                     type="button"
@@ -314,7 +314,7 @@ function SettingsPage() {
 
               {/* New PIN */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   New PIN <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -326,13 +326,13 @@ function SettingsPage() {
                   onChange={(e) =>
                     handlePinInputChange("newPin", e.target.value.replace(/\D/g, ""))
                   }
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition text-center text-2xl tracking-widest"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition text-center text-2xl tracking-widest"
                 />
               </div>
 
               {/* Confirm PIN */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Confirm New PIN <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -344,7 +344,7 @@ function SettingsPage() {
                   onChange={(e) =>
                     handlePinInputChange("confirmPin", e.target.value.replace(/\D/g, ""))
                   }
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#552ae7] focus:border-transparent outline-none transition text-center text-2xl tracking-widest"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition text-center text-2xl tracking-widest"
                 />
               </div>
 
@@ -367,7 +367,7 @@ function SettingsPage() {
                 <button
                   type="submit"
                   disabled={loadingPin}
-                  className="flex-1 px-4 py-2 bg-[#552ae7] text-white rounded-lg font-medium hover:bg-[#552ae7]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loadingPin ? "Changing..." : "Change PIN"}
                 </button>

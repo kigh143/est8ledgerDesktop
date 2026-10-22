@@ -167,7 +167,7 @@ function RentTrackingPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate({ to: "/dashboard/renttracking/record" })}
-            className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors"
           >
             <Plus size={20} />
             Record Payment
@@ -183,7 +183,7 @@ function RentTrackingPage() {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white rounded-lg border border-slate-200 p-4">
+      <div className="card p-4">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
             <div>
@@ -198,7 +198,7 @@ function RentTrackingPage() {
                   onChange={(e) =>
                     setFilterMonth(e.target.value === "all" ? "all" : parseInt(e.target.value))
                   }
-                  className="w-full sm:w-44 pl-9 pr-8 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                  className="w-full sm:w-44 pl-9 pr-8 py-2 border border-slate-300 rounded-lg text-sm focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                 >
                   <option value="all">All months</option>
                   {months.map((label, i) => (
@@ -220,7 +220,7 @@ function RentTrackingPage() {
                 onChange={(e) =>
                   setFilterYear(e.target.value === "all" ? "all" : parseInt(e.target.value))
                 }
-                className="w-full sm:w-32 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                className="w-full sm:w-32 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
               >
                 <option value="all">All years</option>
                 {yearOptions.map((year) => (
@@ -241,7 +241,7 @@ function RentTrackingPage() {
                   id="filter-tenant"
                   value={filterTenant}
                   onChange={(e) => setFilterTenant(e.target.value)}
-                  className="w-full sm:w-56 pl-9 pr-8 py-2 border border-slate-300 rounded-lg text-sm capitalize focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
+                  className="w-full sm:w-56 pl-9 pr-8 py-2 border border-slate-300 rounded-lg text-sm capitalize focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition"
                 >
                   <option value="all">All tenants</option>
                   {tenantOptions.map((t) => (
@@ -268,7 +268,7 @@ function RentTrackingPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
+        <div className="card p-6">
           <p className="text-sm font-medium text-slate-600">Rent Collected</p>
           <p className="mt-2 text-xl font-bold text-slate-900 tabular-nums">
             {new Intl.NumberFormat("en-US", {
@@ -278,7 +278,7 @@ function RentTrackingPage() {
           </p>
           <p className="mt-1 text-xs text-slate-400">{periodLabel}</p>
         </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
+        <div className="card p-6">
           <p className="text-sm font-medium text-slate-600">Average Rent</p>
           <p className="mt-2 text-xl font-bold text-slate-900 tabular-nums">
             {new Intl.NumberFormat("en-US", {
@@ -288,18 +288,18 @@ function RentTrackingPage() {
           </p>
           <p className="mt-1 text-xs text-slate-400">{filteredPayments.length} payment{filteredPayments.length === 1 ? "" : "s"}</p>
         </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
+        <div className="card p-6">
           <p className="text-sm font-medium text-slate-600">Confirmed Payments</p>
           <p className="mt-2 text-xl font-bold text-emerald-600 tabular-nums">{confirmedCount}</p>
         </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
+        <div className="card p-6">
           <p className="text-sm font-medium text-slate-600">Pending</p>
           <p className="mt-2 text-xl font-bold text-[#3f0ee3] tabular-nums">{pendingCount}</p>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+      <div className="card overflow-hidden">
         <div className="flex items-center justify-between px-6 py-3 border-b border-slate-200 bg-slate-50">
           <h2 className="text-sm font-semibold text-slate-900">
             Payments <span className="text-slate-400 font-normal">· {periodLabel}</span>
@@ -333,7 +333,7 @@ function RentTrackingPage() {
               )}
               <button
                 onClick={() => navigate({ to: "/dashboard/renttracking/record" })}
-                className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg text-sm font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg text-sm font-medium hover:bg-[#3409c4] transition-colors"
               >
                 <Plus size={16} />
                 Record Payment

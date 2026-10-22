@@ -152,7 +152,7 @@ function ManageAccountsPage() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors"
         >
           {showForm ? (
             <>
@@ -176,7 +176,7 @@ function ManageAccountsPage() {
               {accounts.map((account: any) => (
                 <div
                   key={account.id}
-                  className="bg-white rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all p-6"
+                  className="card hover:border-slate-300 hover:shadow-sm transition-all p-6"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
@@ -242,18 +242,18 @@ function ManageAccountsPage() {
         {/* Add Account Form - Sticky on right */}
         {showForm && (
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg border border-slate-200 p-6 sticky top-6 shadow-lg">
+            <div className="card p-6 sticky top-6 shadow-lg">
               <h2 className="text-lg font-semibold text-slate-900 mb-4">Add New Account</h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Type */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                  <label className="label">
                     Type <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={formData.accountType}
                     onChange={(e) => handleInputChange("accountType", e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition text-sm"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition text-sm"
                   >
                     <option value="">Select type</option>
                     {accountTypes.map((type) => (
@@ -266,7 +266,7 @@ function ManageAccountsPage() {
 
                 {/* Account Name */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                  <label className="label">
                     Account Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -274,13 +274,13 @@ function ManageAccountsPage() {
                     placeholder="e.g., MTN Wallet"
                     value={formData.accountName}
                     onChange={(e) => handleInputChange("accountName", e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition text-sm"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition text-sm"
                   />
                 </div>
 
                 {/* Account Number */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                  <label className="label">
                     Account Number <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -288,13 +288,13 @@ function ManageAccountsPage() {
                     placeholder="e.g., 0712345678"
                     value={formData.accountNumber}
                     onChange={(e) => handleInputChange("accountNumber", e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition text-sm"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition text-sm"
                   />
                 </div>
 
                 {/* Instructions */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                  <label className="label">
                     Instructions <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -302,7 +302,7 @@ function ManageAccountsPage() {
                     value={formData.instructions}
                     onChange={(e) => handleInputChange("instructions", e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition text-sm resize-none"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition text-sm resize-none"
                   />
                 </div>
 
@@ -310,7 +310,7 @@ function ManageAccountsPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="w-full px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   {loading ? "Adding..." : "Add Account"}
                 </button>

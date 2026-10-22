@@ -1,10 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import {
-  ArrowLeft, MessageCircle, Mail, Phone, AlertCircle, Edit, Trash2, Banknote,
-  CheckCircle2, Clock, ShieldCheck, FileSignature, ClipboardCheck,
-  Wallet, CalendarClock, Coins, CircleDollarSign, Home, Droplets, Zap,
-  ListChecks, X, AlertTriangle, Download,
+  Banknote, CalendarClock, Check, CheckCircle2, ChevronLeft, ChevronRight, Circle, ClipboardCheck, Clock,
+  Download, FileText, Hourglass, LogOut, Mail, MessageCircle, MessageSquareText, MoreHorizontal, Pencil,
+  Phone, Plus, Undo2, UserX, XCircle,
 } from "lucide-react";
 import tenancyService from "../../../services/tenancyService";
 import { securityDepositService } from "../../../services/securityDepositService";
@@ -12,9 +11,15 @@ import { rentPaymentsService } from "../../../services/rentPaymentsService";
 import type { DueRentDetails } from "../../../services/rentPaymentsService";
 import { inspectionService } from "../../../services/inspectionService";
 import SlideOver from "../../../componennts/SlideOver";
+import ReleaseDepositSheet from "../../../componennts/deposits/ReleaseDepositSheet";
+import { Badge, ConfirmDialog, DetailRow, EmptyState, type Tone } from "../../../componennts/dashboard/ui";
 import { useAppStore } from "../../../store";
 import { toast } from "react-toastify";
 import type { TenancyAgreement, SecurityDepositRecord, RentPayment, InspectionItem, PropertyClause } from "../../../types";
+import { getNetworkError } from "../../../utils";
+import {
+  canReleaseDeposit, getDepositStage, getReleaseState, isLandlordHeld, type DepositStage,
+} from "../../../utils/depositStatus";
 
 const esc = (s: unknown) =>
   String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -191,12 +196,9 @@ function TenancyAgreementDrawer({
       widthClass="max-w-3xl"
       footer={
         <div className="flex justify-end">
-          <button
-            onClick={handleDownload}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#3f0ee3] text-white rounded-lg font-semibold hover:bg-[#3f0ee3]/90 transition-colors"
-          >
-            <Download size={17} />
-            Download Agreement
+          <button onClick={handleDownload} className="btn btn-primary">
+            <Download size={16} />
+            Download PDF
           </button>
         </div>
       }
@@ -379,7 +381,7 @@ export const Route = createFileRoute("/dashboard/tenants/$tenantId")({
 });
 
 
-function UnpaidMonthsDrawer({
+function UnpaidMonthsSheet({
   open,
   onClose,
   dueRent,
@@ -390,132 +392,176 @@ function UnpaidMonthsDrawer({
   dueRent: DueRentDetails | null;
   fmtMoney: (n: number) => string;
 }) {
-  const [render, setRender] = useState(open);
-  const [shown, setShown] = useState(false);
-
-  useEffect(() => {
-    if (open) {
-      setRender(true);
-      const id = requestAnimationFrame(() => setShown(true));
-      return () => cancelAnimationFrame(id);
-    }
-    setShown(false);
-    const id = setTimeout(() => setRender(false), 300);
-    return () => clearTimeout(id);
-  }, [open]);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  if (!render || !dueRent) return null;
+  if (!dueRent) return null;
+  const count = dueRent.unpaidMonths.length;
 
   return (
-    <div className="fixed inset-0 z-50">
-      {/* Scrim */}
-      <div
-        onClick={onClose}
-        className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
-          shown ? "opacity-100" : "opacity-0"
-        }`}
-      />
-
-      {/* Panel */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Unpaid months"
-        className={`absolute right-0 top-0 h-full w-full sm:max-w-md bg-slate-50 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
-          shown ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#3f0ee3] to-indigo-600 text-white p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-bold">Unpaid Months</h2>
-              <p className="text-sm text-white/80 mt-0.5">
-                {dueRent.tenant.firstName} {dueRent.tenant.lastName} · {dueRent.unitName}
+    <SlideOver
+      open={open}
+      onClose={onClose}
+      title="Unpaid months"
+      subtitle={`${dueRent.tenant.firstName} ${dueRent.tenant.lastName} · Unit ${dueRent.unitName}`}
+      footer={
+        <div className="space-y-1.5 text-sm">
+          <div className="flex justify-between text-slate-500">
+            <span>Rent</span>
+            <span className="tabular-nums text-slate-900">{fmtMoney(dueRent.totalRentDue)}</span>
+          </div>
+          <div className="flex justify-between text-slate-500">
+            <span>Late fees</span>
+            <span className="tabular-nums text-slate-900">{fmtMoney(dueRent.totalLateFees)}</span>
+          </div>
+          <div className="flex justify-between border-t border-black/[0.06] pt-2">
+            <span className="font-semibold text-slate-900">Total due</span>
+            <span className="text-[17px] font-semibold text-[#d70015] tabular-nums">{fmtMoney(dueRent.overallTotal)}</span>
+          </div>
+        </div>
+      }
+    >
+      <p className="mb-4 text-sm text-slate-500">
+        {count} month{count === 1 ? "" : "s"} unpaid, oldest first.
+      </p>
+      <ul className="divide-y divide-black/[0.06] rounded-2xl ring-1 ring-black/[0.06]">
+        {dueRent.unpaidMonths.map((m) => (
+          <li key={`${m.year}-${m.month}`} className="flex items-center justify-between gap-4 px-4 py-3.5">
+            <div className="min-w-0">
+              <p className="font-semibold text-slate-900">
+                {m.monthName} {m.year}
+              </p>
+              <p className="mt-0.5 text-[13px] text-slate-500">
+                Due {formatShort(m.dueDate)} · {m.daysLate} day{m.daysLate === 1 ? "" : "s"} late
               </p>
             </div>
-            <button
-              onClick={onClose}
-              aria-label="Close"
-              className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/15 hover:bg-white/25 transition-colors shrink-0"
-            >
-              <X size={18} />
-            </button>
-          </div>
-          <div className="mt-4 flex items-end justify-between">
-            <div>
-              <p className="text-xs text-white/70">Total Outstanding</p>
-              <p className="text-2xl font-bold tabular-nums">{fmtMoney(dueRent.overallTotal)}</p>
+            <div className="shrink-0 text-right">
+              <p className="font-semibold text-slate-900 tabular-nums">{fmtMoney(m.total)}</p>
+              {m.lateFee > 0 && (
+                <p className="text-xs text-[#c93400] tabular-nums">incl. {fmtMoney(m.lateFee)} late fee</p>
+              )}
             </div>
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/15">
-              {dueRent.unpaidMonths.length} month{dueRent.unpaidMonths.length === 1 ? "" : "s"}
-            </span>
-          </div>
-        </div>
+          </li>
+        ))}
+      </ul>
+    </SlideOver>
+  );
+}
 
-        {/* List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {dueRent.unpaidMonths.map((m) => (
-            <div
-              key={`${m.year}-${m.month}`}
-              className="bg-white rounded-xl border border-slate-200 p-4"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="font-semibold text-slate-900">
-                    {m.monthName} {m.year}
-                  </p>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Due {new Date(m.dueDate).toLocaleDateString()}
-                  </p>
-                </div>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 shrink-0">
-                  <AlertTriangle size={12} />
-                  {m.daysLate} day{m.daysLate === 1 ? "" : "s"} late
-                </span>
-              </div>
+const formatShort = (iso: string | null | undefined) =>
+  iso ? new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
 
-              <div className="mt-3 pt-3 border-t border-slate-100 space-y-1.5 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Rent Due</span>
-                  <span className="font-medium text-slate-900 tabular-nums">{fmtMoney(m.rentDue)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Late Fee</span>
-                  <span className="font-medium text-amber-600 tabular-nums">{fmtMoney(m.lateFee)}</span>
-                </div>
-                <div className="flex justify-between pt-1.5 border-t border-slate-100">
-                  <span className="font-medium text-slate-700">Total</span>
-                  <span className="font-bold text-red-600 tabular-nums">{fmtMoney(m.total)}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+const addDays = (iso: string, days: number) => {
+  const d = new Date(iso);
+  d.setDate(d.getDate() + days);
+  return d.toISOString();
+};
 
-        {/* Footer totals */}
-        <div className="border-t border-slate-200 bg-white p-4 space-y-1.5 text-sm">
-          <div className="flex justify-between">
-            <span className="text-slate-500">Total Rent</span>
-            <span className="font-medium text-slate-900 tabular-nums">{fmtMoney(dueRent.totalRentDue)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-slate-500">Total Late Fees</span>
-            <span className="font-medium text-amber-600 tabular-nums">{fmtMoney(dueRent.totalLateFees)}</span>
-          </div>
-          <div className="flex justify-between pt-1.5 border-t border-slate-100">
-            <span className="font-semibold text-slate-700">Grand Total</span>
-            <span className="font-bold text-red-600 text-base tabular-nums">{fmtMoney(dueRent.overallTotal)}</span>
-          </div>
+const paymentStatus: Record<RentPayment["status"], { label: string; tone: Tone }> = {
+  CONFIRMED: { label: "Confirmed", tone: "emerald" },
+  PENDING: { label: "Pending", tone: "amber" },
+  DISPUTED: { label: "Disputed", tone: "red" },
+  CANCELLED: { label: "Cancelled", tone: "slate" },
+};
+
+/** Small popover menu anchored to a trigger button. Closes on outside click and Escape. */
+function Menu({ trigger, label, children }: { trigger: ReactNode; label: string; children: (close: () => void) => ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => ref.current && !ref.current.contains(e.target as Node) && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", onDown);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={label}
+        className="btn btn-secondary"
+      >
+        {trigger}
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 z-40 mt-2 w-64 origin-top-right rounded-2xl bg-white/95 p-1.5 shadow-xl ring-1 ring-black/[0.08] backdrop-blur-xl animate-fade-up"
+        >
+          {children(() => setOpen(false))}
         </div>
+      )}
+    </div>
+  );
+}
+
+function MenuItem({ icon: Icon, children, onSelect, href, destructive, hint }: {
+  icon: typeof Mail;
+  children: ReactNode;
+  onSelect?: () => void;
+  href?: string;
+  destructive?: boolean;
+  hint?: string;
+}) {
+  const cls = `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium ${
+    destructive ? "text-[#d70015] hover:bg-[#ff3b30]/[0.07]" : "text-slate-800 hover:bg-slate-100"
+  }`;
+  const body = (
+    <>
+      <Icon size={17} className={destructive ? "" : "text-slate-500"} />
+      <span className="min-w-0 flex-1">
+        <span className="block">{children}</span>
+        {hint && <span className="block truncate text-xs font-normal text-slate-500">{hint}</span>}
+      </span>
+    </>
+  );
+  return href ? (
+    <a role="menuitem" href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" onClick={onSelect} className={cls}>
+      {body}
+    </a>
+  ) : (
+    <button role="menuitem" onClick={onSelect} className={cls}>
+      {body}
+    </button>
+  );
+}
+
+function SectionCard({ title, meta, action, children }: { title: string; meta?: ReactNode; action?: ReactNode; children: ReactNode }) {
+  return (
+    <section className="card p-6">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <h2 className="text-[17px] font-semibold text-slate-900">{title}</h2>
+          {meta}
+        </div>
+        {action}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function TenantProfileSkeleton() {
+  return (
+    <div className="space-y-8 animate-pulse" aria-busy="true" aria-label="Loading tenant">
+      <div className="h-4 w-20 rounded bg-slate-200" />
+      <div className="flex items-center gap-5">
+        <div className="h-20 w-20 rounded-full bg-slate-200" />
+        <div className="space-y-3">
+          <div className="h-7 w-56 rounded bg-slate-200" />
+          <div className="h-4 w-40 rounded bg-slate-200" />
+        </div>
+      </div>
+      <div className="h-36 rounded-2xl bg-slate-200/70" />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="h-72 rounded-2xl bg-slate-200/70 lg:col-span-2" />
+        <div className="h-72 rounded-2xl bg-slate-200/70" />
       </div>
     </div>
   );
@@ -530,21 +576,17 @@ function TenantProfilePage() {
   const [inspections, setInspections] = useState<InspectionItem[]>([]);
   const [dueRent, setDueRent] = useState<DueRentDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showTextModal, setShowTextModal] = useState(false);
-  const [textMessage, setTextMessage] = useState("");
-  const [sendingText, setSendingText] = useState(false);
-  const [showTerminateModal, setShowTerminateModal] = useState(false);
-  const [terminatingId, setTerminatingId] = useState<string | null>(null);
-  const [showUnpaidModal, setShowUnpaidModal] = useState(false);
-  const [showAgreementDrawer, setShowAgreementDrawer] = useState(false);
+  const [showAllPayments, setShowAllPayments] = useState(false);
+  const [showUnpaid, setShowUnpaid] = useState(false);
+  const [showAgreement, setShowAgreement] = useState(false);
+  const [confirmTerminate, setConfirmTerminate] = useState(false);
+  const [confirmCancelTermination, setConfirmCancelTermination] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [releaseKey, setReleaseKey] = useState(0);
+  const [releasing, setReleasing] = useState(false);
 
-  useEffect(() => {
-    loadTenantData();
-  }, [tenantId]);
-
-  const loadTenantData = async () => {
+  const loadTenantData = useCallback(async () => {
     try {
-      setLoading(true);
       const [tenancyRes, depositsRes, paymentsRes, inspectionsRes, dueRentRes] = await Promise.all([
         tenancyService.getTenancy(tenantId),
         securityDepositService.getTenancyDeposit(tenantId),
@@ -554,660 +596,626 @@ function TenantProfilePage() {
       ]);
 
       setTenancy(tenancyRes.data || tenancyRes);
-      setDeposits((depositsRes?.data || []) as SecurityDepositRecord[]);
-      setPayments(paymentsRes as any[]);
+      setDeposits((depositsRes?.data || depositsRes || []) as SecurityDepositRecord[]);
+      setPayments((paymentsRes || []) as RentPayment[]);
       setInspections((inspectionsRes?.data || inspectionsRes || []) as InspectionItem[]);
       setDueRent(dueRentRes);
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to load tenant data");
+      toast.error(getNetworkError(error));
     } finally {
       setLoading(false);
     }
-  };
+  }, [tenantId]);
 
-  const handleSendText = async () => {
-    if (!textMessage.trim()) {
-      toast.error("Please enter a message");
-      return;
-    }
+  useEffect(() => {
+    loadTenantData();
+  }, [loadTenantData]);
 
-    setSendingText(true);
-    try {
-      // Mock SMS service - replace with actual service when available
-      console.log(`Sending SMS to ${tenancy?.tenant.phoneNumber}: ${textMessage}`);
-      toast.success("Text sent successfully");
-      setShowTextModal(false);
-      setTextMessage("");
-    } catch (error) {
-      toast.error("Failed to send text");
-    } finally {
-      setSendingText(false);
-    }
-  };
-
-  const handleTerminateTenancy = async () => {
-    if (!tenancy) return;
-
-    setTerminatingId(tenancy.id.toString());
-    try {
-      await tenancyService.mgtRequestTenancyTermiantion(tenancy.id.toString());
-      toast.success("Termination request sent successfully");
-      setShowTerminateModal(false);
-      // Reload the data
-      setTimeout(() => {
-        loadTenantData();
-      }, 500);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to terminate tenancy");
-    } finally {
-      setTerminatingId(null);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <div className="text-center">
-          <div className="inline-block w-12 h-12 border-4 border-[#3f0ee3]/20 border-t-[#3f0ee3] rounded-full animate-spin mb-4" />
-          <p className="text-slate-600 font-medium">Loading tenant details...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <TenantProfileSkeleton />;
 
   if (!tenancy) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <div className="text-center">
-          <AlertCircle size={48} className="text-slate-400 mx-auto mb-4" />
-          <p className="text-slate-600 font-medium">Tenant not found</p>
-        </div>
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+          <UserX size={26} strokeWidth={1.5} />
+        </span>
+        <p className="text-[17px] font-semibold text-slate-900">We couldn't find this tenant</p>
+        <p className="mt-1 text-sm text-slate-500">They may have been removed, or the link is out of date.</p>
+        <Link to="/dashboard/tenants" className="btn btn-secondary mt-5">Back to tenants</Link>
       </div>
     );
   }
 
+  const tenant = tenancy.tenant;
+  const fullName = `${tenant.firstName ?? ""} ${tenant.lastName ?? ""}`.trim() || tenant.email;
+  const firstName = tenant.firstName || "The tenant";
+  const initials = `${tenant.firstName?.[0] ?? ""}${tenant.lastName?.[0] ?? ""}`.toUpperCase() || "T";
   const currency = tenancy.propertyAgreement?.currency || "UGX";
+  const fmtMoney = (n: number) => `${currency} ${new Intl.NumberFormat("en-US").format(Math.round(n))}`;
+  const monthLabel = (m: number, y: number) =>
+    new Date(y, m - 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+
+  // Money
   const monthlyRent = Number(dueRent?.rentAmount ?? tenancy.rentAmount) || 0;
   // Prefer the authoritative due-rent endpoint, fall back to tenancy fields
   const outstandingBalance =
     Number(dueRent?.totalRentDue ?? NaN) ||
     Number(tenancy.outstanding_rent_balance ?? 0) ||
     parseFloat(tenancy.outstandingBalance || "0");
-  const totalDeposits = deposits.reduce((sum, d) => sum + parseFloat(d.amount?.toString() || "0"), 0);
-  const totalPayments = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
-
-  // At-a-glance landlord metrics
+  const lateFees = dueRent?.totalLateFees ?? 0;
+  const totalDue = dueRent?.overallTotal ?? outstandingBalance;
   const monthsUnpaid =
     dueRent?.unpaidMonths != null
       ? dueRent.unpaidMonths.length
       : monthlyRent > 0 && outstandingBalance > 0
       ? Math.ceil(outstandingBalance / monthlyRent)
       : 0;
-  const isUpToDate = outstandingBalance <= 0;
-  const depositPaid = !!tenancy.securityDepositPaidAt || deposits.some((d) => d.paymentStatus === "COMPLETED");
+  const owes = totalDue > 0;
+  const totalPaid = payments
+    .filter((p) => p.status === "CONFIRMED")
+    .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+  const pendingPayments = payments.filter((p) => p.status === "PENDING").length;
+  const sortedPayments = [...payments].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+  const visiblePayments = showAllPayments ? sortedPayments : sortedPayments.slice(0, 5);
+
+  // Setup checklist
   const agreementSigned = !!tenancy.tenantSignedAt && !!tenancy.mgtSignedAt;
-  const completedInspections = inspections.filter(
-    (i) => i.status === "COMPLETED" || i.status === "APPROVED"
-  ).length;
-  const inspectionsDone = inspections.length > 0 && completedInspections === inspections.length;
+  const activeDeposits = deposits.filter((d) => getDepositStage(d) !== "REJECTED");
+  const depositApproved = activeDeposits.some((d) => getDepositStage(d) === "COMPLETED");
+  const depositPaid = !!tenancy.securityDepositPaidAt || depositApproved || activeDeposits.length > 0;
+  const moveIn = inspections.find((i) => i.type === "MOVE_IN");
+  const moveInDone = !!moveIn && (moveIn.status === "COMPLETED" || moveIn.status === "APPROVED");
+  const setupSteps = [
+    { label: "Agreement signed", done: agreementSigned, detail: agreementSigned ? formatShort(tenancy.tenantSignedAt) : tenancy.tenantSignedAt ? "Waiting on you" : `Waiting on ${firstName}` },
+    { label: "Deposit paid", done: depositApproved, partial: depositPaid && !depositApproved, detail: depositApproved ? "Approved" : depositPaid ? "Awaiting approval" : "Not paid yet" },
+    { label: "Move-in inspection", done: moveInDone, partial: !!moveIn && !moveInDone, detail: moveInDone ? formatShort(moveIn?.createdAt) : moveIn ? "Awaiting approval" : "Not started" },
+  ];
+  const stepsDone = setupSteps.filter((s) => s.done).length;
 
-  const recentPayments = [...payments].sort(
-    (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
+  // Termination (mirrors the mobile app)
+  const isActive = !tenancy.terminatedAt;
+  const noticeDays = tenancy.propertyAgreement?.terminationNoticeDays || 30;
+  const tenantSideAt = tenancy.tenantRequestedAt || tenancy.terminationApprovedByTenantAt;
+  const canManageTermination =
+    isActive && !tenancy.terminationApprovedByTenantAt && !(tenancy.repairBreakdowns?.length > 0);
+  const awaitingTenantApproval = canManageTermination && !!tenancy.mgtRequestedAt;
+
+  // Deposit refund
+  const landlordDeposit = deposits.find((d) => isLandlordHeld(d) && getDepositStage(d) === "COMPLETED") ?? null;
+  const canRelease = !!landlordDeposit && canReleaseDeposit(landlordDeposit, tenancy as unknown as Record<string, unknown>);
+  const releaseState = landlordDeposit ? getReleaseState(landlordDeposit) : null;
+
+  const phoneDigits = (tenant.phoneNumber || "").replace(/[^\d]/g, "");
+  const openRelease = () => {
+    setReleaseKey((k) => k + 1);
+    setReleasing(true);
+  };
+  const releaseAction = canRelease && (
+    <button onClick={openRelease} className="btn btn-primary min-h-8 px-3.5 text-[13px]">
+      {releaseState === "DISPUTED" ? "Release deposit again" : "Release deposit"}
+    </button>
   );
+  const goRecordPayment = () =>
+    navigate({ to: "/dashboard/renttracking/record", search: { tenancyId: tenancy.id.toString() } });
 
-  const initials = `${tenancy.tenant.firstName?.[0] ?? ""}${tenancy.tenant.lastName?.[0] ?? ""}`.toUpperCase();
+  const runAction = async (action: () => Promise<unknown>, success: string) => {
+    setBusy(true);
+    try {
+      await action();
+      toast.success(success);
+      await loadTenantData();
+      return true;
+    } catch (error) {
+      toast.error(getNetworkError(error));
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  };
 
-  const fmtMoney = (n: number) =>
-    `${currency} ${new Intl.NumberFormat("en-US").format(Math.round(n))}`;
-  const monthLabel = (m: number, y: number) =>
-    new Date(y, m - 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const handleRequestTermination = async () => {
+    const ok = await runAction(
+      () => tenancyService.mgtRequestTenancyTermiantion(tenancy.id.toString()),
+      `Termination request sent to ${firstName}`
+    );
+    if (ok) setConfirmTerminate(false);
+  };
+
+  const handleCancelTermination = async () => {
+    const ok = await runAction(
+      () => tenancyService.updateTenancy({ id: tenancy.id, mgtRequestedAt: null }),
+      "Termination request withdrawn"
+    );
+    if (ok) setConfirmCancelTermination(false);
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Back link */}
-      <button
-        onClick={() => navigate({ to: "/dashboard/tenants" })}
-        className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
+    <div className="space-y-8">
+      <Link
+        to="/dashboard/tenants"
+        className="-ml-1.5 inline-flex items-center gap-0.5 rounded-lg px-1.5 py-1 text-[15px] font-medium text-[#3f0ee3] hover:bg-[#3f0ee3]/[0.06]"
       >
-        <ArrowLeft size={18} />
-        Back to tenants
-      </button>
+        <ChevronLeft size={18} strokeWidth={2.25} />
+        Tenants
+      </Link>
 
-      {/* Hero header */}
-      <div className="rounded-2xl bg-gradient-to-r from-[#3f0ee3] to-indigo-600 p-6 text-white shadow-lg shadow-[#3f0ee3]/20">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-4 min-w-0">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white/15 text-xl font-bold backdrop-blur shrink-0">
-              {initials || "T"}
+      {/* Identity */}
+      <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between animate-fade-up">
+        <div className="flex min-w-0 items-center gap-5">
+          <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#3f0ee3] to-[#7c5cff] text-2xl font-semibold text-white shadow-[0_8px_24px_-8px_rgb(63_14_227/0.5)]">
+            {initials}
+          </span>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="truncate text-[30px] font-bold leading-tight tracking-[-0.028em] text-slate-900 capitalize">
+                {fullName}
+              </h1>
+              {!isActive ? (
+                <Badge tone="slate">Ended</Badge>
+              ) : tenantSideAt || tenancy.mgtRequestedAt ? (
+                <Badge tone="amber">Ending</Badge>
+              ) : (
+                <Badge tone="emerald">Active</Badge>
+              )}
             </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl font-bold truncate">
-                  {tenancy.tenant.firstName} {tenancy.tenant.lastName}
-                </h1>
-                <span
-                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                    tenancy.terminatedAt ? "bg-red-500/90 text-white" : "bg-white/20 text-white"
-                  }`}
-                >
-                  {tenancy.terminatedAt ? "Terminated" : "Active"}
-                </span>
-              </div>
-              <p className="text-white/80 text-sm mt-0.5">
-                {tenancy.unitName}
-                {tenancy.propertyAgreement?.propertyName ? ` · ${tenancy.propertyAgreement.propertyName}` : ""}
-              </p>
-              <div className="flex items-center gap-4 mt-2 text-sm text-white/80">
-                <a href={`mailto:${tenancy.tenant.email}`} className="flex items-center gap-1.5 hover:text-white transition-colors">
-                  <Mail size={15} />
-                  <span className="truncate">{tenancy.tenant.email}</span>
+            <p className="mt-1 text-[15px] text-slate-500">
+              Unit {tenancy.unitName}
+              {tenancy.propertyAgreement?.propertyName ? ` · ${tenancy.propertyAgreement.propertyName}` : ""}
+              {` · Tenant since ${new Date(tenancy.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}`}
+            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-600">
+              {tenant.email && (
+                <a href={`mailto:${tenant.email}`} className="inline-flex items-center gap-1.5 hover:text-[#3f0ee3]">
+                  <Mail size={14} className="text-slate-400" />
+                  {tenant.email}
                 </a>
-                <a href={`tel:${tenancy.tenant.phoneNumber}`} className="flex items-center gap-1.5 hover:text-white transition-colors">
-                  <Phone size={15} />
-                  {tenancy.tenant.phoneNumber}
+              )}
+              {tenant.phoneNumber && (
+                <a href={`tel:${tenant.phoneNumber}`} className="inline-flex items-center gap-1.5 hover:text-[#3f0ee3] tabular-nums">
+                  <Phone size={14} className="text-slate-400" />
+                  {tenant.phoneNumber}
                 </a>
-              </div>
+              )}
             </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2 shrink-0">
-            <button
-              onClick={() =>
-                navigate({
-                  to: "/dashboard/renttracking/record",
-                  search: { tenancyId: tenancy.id.toString() },
-                })
-              }
-              className="flex items-center gap-2 px-4 py-2 bg-white text-[#3f0ee3] rounded-lg font-semibold hover:bg-white/90 transition-colors"
-            >
-              <Banknote size={18} />
-              Record Payment
-            </button>
-            <button
-              onClick={() => setShowTextModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-white/15 text-white rounded-lg font-medium hover:bg-white/25 transition-colors backdrop-blur"
-            >
-              <MessageCircle size={18} />
-              Send Text
-            </button>
-            <button
-              onClick={() => navigate({ to: `/dashboard/tenants/edit/${tenancy.id}` })}
-              className="flex items-center gap-2 px-4 py-2 bg-white/15 text-white rounded-lg font-medium hover:bg-white/25 transition-colors backdrop-blur"
-            >
-              <Edit size={18} />
-              Edit
-            </button>
-            <button
-              onClick={() => setShowTerminateModal(true)}
-              aria-label="Terminate tenancy"
-              className="flex items-center justify-center p-2 w-10 h-10 bg-white/15 text-white rounded-lg hover:bg-red-500 transition-colors backdrop-blur"
-            >
-              <Trash2 size={18} />
-            </button>
           </div>
         </div>
-      </div>
 
-      {/* Financial command center — the single home for all money figures */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <div className="flex flex-col lg:flex-row">
-          {/* Outstanding focal */}
-          <div
-            className={`p-6 lg:w-80 shrink-0 text-white ${
-              outstandingBalance > 0
-                ? "bg-gradient-to-br from-red-500 to-rose-600"
-                : "bg-gradient-to-br from-emerald-500 to-emerald-600"
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-white/85">
-                <CircleDollarSign size={16} />
-                Outstanding Balance
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 backdrop-blur">
-                {isUpToDate ? "Up to date" : "Overdue"}
-              </span>
-            </div>
-            <p className="mt-3 text-[1.5rem] leading-none font-bold tabular-nums">
-              {fmtMoney(outstandingBalance)}
+        <div className="flex flex-wrap items-center gap-2">
+          <Menu label="Contact tenant" trigger={<><MessageCircle size={16} /> Contact</>}>
+            {(close) => (
+              <>
+                {phoneDigits ? (
+                  <>
+                    <MenuItem icon={MessageCircle} href={`https://wa.me/${phoneDigits}`} onSelect={close} hint={tenant.phoneNumber}>WhatsApp</MenuItem>
+                    <MenuItem icon={MessageSquareText} href={`sms:${tenant.phoneNumber}`} onSelect={close}>Text message</MenuItem>
+                    <MenuItem icon={Phone} href={`tel:${tenant.phoneNumber}`} onSelect={close}>Call</MenuItem>
+                  </>
+                ) : (
+                  <p className="px-3 py-2 text-xs text-slate-500">No phone number on file.</p>
+                )}
+                {tenant.email && (
+                  <MenuItem icon={Mail} href={`mailto:${tenant.email}`} onSelect={close} hint={tenant.email}>Email</MenuItem>
+                )}
+              </>
+            )}
+          </Menu>
+          <Link to="/dashboard/tenants/edit/$tenantId" params={{ tenantId: tenancy.id.toString() }} className="btn btn-secondary">
+            <Pencil size={15} /> Edit
+          </Link>
+          <Menu label="More actions" trigger={<MoreHorizontal size={18} />}>
+            {(close) => (
+              <>
+                <MenuItem icon={FileText} onSelect={() => { close(); setShowAgreement(true); }}>View agreement</MenuItem>
+                {canRelease && (
+                  <MenuItem
+                    icon={Undo2}
+                    onSelect={() => {
+                      close();
+                      openRelease();
+                    }}
+                  >
+                    {releaseState === "DISPUTED" ? "Release deposit again" : "Release deposit"}
+                  </MenuItem>
+                )}
+                {canManageTermination && (
+                  <>
+                    <div className="my-1 h-px bg-black/[0.06]" />
+                    {tenancy.mgtRequestedAt ? (
+                      <MenuItem icon={XCircle} onSelect={() => { close(); setConfirmCancelTermination(true); }}>
+                        Cancel termination request
+                      </MenuItem>
+                    ) : (
+                      <MenuItem icon={LogOut} destructive onSelect={() => { close(); setConfirmTerminate(true); }}>
+                        End tenancy…
+                      </MenuItem>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </Menu>
+          {isActive && (
+            <button onClick={goRecordPayment} className="btn btn-primary">
+              <Plus size={16} /> Record payment
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Termination status */}
+      {!isActive ? (
+        <Banner tone="slate" icon={LogOut} title={`Tenancy ended on ${formattedDate(tenancy.terminatedAt)}`} action={releaseAction}>
+          {releaseState && releaseState !== "HELD"
+            ? releaseState === "RECEIVED"
+              ? `${firstName} confirmed they received their deposit back.`
+              : releaseState === "RELEASED"
+              ? `You released the deposit. Waiting for ${firstName} to confirm it arrived.`
+              : `${firstName} disputed the deposit refund. Adjust the deductions and release it again.`
+            : canRelease
+            ? `Return ${firstName}'s security deposit, minus any deductions.`
+            : undefined}
+        </Banner>
+      ) : tenantSideAt ? (
+        <Banner tone="amber" icon={CalendarClock} title={`Move-out due by ${formattedDate(addDays(tenantSideAt, noticeDays))}`} action={releaseAction}>
+          {tenancy.tenantRequestedAt ? `${firstName} asked to end the tenancy` : `${firstName} agreed to end the tenancy`} on{" "}
+          {formattedDate(tenantSideAt)}, with a {noticeDays}-day notice period.
+        </Banner>
+      ) : awaitingTenantApproval ? (
+        <Banner
+          tone="amber"
+          icon={Hourglass}
+          title={`Waiting for ${firstName} to accept`}
+          action={
+            <button onClick={() => setConfirmCancelTermination(true)} className="btn btn-secondary min-h-8 px-3 text-[13px]">
+              Withdraw request
+            </button>
+          }
+        >
+          You asked to end this tenancy on {formattedDate(tenancy.mgtRequestedAt)}. {firstName} has been notified.
+        </Banner>
+      ) : null}
+
+      {/* Rent summary */}
+      <section className="card overflow-hidden">
+        <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,2fr)]">
+          <div className="border-b border-black/[0.06] p-6 lg:border-b-0 lg:border-r">
+            <p className="text-[13px] font-medium text-slate-500">{owes ? "Balance due" : "Rent"}</p>
+            <p
+              className={`mt-2 text-[36px] font-semibold leading-none tracking-tight tabular-nums ${
+                owes ? "text-[#d70015]" : "text-slate-900"
+              }`}
+            >
+              {owes ? fmtMoney(totalDue) : "Paid up"}
             </p>
-            <p className="mt-2 text-sm text-white/80">
-              {dueRent && dueRent.totalLateFees > 0
-                ? `+ ${fmtMoney(dueRent.totalLateFees)} late fees → ${fmtMoney(dueRent.overallTotal)} total due`
-                : isUpToDate
-                ? "All rent settled"
-                : "Rent outstanding"}
+            <p className="mt-2.5 text-sm text-slate-500">
+              {owes
+                ? `${monthsUnpaid} month${monthsUnpaid === 1 ? "" : "s"} behind${lateFees > 0 ? ` · includes ${fmtMoney(lateFees)} in late fees` : ""}`
+                : `Nothing owed. Next rent is due on day ${tenancy.paymentDueDay ?? "—"}.`}
             </p>
             {dueRent && dueRent.unpaidMonths.length > 0 && (
               <button
-                onClick={() => setShowUnpaidModal(true)}
-                className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/15 hover:bg-white/25 rounded-lg text-sm font-semibold backdrop-blur transition-colors"
+                onClick={() => setShowUnpaid(true)}
+                className="mt-4 inline-flex items-center gap-0.5 text-sm font-semibold text-[#3f0ee3] hover:underline"
               >
-                <ListChecks size={16} />
-                See all unpaid months
+                View unpaid months
+                <ChevronRight size={16} />
               </button>
             )}
           </div>
-
-          {/* Secondary metrics — clean divided cells */}
-          <div className="flex-1 grid grid-cols-2 xl:grid-cols-4 gap-px bg-slate-100">
+          <dl className="grid grid-cols-1 divide-y divide-black/[0.06] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             {[
+              { label: "Monthly rent", value: fmtMoney(monthlyRent), hint: tenancy.paymentDueDay ? `Due on day ${tenancy.paymentDueDay}` : "No due day set" },
               {
-                icon: CalendarClock,
-                label: "Months Unpaid",
-                value: String(monthsUnpaid),
-                valueClass: monthsUnpaid > 0 ? "text-amber-600" : "text-slate-900",
-                hint: monthsUnpaid > 0 ? "behind on rent" : "none",
+                label: "Late fees",
+                value: fmtMoney(lateFees),
+                hint: dueRent?.late_paymeny_percentage ? `${dueRent.late_paymeny_percentage}% per late month` : `${tenancy.gracePeriodDays ?? 0}-day grace period`,
               },
-              {
-                icon: Coins,
-                label: "Late Fees",
-                value: fmtMoney(dueRent?.totalLateFees ?? 0),
-                valueClass: (dueRent?.totalLateFees ?? 0) > 0 ? "text-amber-600" : "text-slate-900",
-                hint: dueRent ? `${dueRent.late_paymeny_percentage}% per month` : undefined,
-              },
-              {
-                icon: Wallet,
-                label: "Total Paid",
-                value: fmtMoney(totalPayments),
-                valueClass: "text-emerald-600",
-                hint: `${payments.length} payment${payments.length === 1 ? "" : "s"}`,
-              },
-              {
-                icon: Banknote,
-                label: "Monthly Rent",
-                value: fmtMoney(monthlyRent),
-                valueClass: "text-slate-900",
-                hint: tenancy.paymentDueDay ? `due day ${tenancy.paymentDueDay}` : undefined,
-              },
-            ].map(({ icon: Icon, label, value, valueClass, hint }) => (
-              <div key={label} className="bg-white p-5 flex flex-col justify-center">
-                <div className="flex items-center gap-1.5 text-slate-400">
-                  <Icon size={14} />
-                  <p className="text-[11px] font-semibold uppercase tracking-wide">{label}</p>
-                </div>
-                <p className={`mt-1.5 text-xl font-bold tabular-nums ${valueClass}`}>{value}</p>
-                {hint && <p className="text-xs text-slate-400 mt-0.5">{hint}</p>}
+              { label: "Paid to date", value: fmtMoney(totalPaid), hint: pendingPayments > 0 ? `Confirmed only · ${pendingPayments} pending` : `${payments.length} payment${payments.length === 1 ? "" : "s"} confirmed` },
+            ].map((f) => (
+              <div key={f.label} className="p-6">
+                <dt className="text-[13px] font-medium text-slate-500">{f.label}</dt>
+                <dd className="mt-2 text-[22px] font-semibold tracking-tight text-slate-900 tabular-nums">{f.value}</dd>
+                <dd className="mt-1 text-xs text-slate-500">{f.hint}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column — records */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Recent Payments */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2.5">
-                <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-[#3f0ee3]/10 text-[#3f0ee3]">
-                  <Banknote size={18} />
-                </span>
-                <div>
-                  <h2 className="text-base font-semibold text-slate-900">Recent Payments</h2>
-                  <p className="text-xs text-slate-500">
-                    {payments.length === 0 ? "No records yet" : `Showing ${Math.min(3, payments.length)} of ${payments.length}`}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() =>
-                  navigate({
-                    to: "/dashboard/renttracking/record",
-                    search: { tenancyId: tenancy.id.toString() },
-                  })
-                }
-                className="flex items-center gap-1.5 text-sm font-medium text-[#3f0ee3] hover:text-[#3f0ee3]/80 transition-colors"
+      {/* Setup checklist */}
+      <section aria-label="Tenancy setup">
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="text-[17px] font-semibold text-slate-900">Tenancy setup</h2>
+          <span className="text-sm text-slate-500 tabular-nums">
+            {stepsDone === setupSteps.length ? "Complete" : `${stepsDone} of ${setupSteps.length} done`}
+          </span>
+        </div>
+        <ol className="grid gap-3 sm:grid-cols-3">
+          {setupSteps.map((step) => (
+            <li
+              key={step.label}
+              className={`flex items-center gap-3 rounded-2xl p-4 ring-1 ${
+                step.done ? "bg-white ring-black/[0.06]" : "border border-dashed border-black/[0.12] ring-0"
+              }`}
+            >
+              <span
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                  step.done
+                    ? "bg-[#34c759] text-white"
+                    : step.partial
+                    ? "bg-[#ff9500]/15 text-[#c93400]"
+                    : "bg-slate-100 text-slate-400"
+                }`}
               >
-                <Banknote size={16} />
-                Record
-              </button>
-            </div>
-            {recentPayments.length > 0 ? (
-              <div className="space-y-2.5">
-                {recentPayments.slice(0, 3).map((payment) => {
-                  const badge =
-                    payment.status === "CONFIRMED"
-                      ? "bg-emerald-100 text-emerald-800"
-                      : payment.status === "PENDING"
-                      ? "bg-amber-100 text-amber-800"
-                      : payment.status === "DISPUTED"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-slate-100 text-slate-700";
-                  return (
-                    <div
-                      key={payment.id}
-                      className="flex items-center justify-between gap-4 p-3.5 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 shrink-0">
-                          <Banknote size={18} />
-                        </span>
+                {step.done ? <Check size={16} strokeWidth={3} /> : step.partial ? <Clock size={15} strokeWidth={2.25} /> : <Circle size={14} strokeWidth={2.25} />}
+              </span>
+              <span className="min-w-0">
+                <span className={`block text-sm font-semibold ${step.done ? "text-slate-900" : "text-slate-700"}`}>{step.label}</span>
+                <span className="block truncate text-[13px] text-slate-500">{step.detail}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <SectionCard
+            title="Payments"
+            meta={payments.length > 0 && <span className="text-sm text-slate-400 tabular-nums">{payments.length}</span>}
+            action={
+              isActive && (
+                <button onClick={goRecordPayment} className="btn btn-tinted min-h-8 px-3 text-[13px]">
+                  <Plus size={15} /> Record
+                </button>
+              )
+            }
+          >
+            {sortedPayments.length > 0 ? (
+              <>
+                <ul className="-mx-2 divide-y divide-black/[0.06]">
+                  {visiblePayments.map((payment) => {
+                    const st = paymentStatus[payment.status] ?? { label: payment.status, tone: "slate" as Tone };
+                    return (
+                      <li key={payment.id} className="flex items-center justify-between gap-4 px-2 py-3.5">
                         <div className="min-w-0">
-                          <p className="font-medium text-slate-900">
-                            {monthLabel(payment.monthPaidFor, payment.yearPaidFor)}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            Recorded {new Date(payment.createdAt).toLocaleDateString()}
+                          <p className="font-medium text-slate-900">{monthLabel(payment.monthPaidFor, payment.yearPaidFor)}</p>
+                          <p className="text-[13px] text-slate-500">
+                            Recorded {formatShort(payment.createdAt)}
+                            {payment.paymentReference ? ` · Ref ${payment.paymentReference}` : ""}
                           </p>
                         </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="font-semibold text-slate-900 tabular-nums">
-                          {payment.currency || currency} {Number(payment.amount).toLocaleString()}
-                        </p>
-                        <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold ${badge}`}>
-                          {payment.status}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                        <div className="flex shrink-0 items-center gap-4">
+                          <Badge tone={st.tone}>{st.label}</Badge>
+                          <span className="w-32 text-right font-semibold text-slate-900 tabular-nums">
+                            {fmtMoney(Number(payment.amount) || 0)}
+                          </span>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {sortedPayments.length > 5 && (
+                  <button
+                    onClick={() => setShowAllPayments((v) => !v)}
+                    className="mt-3 text-sm font-semibold text-[#3f0ee3] hover:underline"
+                  >
+                    {showAllPayments ? "Show fewer" : `Show all ${sortedPayments.length} payments`}
+                  </button>
+                )}
+              </>
             ) : (
-              <div className="text-center py-10 border border-dashed border-slate-200 rounded-xl">
-                <Banknote size={32} className="text-slate-300 mx-auto mb-2" />
-                <p className="text-sm font-medium text-slate-600">No payments recorded yet</p>
-                <p className="text-xs text-slate-400 mt-1">Record this tenant's first payment to start tracking.</p>
-              </div>
+              <EmptyState
+                icon={Banknote}
+                title="No payments yet"
+                message={`Record ${firstName}'s rent when it arrives to keep their balance accurate.`}
+                action={isActive && <button onClick={goRecordPayment} className="btn btn-tinted"><Plus size={15} /> Record payment</button>}
+              />
             )}
-          </div>
+          </SectionCard>
 
-          {/* Inspections — single home for inspection status + records */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2.5">
-                <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-violet-100 text-violet-600">
-                  <ClipboardCheck size={18} />
-                </span>
-                <h2 className="text-base font-semibold text-slate-900">Inspections</h2>
-              </div>
-              {inspections.length > 0 && (
-                <span
-                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                    inspectionsDone ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
-                  }`}
-                >
-                  {completedInspections}/{inspections.length} done
-                </span>
-              )}
-            </div>
+          <SectionCard title="Inspections">
             {inspections.length > 0 ? (
-              <div className="space-y-2.5">
+              <ul className="-mx-2 divide-y divide-black/[0.06]">
                 {inspections.map((inspection) => {
                   const done = inspection.status === "COMPLETED" || inspection.status === "APPROVED";
                   return (
-                    <div
-                      key={inspection.id}
-                      className="flex items-center justify-between gap-4 p-3.5 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className={`flex items-center justify-center w-10 h-10 rounded-lg shrink-0 ${done ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-400"}`}>
+                    <li key={inspection.id}>
+                      <Link
+                        to="/dashboard/inspections/$inspectionId"
+                        params={{ inspectionId: inspection.id.toString() }}
+                        className="group flex items-center gap-4 rounded-xl px-2 py-3.5 hover:bg-slate-50"
+                      >
+                        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${done ? "bg-[#34c759]/[0.12] text-[#248a3d]" : "bg-slate-100 text-slate-500"}`}>
                           <ClipboardCheck size={18} />
                         </span>
-                        <div>
-                          <p className="font-medium text-slate-900 capitalize">
-                            {inspection.type.replace("_", " ").toLowerCase()}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {new Date(inspection.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          done ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
-                        }`}
-                      >
-                        {inspection.status || "PENDING"}
-                      </span>
-                    </div>
+                        <span className="min-w-0 flex-1">
+                          <span className="block font-medium text-slate-900">
+                            {inspection.type === "MOVE_IN" ? "Move-in inspection" : "Move-out inspection"}
+                          </span>
+                          <span className="block text-[13px] text-slate-500">{formatShort(inspection.createdAt)}</span>
+                        </span>
+                        <Badge tone={done ? "emerald" : "amber"}>{done ? "Approved" : "Awaiting approval"}</Badge>
+                        <ChevronRight size={18} className="text-slate-300 group-hover:text-slate-500" />
+                      </Link>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             ) : (
-              <div className="text-center py-10 border border-dashed border-slate-200 rounded-xl">
-                <ClipboardCheck size={32} className="text-slate-300 mx-auto mb-2" />
-                <p className="text-sm font-medium text-slate-600">No inspections yet</p>
-              </div>
+              <EmptyState
+                icon={ClipboardCheck}
+                title="No inspections yet"
+                message="A move-in inspection records the unit's condition, so deposit deductions are fair at move-out."
+              />
             )}
-          </div>
+          </SectionCard>
         </div>
 
-        {/* Right Column — status & reference */}
         <div className="space-y-6">
-          {/* Security Deposit — single home for deposit status + detail */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2.5">
-                <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700">
-                  <ShieldCheck size={18} />
-                </span>
-                <h2 className="text-base font-semibold text-slate-900">Security Deposit</h2>
-              </div>
-              <span
-                className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                  depositPaid ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"
-                }`}
-              >
-                {depositPaid ? "Paid" : "Not paid"}
-              </span>
-            </div>
+          <SectionCard
+            title="Security deposit"
+            action={
+              <Link to="/dashboard/securitydeposits" className="text-sm font-semibold text-[#3f0ee3] hover:underline">
+                Review
+              </Link>
+            }
+          >
             {deposits.length > 0 ? (
-              <div className="space-y-3">
-                <div className="flex items-baseline justify-between">
-                  <p className="text-sm text-slate-500">Total held</p>
-                  <p className="text-xl font-bold text-slate-900 tabular-nums">{fmtMoney(totalDeposits)}</p>
-                </div>
-                <div className="space-y-2 pt-1">
-                  {deposits.map((deposit) => (
-                    <div key={deposit.id} className="rounded-xl border border-slate-100 p-3">
-                      <div className="flex items-center justify-between">
-                        <p className="font-semibold text-slate-900 tabular-nums">
-                          {deposit.currency || currency} {Number(deposit.amount).toLocaleString()}
+              <ul className="space-y-3">
+                {deposits.map((deposit) => {
+                  const meta = depositStageMeta[getDepositStage(deposit)];
+                  const release = getReleaseState(deposit);
+                  return (
+                    <li key={deposit.id} className="rounded-2xl bg-slate-50 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="text-[22px] font-semibold tracking-tight text-slate-900 tabular-nums">
+                          {fmtMoney(Number(deposit.amount) || 0)}
                         </p>
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                            deposit.paymentStatus === "COMPLETED"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : deposit.paymentStatus === "REFUNDED"
-                              ? "bg-slate-100 text-slate-700"
-                              : "bg-amber-100 text-amber-800"
-                          }`}
-                        >
-                          {deposit.paymentStatus}
-                        </span>
+                        <Badge tone={meta.tone}>{meta.label}</Badge>
                       </div>
-                      <p className="text-xs text-slate-500 mt-1">
-                        {deposit.investedAt ? "Invested" : "Not invested"}
-                        {deposit.createdAt ? ` · ${new Date(deposit.createdAt).toLocaleDateString()}` : ""}
+                      <p className="mt-1 text-[13px] text-slate-500">
+                        {isLandlordHeld(deposit) ? "Paid to you" : "Held by est8Ledger"}
+                        {deposit.createdAt ? ` · ${formatShort(deposit.createdAt)}` : ""}
                       </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                      {release !== "HELD" && (
+                        <p className="mt-2 border-t border-black/[0.06] pt-2 text-[13px] text-slate-600">
+                          {release === "RECEIVED"
+                            ? `Refunded ${fmtMoney(Number(deposit.releasedAmount) || 0)}`
+                            : release === "RELEASED"
+                            ? `Released ${fmtMoney(Number(deposit.releasedAmount) || 0)}, awaiting confirmation`
+                            : `Refund disputed${deposit.releaseDisputeReason ? `: “${deposit.releaseDisputeReason}”` : ""}`}
+                        </p>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
             ) : (
-              <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                <AlertCircle size={16} className="shrink-0" />
-                No security deposit on record.
-              </div>
+              <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
+                {Number(tenancy.securityDeposit) > 0
+                  ? `${firstName} hasn't paid their ${fmtMoney(Number(tenancy.securityDeposit))} deposit yet.`
+                  : "No security deposit is required for this tenancy."}
+              </p>
             )}
-          </div>
+          </SectionCard>
 
-          {/* Agreement — single home for signature status */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2.5">
-                <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-100 text-indigo-600">
-                  <FileSignature size={18} />
-                </span>
-                <h2 className="text-base font-semibold text-slate-900">Agreement</h2>
-              </div>
-              <span
-                className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                  agreementSigned ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
-                }`}
-              >
-                {agreementSigned ? "Signed" : "Pending"}
-              </span>
-            </div>
-            <div className="space-y-2.5">
+          <SectionCard title="Agreement" meta={<Badge tone={agreementSigned ? "emerald" : "amber"}>{agreementSigned ? "Signed" : "Awaiting signature"}</Badge>}>
+            <ul className="space-y-3">
               {[
-                { label: "Manager Signed", at: tenancy.mgtSignedAt },
-                { label: "Tenant Signed", at: tenancy.tenantSignedAt },
+                { label: "You", at: tenancy.mgtSignedAt },
+                { label: firstName, at: tenancy.tenantSignedAt },
               ].map(({ label, at }) => (
-                <div
-                  key={label}
-                  className="flex items-center justify-between gap-3 p-3 rounded-xl border border-slate-100"
-                >
-                  <div className="flex items-center gap-2">
-                    {at ? (
-                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-                    ) : (
-                      <Clock size={16} className="text-amber-500 shrink-0" />
-                    )}
-                    <p className="text-sm text-slate-700">{label}</p>
-                  </div>
-                  <p className="text-sm font-medium text-slate-900">
-                    {at ? new Date(at).toLocaleDateString() : "Pending"}
-                  </p>
-                </div>
+                <li key={label} className="flex items-center justify-between gap-3 text-sm">
+                  <span className="flex items-center gap-2 text-slate-700">
+                    {at ? <CheckCircle2 size={17} className="text-[#34c759]" /> : <Clock size={17} className="text-[#ff9500]" />}
+                    {label}
+                  </span>
+                  <span className={at ? "text-slate-900" : "text-slate-400"}>{at ? `Signed ${formatShort(at)}` : "Not signed"}</span>
+                </li>
               ))}
-            </div>
-            <button
-              onClick={() => setShowAgreementDrawer(true)}
-              className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-semibold hover:bg-indigo-100 transition-colors"
-            >
-              <FileSignature size={16} />
-              View Tenancy Agreement
+            </ul>
+            <button onClick={() => setShowAgreement(true)} className="btn btn-secondary mt-5 w-full">
+              <FileText size={16} /> View agreement
             </button>
-          </div>
+          </SectionCard>
 
-          {/* Tenancy Details — reference facts */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
-            <div className="flex items-center gap-2.5 mb-5">
-              <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 text-slate-500">
-                <Home size={18} />
-              </span>
-              <h2 className="text-base font-semibold text-slate-900">Tenancy Details</h2>
+          <SectionCard title="Unit details">
+            <div className="-my-3 divide-y divide-black/[0.06]">
+              <DetailRow label="Unit">{tenancy.unitName}</DetailRow>
+              <DetailRow label="Water meter">{tenancy.waterMeter || "—"}</DetailRow>
+              <DetailRow label="YAKA meter">{tenancy.yakaMeter || "—"}</DetailRow>
+              <DetailRow label="Waste collection">
+                {tenancy.wasteHandledBy === "TENANT" ? "Tenant" : tenancy.wasteHandledBy === "LANDLORD" ? "You" : "—"}
+              </DetailRow>
+              <DetailRow label="Grace period">{tenancy.gracePeriodDays ?? 0} days</DetailRow>
+              <DetailRow label="Notice period">{noticeDays} days</DetailRow>
             </div>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-              {[
-                { icon: Droplets, label: "Water Meter", value: tenancy.waterMeter || "N/A" },
-                { icon: Zap, label: "YAKA Meter", value: tenancy.yakaMeter || "N/A" },
-                { icon: Trash2, label: "Waste By", value: tenancy.wasteHandledBy || "N/A" },
-                { icon: CalendarClock, label: "Due Day", value: tenancy.paymentDueDay ? `Day ${tenancy.paymentDueDay}` : "N/A" },
-              ].map(({ icon: Icon, label, value }) => (
-                <div key={label} className="min-w-0">
-                  <div className="flex items-center gap-1.5 text-slate-400">
-                    <Icon size={14} />
-                    <p className="text-xs font-medium">{label}</p>
-                  </div>
-                  <p className="mt-1 font-medium text-slate-900 truncate capitalize">{value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          </SectionCard>
         </div>
       </div>
 
-      {/* Unpaid Months Drawer */}
-      <UnpaidMonthsDrawer
-        open={showUnpaidModal}
-        onClose={() => setShowUnpaidModal(false)}
-        dueRent={dueRent}
-        fmtMoney={fmtMoney}
+      <UnpaidMonthsSheet open={showUnpaid} onClose={() => setShowUnpaid(false)} dueRent={dueRent} fmtMoney={fmtMoney} />
+
+      <TenancyAgreementDrawer open={showAgreement} onClose={() => setShowAgreement(false)} tenancy={tenancy} fmtMoney={fmtMoney} />
+
+      {landlordDeposit && (
+        <ReleaseDepositSheet
+          key={releaseKey}
+          open={releasing}
+          deposit={{ ...landlordDeposit, currency: landlordDeposit.currency || currency }}
+          tenantName={firstName}
+          onClose={() => setReleasing(false)}
+          onReleased={async () => {
+            setReleasing(false);
+            await loadTenantData();
+          }}
+        />
+      )}
+
+      <ConfirmDialog
+        open={confirmTerminate}
+        title="End this tenancy?"
+        message={
+          <>
+            {firstName} will be asked to accept. With the {noticeDays}-day notice period, the tenancy ends by{" "}
+            <strong className="text-slate-900">{formattedDate(addDays(new Date().toISOString(), noticeDays))}</strong>.
+          </>
+        }
+        confirmLabel="Send request"
+        destructive
+        busy={busy}
+        onConfirm={handleRequestTermination}
+        onClose={() => setConfirmTerminate(false)}
       />
 
-      {/* Tenancy Agreement Drawer */}
-      <TenancyAgreementDrawer
-        open={showAgreementDrawer}
-        onClose={() => setShowAgreementDrawer(false)}
-        tenancy={tenancy}
-        fmtMoney={fmtMoney}
+      <ConfirmDialog
+        open={confirmCancelTermination}
+        title="Withdraw termination request?"
+        message={`The tenancy stays active and ${firstName} is no longer asked to move out.`}
+        confirmLabel="Withdraw"
+        cancelLabel="Keep request"
+        busy={busy}
+        onConfirm={handleCancelTermination}
+        onClose={() => setConfirmCancelTermination(false)}
       />
+    </div>
+  );
+}
 
-      {/* Send Text Modal */}
-      <SlideOver
-        open={showTextModal}
-        onClose={() => setShowTextModal(false)}
-        title="Send Text Message"
-        widthClass="max-w-md"
-        footer={
-          <div className="flex gap-3 justify-end">
-            <button
-              onClick={() => setShowTextModal(false)}
-              className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSendText}
-              disabled={sendingText}
-              className="px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {sendingText ? "Sending..." : "Send"}
-            </button>
-          </div>
-        }
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-slate-600">To: {tenancy.tenant.phoneNumber}</p>
-          <textarea
-            value={textMessage}
-            onChange={(e) => setTextMessage(e.target.value)}
-            placeholder="Type your message..."
-            rows={4}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
-          />
-        </div>
-      </SlideOver>
+const depositStageMeta: Record<DepositStage, { label: string; tone: Tone }> = {
+  AWAITING_LANDLORD: { label: "Needs your confirmation", tone: "amber" },
+  AWAITING_EST8LEDGER: { label: "With est8Ledger", tone: "blue" },
+  COMPLETED: { label: "Approved", tone: "emerald" },
+  REJECTED: { label: "Rejected", tone: "red" },
+};
 
-      {/* Terminate Tenancy Modal */}
-      <SlideOver
-        open={showTerminateModal}
-        onClose={() => setShowTerminateModal(false)}
-        title="Terminate Tenancy"
-        widthClass="max-w-md"
-        footer={
-          <div className="flex gap-3 justify-end">
-            <button
-              onClick={() => setShowTerminateModal(false)}
-              className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleTerminateTenancy}
-              disabled={terminatingId !== null}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {terminatingId ? "Terminating..." : "Confirm Termination"}
-            </button>
-          </div>
-        }
+function Banner({ tone, icon: Icon, title, action, children }: {
+  tone: "amber" | "slate";
+  icon: typeof Mail;
+  title: string;
+  action?: ReactNode;
+  children?: ReactNode;
+}) {
+  return (
+    <div
+      role="status"
+      className={`flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center ${
+        tone === "amber" ? "bg-[#ff9500]/[0.09]" : "bg-slate-100"
+      }`}
+    >
+      <span
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white ${
+          tone === "amber" ? "text-[#c93400]" : "text-slate-500"
+        }`}
       >
-        <div className="space-y-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-sm text-red-900">
-              <strong>Warning:</strong> This will send a termination request for this tenancy. The tenant will be notified and the request will require confirmation.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm text-slate-600">Tenant Name:</p>
-            <p className="font-medium text-slate-900">
-              {tenancy.tenant.firstName} {tenancy.tenant.lastName}
-            </p>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm text-slate-600">Unit:</p>
-            <p className="font-medium text-slate-900">{tenancy.unitName}</p>
-          </div>
-        </div>
-      </SlideOver>
+        <Icon size={17} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[15px] font-semibold text-slate-900">{title}</p>
+        {children && <p className="mt-0.5 text-sm text-slate-600">{children}</p>}
+      </div>
+      {action}
     </div>
   );
 }

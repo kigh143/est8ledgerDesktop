@@ -305,7 +305,7 @@ function DashboardHome() {
       <PageHeader icon={LayoutDashboard} title="Dashboard" subtitle={activeProperty?.propertyName} />
 
       {/* Needs Your Attention */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="card overflow-hidden">
         <div className="px-5 sm:px-6 py-4 border-b border-slate-200 flex items-center gap-2">
           <AlertTriangle size={18} className="text-slate-400" />
           <h2 className="text-base font-semibold text-slate-900">Needs Your Attention</h2>
@@ -356,7 +356,7 @@ function DashboardHome() {
 
       {/* Financial Snapshot */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="card p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Expected Revenue</p>
             <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-[#3f0ee3]/10 text-[#3f0ee3]">
@@ -367,7 +367,7 @@ function DashboardHome() {
           <p className="text-xs text-slate-400 mt-1">Per month, from {stats.occupiedUnits} occupied unit{stats.occupiedUnits !== 1 ? 's' : ''}</p>
         </div>
 
-        <Link to="/dashboard/renttracking" className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow block">
+        <Link to="/dashboard/renttracking" className="card p-5 shadow-sm hover:shadow-md transition-shadow block">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Outstanding Balance</p>
             <span className={`flex items-center justify-center w-9 h-9 rounded-lg ${stats.outstandingBalance > 0 ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}`}>
@@ -380,7 +380,7 @@ function DashboardHome() {
           <p className="text-xs text-slate-400 mt-1">{stats.lateTenancies.length} tenant{stats.lateTenancies.length !== 1 ? 's' : ''} behind on rent</p>
         </Link>
 
-        <Link to="/dashboard/expenses" className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow block">
+        <Link to="/dashboard/expenses" className="card p-5 shadow-sm hover:shadow-md transition-shadow block">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Monthly Expenses</p>
             <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-purple-100 text-purple-600">
@@ -406,7 +406,7 @@ function DashboardHome() {
       {/* Occupancy & Repair Backlog */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Occupancy */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="card p-6 shadow-sm">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm font-medium text-slate-600 uppercase tracking-wide">Occupancy</p>
@@ -440,7 +440,7 @@ function DashboardHome() {
         </div>
 
         {/* Repair Backlog */}
-        <Link to="/dashboard/repairs" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow block">
+        <Link to="/dashboard/repairs" className="card p-6 shadow-sm hover:shadow-md transition-shadow block">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm font-medium text-slate-600 uppercase tracking-wide">Repair Backlog</p>
@@ -480,7 +480,7 @@ function DashboardHome() {
       </div>
 
       {/* Rent Collection Risk */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="card overflow-hidden">
         <div className="px-5 sm:px-6 py-4 border-b border-slate-200 flex items-center gap-2">
           <Users size={18} className="text-slate-400" />
           <h2 className="text-base font-semibold text-slate-900">Tenants Behind on Rent</h2>

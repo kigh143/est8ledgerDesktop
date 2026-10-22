@@ -1,548 +1,535 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowLeft, X, ChevronLeft, ChevronRight, Image as ImageIcon, ShieldCheck, Loader2, Plus, Trash2, Wrench } from "lucide-react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
+import {
+  AlertCircle,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Circle,
+  ImageOff,
+  Loader2,
+  Plus,
+  Trash2,
+  Wrench,
+  X,
+} from "lucide-react";
+import { toast } from "react-toastify";
 import { inspectionService } from "../../../services/inspectionService";
 import repairBreakdownService, { type RepairBreakdown } from "../../../services/repairBreakdownService";
-import type { InspectionItem } from "../../../types";
-import { toast } from "react-toastify";
+import { Badge, ConfirmDialog, EmptyState, type Tone } from "../../../componennts/dashboard/ui";
+import { getNetworkError } from "../../../utils";
+import { useAppStore } from "../../../store";
+import type { InspectionCondition, InspectionItem, InspectionSection } from "../../../types";
 
-type BreakdownItemDraft = {
-  name: string;
-  price: string;
-  description: string;
-};
+type BreakdownItemDraft = { name: string; price: string; description: string };
 
 interface InspectionDetails extends InspectionItem {
-  images?: Array<{
-    id: number;
-    url: string;
-    fileName: string;
-    uploadedAt: string;
-  }>;
-  sections?: Array<{
-    id: number;
-    name: string;
-    description: string;
-    images: Array<{
-      id: number;
-      url: string;
-      fileName: string;
-    }>;
-  }>;
+  repairBreakdown?: RepairBreakdown | null;
 }
 
 export const Route = createFileRoute("/dashboard/inspections/$inspectionId")({
   component: InspectionDetailPage,
   loader: async ({ params }) => {
     try {
-      const inspection = await inspectionService.getInspection(params.inspectionId);
-      return { inspection: (inspection.data || inspection) as InspectionDetails };
+      const response = await inspectionService.getInspection(params.inspectionId);
+      return { inspection: (response?.data ?? response) as InspectionDetails };
     } catch {
       return { inspection: null };
     }
   },
 });
 
+const conditionMeta: Record<InspectionCondition, { label: string; tone: Tone }> = {
+  GOOD: { label: "Good", tone: "emerald" },
+  FAIR: { label: "Fair", tone: "amber" },
+  DAMAGED: { label: "Damaged", tone: "red" },
+};
+
+const formatDate = (value?: string | null, withTime = false) =>
+  value
+    ? new Date(value).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        ...(withTime ? { hour: "numeric", minute: "2-digit" } : {}),
+      })
+    : "";
+
 function InspectionDetailPage() {
-  const navigate = useNavigate();
-  const { inspection: loadedInspection } = Route.useLoaderData();
-  const [inspection, setInspection] = useState(loadedInspection);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
-  const [allImages, setAllImages] = useState<Array<{ id: number; url: string; fileName: string }>>([]);
+  const router = useRouter();
+  const { inspection: loaded } = Route.useLoaderData();
+  const currency = useAppStore((s) => s.activeProperty?.currency) || "UGX";
+  const [inspection, setInspection] = useState(loaded);
+  const [viewer, setViewer] = useState<{ photos: string[]; index: number; title: string } | null>(null);
+  const [confirmApprove, setConfirmApprove] = useState(false);
   const [approving, setApproving] = useState(false);
-  const [breakdownItems, setBreakdownItems] = useState<BreakdownItemDraft[]>([
-    { name: "", price: "", description: "" },
-  ]);
-  const [creatingBreakdown, setCreatingBreakdown] = useState(false);
-  const [breakdown, setBreakdown] = useState<RepairBreakdown | null>(null);
 
-  const addBreakdownItem = () => {
-    setBreakdownItems((prev) => [...prev, { name: "", price: "", description: "" }]);
-  };
-
-  const removeBreakdownItem = (index: number) => {
-    setBreakdownItems((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const updateBreakdownItem = (index: number, field: keyof BreakdownItemDraft, value: string) => {
-    setBreakdownItems((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+  if (!inspection) {
+    return (
+      <div className="space-y-6">
+        <BackLink />
+        <div className="card">
+          <EmptyState
+            icon={AlertCircle}
+            title="Inspection not found"
+            message="It may have been removed, or there was a problem loading it."
+            action={
+              <button onClick={() => router.invalidate()} className="btn btn-secondary">
+                Try again
+              </button>
+            }
+          />
+        </div>
+      </div>
     );
+  }
+
+  const typeLabel = inspection.type === "MOVE_OUT" ? "Move-out" : "Move-in";
+  const tenant = inspection.tenancy?.tenant;
+  const tenantName = `${tenant?.firstName ?? ""} ${tenant?.lastName ?? ""}`.trim() || "the tenant";
+  const sections = (inspection.inspectionSections ?? []).filter((s) => (s.photos?.length ?? 0) > 0);
+  const totalPhotos = sections.reduce((sum, s) => sum + (s.photos?.length ?? 0), 0);
+  const damaged = sections.filter((s) => s.condition_status === "DAMAGED").length;
+  const fullyApproved = !!inspection.tenantApprovedAt && !!inspection.managerApprovedAt;
+
+  const handleApprove = async () => {
+    setApproving(true);
+    try {
+      await inspectionService.approveInspectionByManagement(inspection.id.toString());
+      setInspection({ ...inspection, managerApprovedAt: new Date().toISOString() });
+      setConfirmApprove(false);
+      toast.success("Inspection approved");
+    } catch (error) {
+      toast.error(getNetworkError(error));
+    } finally {
+      setApproving(false);
+    }
   };
 
-  const breakdownTotal = breakdownItems.reduce(
-    (sum, item) => sum + (parseFloat(item.price) || 0),
-    0
+  return (
+    <div className="space-y-8">
+      <BackLink />
+
+      {/* Title */}
+      <header className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between animate-fade-up">
+        <div className="min-w-0">
+          <p className="eyebrow">{typeLabel} inspection</p>
+          <h1 className="mt-1.5 truncate text-[30px] font-bold leading-tight tracking-[-0.028em] text-slate-900 capitalize">
+            {tenantName}
+          </h1>
+          <p className="mt-1 text-[15px] text-slate-500">
+            {inspection.tenancy?.unitName ? `Unit ${inspection.tenancy.unitName} · ` : ""}
+            Recorded {formatDate(inspection.createdAt, true)}
+          </p>
+        </div>
+        {!inspection.managerApprovedAt && (
+          <button onClick={() => setConfirmApprove(true)} className="btn btn-primary btn-lg">
+            <Check size={18} strokeWidth={2.25} />
+            Approve inspection
+          </button>
+        )}
+      </header>
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        {/* Rooms */}
+        <div className="min-w-0 space-y-4">
+          <div className="flex items-baseline justify-between gap-3 px-1">
+            <h2 className="text-[19px] font-semibold text-slate-900">Rooms</h2>
+            {sections.length > 0 && (
+              <p className="text-[13px] text-slate-500 tabular-nums">
+                {sections.length} {sections.length === 1 ? "area" : "areas"} · {totalPhotos}{" "}
+                {totalPhotos === 1 ? "photo" : "photos"}
+                {damaged > 0 && <span className="text-[#d70015]"> · {damaged} damaged</span>}
+              </p>
+            )}
+          </div>
+
+          {sections.length === 0 ? (
+            <div className="card">
+              <EmptyState
+                icon={ImageOff}
+                title="No photos recorded"
+                message="Rooms appear here once photos are captured in the mobile app."
+              />
+            </div>
+          ) : (
+            sections.map((section, index) => (
+              <SectionCard
+                key={section.id}
+                section={section}
+                fallbackTitle={`Area ${index + 1}`}
+                onOpen={(photoIndex) =>
+                  setViewer({
+                    photos: section.photos ?? [],
+                    index: photoIndex,
+                    title: section.title || `Area ${index + 1}`,
+                  })
+                }
+              />
+            ))
+          )}
+        </div>
+
+        {/* Sign-off + repairs */}
+        <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start">
+          <section className="card p-5">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-[15px] font-semibold text-slate-900">Sign-off</h2>
+              {fullyApproved ? <Badge tone="emerald">Complete</Badge> : <Badge tone="amber">In progress</Badge>}
+            </div>
+            <ol className="mt-4 space-y-4">
+              <SignOffStep
+                label="You"
+                doneAt={inspection.managerApprovedAt}
+                pending="Review the photos, then approve"
+              />
+              <SignOffStep
+                label={tenant?.firstName ? tenant.firstName : "Tenant"}
+                doneAt={inspection.tenantApprovedAt}
+                pending="Approves from the mobile app"
+              />
+            </ol>
+          </section>
+
+          {inspection.type === "MOVE_OUT" && (
+            <RepairBreakdownCard inspection={inspection} currency={currency} />
+          )}
+        </aside>
+      </div>
+
+      <ConfirmDialog
+        open={confirmApprove}
+        title="Approve inspection?"
+        message={`This confirms you've reviewed the condition and photos recorded for this ${typeLabel.toLowerCase()} inspection.`}
+        confirmLabel="Approve"
+        busy={approving}
+        onConfirm={handleApprove}
+        onClose={() => setConfirmApprove(false)}
+      />
+
+      {viewer && <PhotoViewer {...viewer} onClose={() => setViewer(null)} />}
+    </div>
   );
+}
 
-  const handleCreateBreakdown = async () => {
-    if (!inspection) return;
+function BackLink() {
+  return (
+    <Link
+      to="/dashboard/inspections"
+      className="-ml-1.5 inline-flex items-center gap-0.5 rounded-lg px-1.5 py-1 text-[15px] font-medium text-[#3f0ee3] hover:bg-[#3f0ee3]/[0.06]"
+    >
+      <ChevronLeft size={18} strokeWidth={2.25} />
+      Inspections
+    </Link>
+  );
+}
 
-    const validItems = breakdownItems.filter((item) => item.name.trim() && parseFloat(item.price) > 0);
-    if (validItems.length === 0) {
-      toast.error("Add at least one item with a name and price");
+function SectionCard({
+  section,
+  fallbackTitle,
+  onOpen,
+}: {
+  section: InspectionSection;
+  fallbackTitle: string;
+  onOpen: (index: number) => void;
+}) {
+  const photos = section.photos ?? [];
+  const condition = section.condition_status ? conditionMeta[section.condition_status] : null;
+  const [lead, ...rest] = photos;
+
+  return (
+    <section className="card overflow-hidden">
+      {/* Photo mosaic: the first shot leads, up to two more stack beside it. */}
+      <div className={`grid aspect-[2/1] gap-1 ${rest.length > 0 ? "grid-cols-3 grid-rows-2" : ""}`}>
+        <PhotoTile
+          src={lead}
+          alt={`${section.title || fallbackTitle}, photo 1`}
+          onClick={() => onOpen(0)}
+          className={rest.length > 0 ? "col-span-2 row-span-2" : ""}
+        />
+        {rest.slice(0, 2).map((src, i) => (
+          <PhotoTile
+            key={src + i}
+            src={src}
+            alt={`${section.title || fallbackTitle}, photo ${i + 2}`}
+            onClick={() => onOpen(i + 1)}
+            className={rest.length === 1 ? "row-span-2" : ""}
+            more={i === 1 && rest.length > 2 ? rest.length - 2 : 0}
+          />
+        ))}
+      </div>
+      <div className="p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="truncate text-[17px] font-semibold text-slate-900">{section.title || fallbackTitle}</h3>
+          {condition && <Badge tone={condition.tone}>{condition.label}</Badge>}
+        </div>
+        <p className={`mt-1.5 text-sm leading-relaxed ${section.comments ? "text-slate-600" : "text-slate-400"}`}>
+          {section.comments || "No notes for this area."}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function PhotoTile({
+  src,
+  alt,
+  onClick,
+  className,
+  more = 0,
+}: {
+  src: string;
+  alt: string;
+  onClick: () => void;
+  className: string;
+  more?: number;
+}) {
+  return (
+    <button onClick={onClick} className={`group relative min-h-0 overflow-hidden bg-slate-100 ${className}`}>
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.03]"
+      />
+      {more > 0 && (
+        <span className="absolute inset-0 flex items-center justify-center bg-black/45 text-[17px] font-semibold text-white">
+          +{more}
+        </span>
+      )}
+    </button>
+  );
+}
+
+function SignOffStep({ label, doneAt, pending }: { label: string; doneAt?: string | null; pending: string }) {
+  return (
+    <li className="flex gap-3">
+      {doneAt ? (
+        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#34c759] text-white">
+          <Check size={12} strokeWidth={3} />
+        </span>
+      ) : (
+        <Circle size={20} strokeWidth={1.75} className="mt-0.5 shrink-0 text-slate-300" />
+      )}
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-slate-900 capitalize">{label}</p>
+        <p className="text-[13px] text-slate-500">{doneAt ? `Approved ${formatDate(doneAt)}` : pending}</p>
+      </div>
+    </li>
+  );
+}
+
+function RepairBreakdownCard({ inspection, currency }: { inspection: InspectionDetails; currency: string }) {
+  const [breakdown, setBreakdown] = useState<RepairBreakdown | null>(inspection.repairBreakdown ?? null);
+  const [items, setItems] = useState<BreakdownItemDraft[]>([{ name: "", price: "", description: "" }]);
+  const [saving, setSaving] = useState(false);
+  const fmt = (n: number) => `${currency} ${new Intl.NumberFormat("en-US").format(Math.round(n))}`;
+
+  const total = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
+  const update = (index: number, field: keyof BreakdownItemDraft, value: string) =>
+    setItems((prev) => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
+
+  const handleCreate = async () => {
+    const valid = items.filter((item) => item.name.trim() && parseFloat(item.price) > 0);
+    if (valid.length === 0) {
+      toast.error("Add at least one repair with a name and cost");
       return;
     }
-
-    setCreatingBreakdown(true);
+    setSaving(true);
     try {
       const created = await repairBreakdownService.createBreakdown({
         moveOutInspectionId: inspection.id,
         tenancyId: inspection.tenancyId,
-        amount: validItems.reduce((sum, item) => sum + parseFloat(item.price), 0),
-        items: validItems.map((item) => ({
+        amount: valid.reduce((sum, item) => sum + parseFloat(item.price), 0),
+        items: valid.map((item) => ({
           name: item.name.trim(),
           price: parseFloat(item.price),
           description: item.description.trim(),
         })),
       });
       setBreakdown(created);
-      toast.success("Repair cost breakdown created");
+      toast.success(`Repair costs sent to the tenant`);
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to create repair cost breakdown");
+      toast.error(getNetworkError(error));
     } finally {
-      setCreatingBreakdown(false);
+      setSaving(false);
     }
   };
 
-  const handleManagerApprove = async () => {
-    if (!inspection) return;
-    setApproving(true);
-    try {
-      await inspectionService.approveInspectionByManagement(inspection.id.toString());
-      setInspection({ ...inspection, managerApprovedAt: new Date().toISOString() });
-      toast.success("Inspection approved");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to approve inspection");
-    } finally {
-      setApproving(false);
-    }
-  };
-
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case "COMPLETED":
-        return "bg-emerald-100 text-emerald-800";
-      case "PENDING":
-        return "bg-amber-100 text-amber-800";
-      case "APPROVED":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-slate-100 text-slate-800";
-    }
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case "MOVE_IN":
-        return "bg-purple-100 text-purple-800";
-      case "MOVE_OUT":
-        return "bg-orange-100 text-orange-800";
-      default:
-        return "bg-slate-100 text-slate-800";
-    }
-  };
-
-  const openImageViewer = (images: Array<{ id: number; url: string; fileName: string }>, startIndex = 0) => {
-    setAllImages(images);
-    setSelectedImageIndex(startIndex);
-    setIsImageViewerOpen(true);
-  };
-
-  const nextImage = () => {
-    setSelectedImageIndex((prev) => (prev + 1) % allImages.length);
-  };
-
-  const prevImage = () => {
-    setSelectedImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
-  };
-
-  if (!inspection) {
+  if (breakdown) {
+    const tone: Tone = breakdown.status === "APPROVED" ? "emerald" : breakdown.status === "DISPUTED" ? "red" : "amber";
+    const label =
+      breakdown.status === "APPROVED" ? "Accepted" : breakdown.status === "DISPUTED" ? "Disputed" : "Awaiting tenant";
     return (
-      <div className="max-w-4xl mx-auto text-center py-12">
-        <p className="text-slate-600">Inspection not found</p>
-        <button
-          onClick={() => navigate({ to: "/dashboard/inspections" })}
-          className="mt-4 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90"
-        >
-          Back to Inspections
-        </button>
-      </div>
+      <section className="card p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-[15px] font-semibold text-slate-900">Repair costs</h2>
+          <Badge tone={tone}>{label}</Badge>
+        </div>
+        <ul className="mt-3 divide-y divide-black/[0.06]">
+          {breakdown.items.map((item, i) => (
+            <li key={i} className="flex items-start justify-between gap-4 py-2.5">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-slate-900">{item.name}</p>
+                {item.description && <p className="text-xs text-slate-500">{item.description}</p>}
+              </div>
+              <p className="text-sm text-slate-900 tabular-nums whitespace-nowrap">{fmt(item.price)}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-2 flex items-center justify-between border-t border-black/[0.06] pt-3">
+          <span className="text-sm text-slate-500">Total</span>
+          <span className="text-[17px] font-semibold text-slate-900 tabular-nums">{fmt(breakdown.amount)}</span>
+        </div>
+      </section>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={() => navigate({ to: "/dashboard/inspections" })}
-          className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft size={20} className="text-slate-600" />
-        </button>
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Inspection Details</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            {inspection.type === "MOVE_IN" ? "Move-In" : "Move-Out"} Inspection
-          </p>
-        </div>
+    <section className="card p-5">
+      <div className="flex items-center gap-2">
+        <Wrench size={16} className="text-slate-500" />
+        <h2 className="text-[15px] font-semibold text-slate-900">Repair costs</h2>
       </div>
-
-      {/* Status Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg border border-slate-200 p-4">
-          <p className="text-sm text-slate-600">Type</p>
-          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-2 ${getTypeColor(inspection.type)}`}>
-            {inspection.type === "MOVE_IN" ? "Move-In" : "Move-Out"}
-          </span>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-4">
-          <p className="text-sm text-slate-600">Status</p>
-          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-2 ${getStatusColor(inspection.status)}`}>
-            {inspection.status || "PENDING"}
-          </span>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-4">
-          <p className="text-sm text-slate-600">Unit</p>
-          <p className="font-semibold text-slate-900 mt-2">{inspection.tenancy?.unitName || "N/A"}</p>
-        </div>
-      </div>
-
-      {/* Inspection Information */}
-      <div className="bg-white rounded-lg border border-slate-200 p-6">
-        <h2 className="text-xl font-bold text-slate-900 mb-4">Inspection Information</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <p className="text-sm text-slate-600 mb-1">Created Date</p>
-            <p className="font-medium text-slate-900">
-              {new Date(inspection.createdAt).toLocaleDateString()} at{" "}
-              {new Date(inspection.createdAt).toLocaleTimeString()}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-slate-600 mb-1">Last Updated</p>
-            <p className="font-medium text-slate-900">
-              {new Date(inspection.updatedAt).toLocaleDateString()} at{" "}
-              {new Date(inspection.updatedAt).toLocaleTimeString()}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Approval Status */}
-      <div className="bg-white rounded-lg border border-slate-200 p-6">
-        <h2 className="text-xl font-bold text-slate-900 mb-4">Approval Status</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border rounded-lg p-4 bg-slate-50">
-            <p className="text-sm text-slate-600 mb-2">Tenant Approval</p>
-            {inspection.tenantApprovedAt ? (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                <div>
-                  <p className="font-semibold text-emerald-700">Approved</p>
-                  <p className="text-xs text-slate-500">
-                    {new Date(inspection.tenantApprovedAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-slate-300 rounded-full"></div>
-                <p className="font-medium text-slate-600">Pending</p>
-              </div>
-            )}
-          </div>
-          <div className="border rounded-lg p-4 bg-slate-50">
-            <p className="text-sm text-slate-600 mb-2">Manager Approval</p>
-            {inspection.managerApprovedAt ? (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                <div>
-                  <p className="font-semibold text-emerald-700">Approved</p>
-                  <p className="text-xs text-slate-500">
-                    {new Date(inspection.managerApprovedAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-slate-300 rounded-full"></div>
-                  <p className="font-medium text-slate-600">Pending</p>
-                </div>
-                <button
-                  onClick={handleManagerApprove}
-                  disabled={approving}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-[#3f0ee3] text-white rounded-lg text-xs font-semibold hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {approving ? <Loader2 size={14} className="animate-spin" /> : <ShieldCheck size={14} />}
-                  Approve as Manager
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Repair Cost Breakdown (move-out inspections only) */}
-      {inspection.type === "MOVE_OUT" && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <Wrench size={20} />
-            Repair Cost Breakdown
-          </h2>
-
-          {breakdown ? (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                  breakdown.status === "APPROVED"
-                    ? "bg-emerald-100 text-emerald-800"
-                    : breakdown.status === "DISPUTED"
-                    ? "bg-red-100 text-red-800"
-                    : "bg-amber-100 text-amber-800"
-                }`}>
-                  {breakdown.status}
-                </span>
-                <p className="font-bold text-slate-900">
-                  Total: {breakdown.amount.toLocaleString()}
-                </p>
-              </div>
-              <div className="divide-y divide-slate-100 border rounded-lg">
-                {breakdown.items.map((item, idx) => (
-                  <div key={idx} className="p-3 flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-medium text-slate-900 text-sm">{item.name}</p>
-                      {item.description && (
-                        <p className="text-xs text-slate-500 mt-0.5">{item.description}</p>
-                      )}
-                    </div>
-                    <p className="text-sm font-semibold text-slate-900 whitespace-nowrap">
-                      {item.price.toLocaleString()}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="space-y-3">
-                {breakdownItems.map((item, idx) => (
-                  <div key={idx} className="grid grid-cols-1 md:grid-cols-[2fr_1fr_2fr_auto] gap-2 items-start">
-                    <input
-                      type="text"
-                      placeholder="Item name (e.g. Broken window)"
-                      value={item.name}
-                      onChange={(e) => updateBreakdownItem(idx, "name", e.target.value)}
-                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Price"
-                      min="0"
-                      value={item.price}
-                      onChange={(e) => updateBreakdownItem(idx, "price", e.target.value)}
-                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Description (optional)"
-                      value={item.description}
-                      onChange={(e) => updateBreakdownItem(idx, "description", e.target.value)}
-                      className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent outline-none transition"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeBreakdownItem(idx)}
-                      disabled={breakdownItems.length === 1}
-                      aria-label="Remove item"
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
+      <p className="mt-1 text-[13px] leading-relaxed text-slate-500">
+        List anything that needs fixing. The tenant reviews the costs before they're taken from the deposit.
+      </p>
+      <div className="mt-4 space-y-3">
+        {items.map((item, i) => (
+          <div key={i} className="space-y-2 rounded-xl bg-slate-50 p-3">
+            <div className="flex gap-2">
+              <input
+                value={item.name}
+                onChange={(e) => update(i, "name", e.target.value)}
+                placeholder="e.g. Broken window"
+                aria-label="Repair"
+                className="field py-2 text-sm"
+              />
               <button
                 type="button"
-                onClick={addBreakdownItem}
-                className="flex items-center gap-2 text-sm font-medium text-[#3f0ee3] hover:underline"
+                onClick={() => setItems((prev) => prev.filter((_, idx) => idx !== i))}
+                disabled={items.length === 1}
+                aria-label="Remove repair"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-white hover:text-[#d70015] disabled:opacity-30"
               >
-                <Plus size={16} />
-                Add item
+                <Trash2 size={16} />
               </button>
-
-              <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-                <p className="font-semibold text-slate-900">
-                  Total: {breakdownTotal.toLocaleString()}
-                </p>
-                <button
-                  type="button"
-                  onClick={handleCreateBreakdown}
-                  disabled={creatingBreakdown}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg text-sm font-semibold hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {creatingBreakdown ? <Loader2 size={16} className="animate-spin" /> : <Wrench size={16} />}
-                  {creatingBreakdown ? "Creating..." : "Create Breakdown"}
-                </button>
-              </div>
             </div>
-          )}
-        </div>
-      )}
-
-      {/* Inspection Sections with Images */}
-      {inspection.sections && inspection.sections.length > 0 && (
-        <div className="space-y-4">
-          {inspection.sections.map((section) => (
-            <div key={section.id} className="bg-white rounded-lg border border-slate-200 p-6">
-              <h3 className="text-lg font-bold text-slate-900 mb-2">{section.name}</h3>
-              {section.description && (
-                <p className="text-slate-600 text-sm mb-4">{section.description}</p>
-              )}
-
-              {/* Section Images */}
-              {section.images && section.images.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                    <ImageIcon size={16} />
-                    Images ({section.images.length})
-                  </p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {section.images.map((image, idx) => (
-                      <button
-                        key={image.id}
-                        onClick={() => openImageViewer(section.images, idx)}
-                        className="relative group overflow-hidden rounded-lg border border-slate-200 hover:border-[#3f0ee3] transition-colors"
-                      >
-                        <img
-                          src={image.url}
-                          alt={image.fileName}
-                          className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-200"
-                        />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            <p className="text-white text-xs text-center px-1">{image.fileName}</p>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* General Images */}
-      {inspection.images && inspection.images.length > 0 && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <ImageIcon size={20} />
-            Inspection Photos ({inspection.images.length})
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {inspection.images.map((image, idx) => (
-              <button
-                key={image.id}
-                onClick={() => openImageViewer(inspection.images || [], idx)}
-                className="relative group overflow-hidden rounded-lg border border-slate-200 hover:border-[#3f0ee3] transition-colors"
-              >
-                <img
-                  src={image.url}
-                  alt={image.fileName}
-                  className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-200"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <p className="text-white text-xs text-center px-1">{image.fileName}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
+            <input
+              type="number"
+              min="0"
+              inputMode="decimal"
+              value={item.price}
+              onChange={(e) => update(i, "price", e.target.value)}
+              placeholder={`Cost (${currency})`}
+              aria-label="Cost"
+              className="field py-2 text-sm tabular-nums"
+            />
+            <input
+              value={item.description}
+              onChange={(e) => update(i, "description", e.target.value)}
+              placeholder="Note (optional)"
+              aria-label="Note"
+              className="field py-2 text-sm"
+            />
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => setItems((prev) => [...prev, { name: "", price: "", description: "" }])}
+        className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-[#3f0ee3] hover:underline"
+      >
+        <Plus size={15} /> Add repair
+      </button>
+      <div className="mt-4 flex items-center justify-between border-t border-black/[0.06] pt-4">
+        <span className="text-sm text-slate-500">Total</span>
+        <span className="text-[17px] font-semibold text-slate-900 tabular-nums">{fmt(total)}</span>
+      </div>
+      <button onClick={handleCreate} disabled={saving} className="btn btn-primary mt-4 w-full">
+        {saving && <Loader2 size={15} className="animate-spin" />}
+        Send to tenant
+      </button>
+    </section>
+  );
+}
 
-      {/* No Images Message */}
-      {(!inspection.images || inspection.images.length === 0) &&
-        (!inspection.sections || inspection.sections.every((s) => !s.images || s.images.length === 0)) && (
-          <div className="bg-slate-50 rounded-lg border border-slate-200 p-8 text-center">
-            <ImageIcon size={32} className="mx-auto text-slate-300 mb-3" />
-            <p className="text-slate-600">No images attached to this inspection</p>
-          </div>
-        )}
+function PhotoViewer({
+  photos,
+  index: startIndex,
+  title,
+  onClose,
+}: {
+  photos: string[];
+  index: number;
+  title: string;
+  onClose: () => void;
+}) {
+  const [index, setIndex] = useState(startIndex);
+  const step = useCallback(
+    (delta: number) => setIndex((i) => (i + delta + photos.length) % photos.length),
+    [photos.length]
+  );
 
-      {/* Image Viewer Modal */}
-      {isImageViewerOpen && allImages.length > 0 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
-          <div className="relative w-full h-full flex items-center justify-center">
-            {/* Close Button */}
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") step(1);
+      if (e.key === "ArrowLeft") step(-1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose, step]);
+
+  return (
+    <div className="fixed inset-0 z-[70] flex flex-col bg-black/95 animate-fade-up" role="dialog" aria-modal="true" aria-label={title}>
+      <div className="flex h-14 shrink-0 items-center justify-between px-4 text-white">
+        <p className="text-sm font-medium">
+          {title} <span className="text-white/50 tabular-nums">· {index + 1} of {photos.length}</span>
+        </p>
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20"
+        >
+          <X size={18} />
+        </button>
+      </div>
+      <div className="relative flex min-h-0 flex-1 items-center justify-center px-4 sm:px-16">
+        <img src={photos[index]} alt={`${title}, photo ${index + 1}`} className="max-h-full max-w-full rounded-lg object-contain" />
+        {photos.length > 1 && (
+          <>
             <button
-              onClick={() => setIsImageViewerOpen(false)}
-              className="absolute top-4 right-4 text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
+              onClick={() => step(-1)}
+              aria-label="Previous photo"
+              className="absolute left-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
             >
-              <X size={24} />
+              <ChevronLeft size={22} />
             </button>
-
-            {/* Image */}
-            <div className="relative max-w-4xl max-h-[80vh] flex flex-col items-center">
-              <img
-                src={allImages[selectedImageIndex].url}
-                alt={allImages[selectedImageIndex].fileName}
-                className="max-w-full max-h-[70vh] object-contain"
-              />
-
-              {/* Image Info */}
-              <div className="mt-4 text-white text-center">
-                <p className="font-medium">{allImages[selectedImageIndex].fileName}</p>
-                <p className="text-sm text-gray-300">
-                  {selectedImageIndex + 1} / {allImages.length}
-                </p>
-              </div>
-            </div>
-
-            {/* Navigation Buttons */}
-            {allImages.length > 1 && (
-              <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
-                >
-                  <ChevronLeft size={28} />
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
-                >
-                  <ChevronRight size={28} />
-                </button>
-              </>
-            )}
-
-            {/* Thumbnail Strip */}
-            {allImages.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 overflow-x-auto max-w-[90vw]">
-                {allImages.map((image, idx) => (
-                  <button
-                    key={image.id}
-                    onClick={() => setSelectedImageIndex(idx)}
-                    className={`flex-shrink-0 border-2 rounded-lg overflow-hidden transition-colors ${
-                      idx === selectedImageIndex ? "border-white" : "border-gray-600"
-                    }`}
-                  >
-                    <img src={image.url} alt="" className="w-16 h-16 object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+            <button
+              onClick={() => step(1)}
+              aria-label="Next photo"
+              className="absolute right-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+            >
+              <ChevronRight size={22} />
+            </button>
+          </>
+        )}
+      </div>
+      {photos.length > 1 && (
+        <div className="flex shrink-0 justify-center gap-2 overflow-x-auto px-4 py-4">
+          {photos.map((src, i) => (
+            <button
+              key={src + i}
+              onClick={() => setIndex(i)}
+              aria-label={`Photo ${i + 1}`}
+              className={`h-14 w-14 shrink-0 overflow-hidden rounded-lg ring-2 transition-opacity ${
+                i === index ? "ring-white opacity-100" : "ring-transparent opacity-50 hover:opacity-80"
+              }`}
+            >
+              <img src={src} alt="" className="h-full w-full object-cover" />
+            </button>
+          ))}
         </div>
       )}
     </div>

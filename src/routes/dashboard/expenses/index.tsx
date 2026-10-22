@@ -204,7 +204,7 @@ function ExpensesPage() {
             </button>
             <button
               onClick={() => navigate({ to: "/dashboard/expenses/add" })}
-              className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors"
             >
               <Plus size={20} />
               Add Expense
@@ -263,7 +263,7 @@ function ExpensesPage() {
             setStatusFilter(value);
             if (value) loadFilteredExpenses(value, null);
           }}
-          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
         >
           <option value="">All Status</option>
           <option value="PENDING">Pending</option>
@@ -278,7 +278,7 @@ function ExpensesPage() {
             setCategoryFilter(value);
             if (value) loadFilteredExpenses(null, value);
           }}
-          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+          className="px-4 py-2 border border-slate-300 rounded-lg text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
         >
           <option value="">All Categories</option>
           <option value="MAINTENANCE">Maintenance</option>
@@ -316,7 +316,7 @@ function ExpensesPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">

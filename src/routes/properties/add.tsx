@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
   ChevronRight,
@@ -304,7 +304,7 @@ function AddPropertyPage() {
       >
         <div className="flex items-center justify-center py-32">
           <div className="text-center">
-            <Loader className="w-12 h-12 text-[#552ae7] animate-spin mx-auto mb-4" />
+            <Loader className="w-12 h-12 text-[#3f0ee3] animate-spin mx-auto mb-4" />
             <p className="text-slate-600 font-medium">Loading country configuration...</p>
           </div>
         </div>
@@ -316,6 +316,12 @@ function AddPropertyPage() {
     <PropertiesLayout
       pageTitle="Add Property"
       subTitle="Create a new property and configure its agreement terms"
+      action={
+        <Link to="/properties/import-agreement" className="btn btn-secondary">
+          <FileText size={16} />
+          Use a signed agreement PDF
+        </Link>
+      }
     >
       <div className="space-y-8">
         {/* Enhanced Progress Steps */}
@@ -331,9 +337,9 @@ function AddPropertyPage() {
                   <div
                     className={`relative w-12 h-12 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
                       currentStep > step
-                        ? "bg-gradient-to-br from-[#7fe502] to-[#65c200] text-white shadow-md shadow-[#7fe502]/30"
+                        ? "bg-gradient-to-br from-[#7fe502] to-[#65c200] text-white shadow-md"
                         : currentStep === step
-                          ? "bg-gradient-to-br from-[#552ae7] to-[#3f0ee3] text-white shadow-lg shadow-[#552ae7]/40 ring-4 ring-[#552ae7]/15"
+                          ? "bg-gradient-to-br from-[#3f0ee3] to-[#3f0ee3] text-white shadow-lg ring-4 ring-[#3f0ee3]/15"
                           : "bg-slate-100 text-slate-400"
                     }`}
                   >
@@ -355,7 +361,7 @@ function AddPropertyPage() {
                   <div className="flex-1 h-1 mx-2 sm:mx-4 mb-6 sm:mb-5 rounded-full bg-slate-100 overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
-                        currentStep > step ? "w-full bg-[#7fe502]" : "w-0 bg-[#552ae7]"
+                        currentStep > step ? "w-full bg-[#7fe502]" : "w-0 bg-[#3f0ee3]"
                       }`}
                     />
                   </div>
@@ -366,13 +372,13 @@ function AddPropertyPage() {
         </div>
 
         {/* Main Form Card */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg shadow-slate-200/50 overflow-hidden">
+        <div className="card shadow-lg shadow-slate-200/50 overflow-hidden">
           <div className="p-6 sm:p-8 md:p-10">
             {/* Step 1: Basic Property Info */}
             {currentStep === 1 && (
               <div className="space-y-7">
                 <div className="mb-8 flex items-start gap-4">
-                  <span className="hidden sm:flex items-center justify-center w-12 h-12 rounded-xl bg-[#552ae7]/10 text-[#552ae7] shrink-0">
+                  <span className="hidden sm:flex items-center justify-center w-12 h-12 rounded-xl bg-[#3f0ee3]/10 text-[#3f0ee3] shrink-0">
                     <Building2 size={22} />
                   </span>
                   <div>
@@ -387,7 +393,7 @@ function AddPropertyPage() {
 
                 {/* Property Type */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  <label className="label">
                     Property Type <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -395,7 +401,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("propertyType", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400 bg-white"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400 bg-white"
                   >
                     <option value="">Select property type</option>
                     {propertyTypes.map((type) => (
@@ -408,7 +414,7 @@ function AddPropertyPage() {
 
                 {/* Property Name */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  <label className="label">
                     Property Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -418,14 +424,14 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("propertyName", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400"
                   />
                 </div>
 
                 {/* City and District */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-900 mb-2">
+                    <label className="label">
                       City <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -435,11 +441,11 @@ function AddPropertyPage() {
                       onChange={(e) =>
                         handleInputChange("city", e.target.value)
                       }
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-900 mb-2">
+                    <label className="label">
                       District <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -449,14 +455,14 @@ function AddPropertyPage() {
                       onChange={(e) =>
                         handleInputChange("district", e.target.value)
                       }
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400"
                     />
                   </div>
                 </div>
 
                 {/* Address */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  <label className="label">
                     Street Address <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -466,13 +472,13 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("propertyAddress", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400"
                   />
                 </div>
 
                 {/* Number of Units */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  <label className="label">
                     Total Units <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -483,7 +489,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("numberOfUnits", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400"
                   />
                 </div>
               </div>
@@ -493,7 +499,7 @@ function AddPropertyPage() {
             {currentStep === 2 && (
               <div className="space-y-7">
                 <div className="mb-8 flex items-start gap-4">
-                  <span className="hidden sm:flex items-center justify-center w-12 h-12 rounded-xl bg-[#552ae7]/10 text-[#552ae7] shrink-0">
+                  <span className="hidden sm:flex items-center justify-center w-12 h-12 rounded-xl bg-[#3f0ee3]/10 text-[#3f0ee3] shrink-0">
                     <FileText size={22} />
                   </span>
                   <div className="flex-1">
@@ -516,7 +522,7 @@ function AddPropertyPage() {
 
                 {/* Currency */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  <label className="label">
                     Currency <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -524,7 +530,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("currency", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400 bg-white"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400 bg-white"
                   >
                     <option value="UGX">UGX — Ugandan Shilling</option>
                     <option value="USD">USD — US Dollar</option>
@@ -541,7 +547,7 @@ function AddPropertyPage() {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-900 mb-2">
+                      <label className="label">
                         Security Deposit <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -552,11 +558,11 @@ function AddPropertyPage() {
                         onChange={(e) =>
                           handleInputChange("securityDepositMonths", e.target.value)
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400 bg-white"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400 bg-white"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-900 mb-2">
+                      <label className="label">
                         Max Security Deposit
                       </label>
                       <input
@@ -567,7 +573,7 @@ function AddPropertyPage() {
                         onChange={(e) =>
                           handleInputChange("maxSecurityDepositMonths", e.target.value)
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400 bg-white"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400 bg-white"
                       />
                     </div>
                   </div>
@@ -581,7 +587,7 @@ function AddPropertyPage() {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-900 mb-2">
+                      <label className="label">
                         Termination Notice <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -592,11 +598,11 @@ function AddPropertyPage() {
                         onChange={(e) =>
                           handleInputChange("terminationNoticeDays", e.target.value)
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400 bg-white"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400 bg-white"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-900 mb-2">
+                      <label className="label">
                         Rent Increase Notice <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -607,7 +613,7 @@ function AddPropertyPage() {
                         onChange={(e) =>
                           handleInputChange("rentIncreaseNoticeDays", e.target.value)
                         }
-                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400 bg-white"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400 bg-white"
                       />
                     </div>
                   </div>
@@ -627,7 +633,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("initialAdvanceMonths", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400 bg-white"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400 bg-white"
                   />
                 </div>
 
@@ -644,7 +650,7 @@ function AddPropertyPage() {
                     onChange={(e) =>
                       handleInputChange("evictionProcess", e.target.value)
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400 resize-none"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400 resize-none"
                   />
                 </div>
               </div>
@@ -655,7 +661,7 @@ function AddPropertyPage() {
               <div className="space-y-7">
                 <div className="mb-8 flex flex-col sm:flex-row sm:items-start gap-4 sm:justify-between">
                   <div className="flex items-start gap-4">
-                    <span className="hidden sm:flex items-center justify-center w-12 h-12 rounded-xl bg-[#552ae7]/10 text-[#552ae7] shrink-0">
+                    <span className="hidden sm:flex items-center justify-center w-12 h-12 rounded-xl bg-[#3f0ee3]/10 text-[#3f0ee3] shrink-0">
                       <Scroll size={22} />
                     </span>
                     <div>
@@ -669,7 +675,7 @@ function AddPropertyPage() {
                   </div>
                   <button
                     onClick={() => setShowCustomClauseModal(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#552ae7] to-[#3f0ee3] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#552ae7]/30 active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3] text-white rounded-xl font-semibold hover:shadow-lg active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
                   >
                     <Plus size={18} />
                     Add Custom Clause
@@ -679,7 +685,7 @@ function AddPropertyPage() {
                 {clausesLoading ? (
                   <div className="flex justify-center py-12">
                     <div className="text-center">
-                      <Loader className="w-10 h-10 text-[#552ae7] animate-spin mx-auto mb-3" />
+                      <Loader className="w-10 h-10 text-[#3f0ee3] animate-spin mx-auto mb-3" />
                       <p className="text-slate-600 font-medium">Loading clauses...</p>
                     </div>
                   </div>
@@ -692,7 +698,7 @@ function AddPropertyPage() {
                         onClick={() => toggleClause(clause.id)}
                         className={`p-5 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md ${
                           formData.selectedClauseIds.includes(clause.id)
-                            ? "border-[#552ae7] bg-[#552ae7]/5 shadow-sm shadow-[#552ae7]/10"
+                            ? "border-[#3f0ee3] bg-[#3f0ee3]/5 shadow-sm"
                             : "border-slate-200 bg-white hover:border-slate-300"
                         }`}
                       >
@@ -700,7 +706,7 @@ function AddPropertyPage() {
                           <div
                             className={`mt-1 shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
                               formData.selectedClauseIds.includes(clause.id)
-                                ? "border-[#552ae7] bg-[#552ae7]"
+                                ? "border-[#3f0ee3] bg-[#3f0ee3]"
                                 : "border-slate-300"
                             }`}
                           >
@@ -771,10 +777,10 @@ function AddPropertyPage() {
 
                 {/* Summary */}
                 {(clauses.length > 0 || formData.customClauses.length > 0) && (
-                  <div className="bg-gradient-to-r from-[#552ae7]/5 to-[#3f0ee3]/5 border-2 border-[#552ae7]/20 rounded-xl p-4 flex flex-wrap gap-x-8 gap-y-2">
+                  <div className="bg-gradient-to-r from-[#3f0ee3]/5 to-[#3f0ee3]/5 border-2 border-[#3f0ee3]/20 rounded-xl p-4 flex flex-wrap gap-x-8 gap-y-2">
                     <p className="text-sm text-slate-700">
                       <span className="font-semibold">Standard Clauses:</span>{" "}
-                      <span className="text-lg font-bold text-[#552ae7]">{formData.selectedClauseIds.length}</span> selected
+                      <span className="text-lg font-bold text-[#3f0ee3]">{formData.selectedClauseIds.length}</span> selected
                     </p>
                     {formData.customClauses.length > 0 && (
                       <p className="text-sm text-slate-700">
@@ -809,7 +815,7 @@ function AddPropertyPage() {
                   </button>
                   <button
                     onClick={handleAddCustomClause}
-                    className="flex-1 px-4 py-3 bg-gradient-to-r from-[#552ae7] to-[#3f0ee3] text-white rounded-xl font-medium hover:shadow-lg hover:shadow-[#552ae7]/30 active:scale-[0.98] transition-all"
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3] text-white rounded-xl font-medium hover:shadow-lg active:scale-[0.98] transition-all"
                   >
                     Add Clause
                   </button>
@@ -819,7 +825,7 @@ function AddPropertyPage() {
               <div className="space-y-4">
                 {/* Title */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  <label className="label">
                     Clause Title <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -832,13 +838,13 @@ function AddPropertyPage() {
                         title: e.target.value,
                       }))
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400"
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  <label className="label">
                     Description <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -851,13 +857,13 @@ function AddPropertyPage() {
                         description: e.target.value,
                       }))
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400"
                   />
                 </div>
 
                 {/* Body */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  <label className="label">
                     Full Clause Text <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -870,7 +876,7 @@ function AddPropertyPage() {
                         body: e.target.value,
                       }))
                     }
-                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#552ae7]/30 focus:border-[#552ae7] outline-none transition-colors hover:border-slate-400 resize-none"
+                    className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400 resize-none"
                   />
                 </div>
               </div>
@@ -891,7 +897,7 @@ function AddPropertyPage() {
               {currentStep < 3 ? (
                 <button
                   onClick={handleNext}
-                  className="flex items-center gap-2 px-6 sm:px-8 py-3 bg-gradient-to-r from-[#552ae7] to-[#3f0ee3] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#552ae7]/30 active:scale-[0.98] transition-all"
+                  className="flex items-center gap-2 px-6 sm:px-8 py-3 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3] text-white rounded-xl font-semibold hover:shadow-lg active:scale-[0.98] transition-all"
                 >
                   Next Step
                   <ChevronRight size={20} />

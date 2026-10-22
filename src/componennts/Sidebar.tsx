@@ -1,11 +1,15 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import type { ReactNode } from "react";
-import { ArrowLeft, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { useState, type FocusEvent, type MouseEvent, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import AccountMenu from "./AccountMenu";
 
 export type NavItem = {
   icon: ReactNode;
   label: string;
   route: string;
+  /** Count shown at the trailing edge (e.g. unread notifications). */
+  badge?: number;
 };
 
 export type NavSection = {
@@ -21,138 +25,122 @@ type SidebarProps = {
   collapsed: boolean;
   onToggleCollapsed: () => void;
   sections: NavSection[];
-  backAction?: { label: string; onClick: () => void };
-  userFirstName?: string | null;
-  userEmail?: string | null;
+  /** Rendered under the logo, e.g. the property switcher. */
+  header?: ReactNode;
 };
 
-const focusRing =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7fe502] focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950";
+const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
+const COLLAPSE_SHORTCUT = isMac ? "⌘\\" : "Ctrl+\\";
 
-const navLinkClasses = (active: boolean, collapsed: boolean) =>
-  `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 cursor-pointer ${focusRing} ${
-    collapsed ? "md:justify-center md:px-2" : ""
-  } ${
-    active
-      ? "bg-[#3f0ee3] text-white"
-      : "text-slate-400 hover:bg-white/5 hover:text-white"
-  }`;
+export default function Sidebar({ isOpen, onClose, collapsed, onToggleCollapsed, sections, header }: SidebarProps) {
+  const pathname = useLocation({ select: (l) => l.pathname });
+  const [tooltip, setTooltip] = useState<{ label: string; top: number } | null>(null);
 
-export default function Sidebar({
-  isOpen,
-  onClose,
-  collapsed,
-  onToggleCollapsed,
-  sections,
-  backAction,
-  userFirstName,
-  userEmail,
-}: SidebarProps) {
-  const location = useLocation();
-  const isActive = (route: string) => location.pathname === route;
+  // Nested pages (e.g. a tenant's profile) keep their section highlighted.
+  const isActive = (route: string) =>
+    pathname === route || (route !== "/properties" && pathname.startsWith(route + "/"));
+
+  // Collapsed rail: show labels in a floating tooltip (the nav clips anything positioned inside it).
+  const showTooltip = (label: string, target: HTMLElement) => {
+    if (!collapsed || window.innerWidth < 768) return;
+    const rect = target.getBoundingClientRect();
+    setTooltip({ label, top: rect.top + rect.height / 2 });
+  };
+  const tooltipHandlers = (label: string) => ({
+    onMouseEnter: (e: MouseEvent<HTMLElement>) => showTooltip(label, e.currentTarget),
+    onMouseLeave: () => setTooltip(null),
+    onFocus: (e: FocusEvent<HTMLElement>) => showTooltip(label, e.currentTarget),
+    onBlur: () => setTooltip(null),
+  });
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-50 flex ${
-        collapsed ? "md:w-19" : "w-72"
-      } w-72 flex-col overflow-hidden border-r border-white/6 bg-linear-to-b from-slate-900 to-slate-950 px-3 py-6 sm:px-4 md:relative md:py-7 transition-[transform,width] duration-300 ease-in-out ${
-        isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-      } shadow-2xl shadow-black/40`}
+      className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-black/[0.06] bg-[#fbfbfd] px-3 pb-3 pt-4 transition-[translate,width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:relative ${
+        collapsed ? "md:w-[68px]" : "md:w-64"
+      } ${isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"}`}
     >
-      {/* Close Button (Mobile) */}
-      <button
-        onClick={onClose}
-        aria-label="Close sidebar"
-        className={`absolute top-3 right-3 md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer ${focusRing}`}
-      >
-        <X size={20} />
-      </button>
-
-      {/* Logo + Collapse Toggle */}
-      <div
-        className={`mb-8 mt-8 flex items-center md:mt-0 ${
-          collapsed ? "md:flex-col md:gap-3" : "justify-between"
-        }`}
-      >
-        <div
-          className={`inline-flex items-center rounded-lg border border-black/5 bg-white ${
-            collapsed ? "md:p-2" : "px-3 py-2"
-          }`}
-        >
-          <div
-            className={`h-6 w-6 rounded-md bg-[#3f0ee3] items-center justify-center shrink-0 ${
-              collapsed ? "md:flex hidden" : "hidden"
-            }`}
-          >
-            <span className="text-white font-bold text-[10px]">E8</span>
-          </div>
-          <img
-            src="/long_logo.png"
-            alt="est8Ledger"
-            className={`h-5 w-auto ${collapsed ? "md:hidden" : ""}`}
-          />
-        </div>
-
+      {/* Logo + collapse toggle */}
+      <div className={`mb-4 flex h-8 items-center px-1.5 ${collapsed ? "md:justify-center" : "justify-between"}`}>
+        <img src="/long_logo.png" alt="est8Ledger" className={`h-[18px] w-auto ${collapsed ? "md:hidden" : ""}`} />
         <button
           onClick={onToggleCollapsed}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className={`hidden h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-white/5 hover:text-white cursor-pointer md:flex ${focusRing}`}
+          {...tooltipHandlers(`Expand sidebar  ${COLLAPSE_SHORTCUT}`)}
+          title={collapsed ? undefined : `Collapse sidebar (${COLLAPSE_SHORTCUT})`}
+          className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-black/[0.05] hover:text-slate-700 md:flex"
         >
-          {collapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
+          {collapsed ? <PanelLeftOpen size={17} strokeWidth={1.75} /> : <PanelLeftClose size={17} strokeWidth={1.75} />}
+        </button>
+        <button
+          onClick={onClose}
+          aria-label="Close navigation"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/[0.05] text-slate-600 md:hidden"
+        >
+          <X size={16} />
         </button>
       </div>
 
-      {/* Navigation */}
-      <nav className="relative flex-1 space-y-6 overflow-y-auto overflow-x-hidden pb-2 pr-1 -mr-1">
-        {backAction && (
-          <div>
-            <button
-              onClick={() => {
-                backAction.onClick();
-                onClose();
-              }}
-              title={collapsed ? backAction.label : undefined}
-              aria-label={backAction.label}
-              className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors duration-150 hover:bg-white/5 hover:text-white cursor-pointer ${focusRing} ${
-                collapsed ? "md:justify-center md:px-2" : ""
-              }`}
-            >
-              <ArrowLeft size={18} className="shrink-0" />
-              <span className={collapsed ? "md:hidden" : ""}>{backAction.label}</span>
-            </button>
-            <div className="mt-6 h-px bg-white/6" />
-          </div>
-        )}
+      {header}
 
+      {/* Navigation */}
+      <nav
+        aria-label="Main"
+        className="-mx-1 flex-1 space-y-5 overflow-y-auto overflow-x-hidden px-1 pb-2"
+        onScroll={() => setTooltip(null)}
+      >
         {sections.map((section) => (
           <div key={section.id}>
+            {section.title &&
+              (collapsed ? (
+                <div className="mx-2.5 mb-2 hidden h-px bg-black/[0.06] md:block" aria-hidden="true" />
+              ) : null)}
             {section.title && (
-              <p
-                className={`mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-600 ${
-                  collapsed ? "md:hidden" : ""
-                }`}
-              >
+              <p className={`mb-1 px-2.5 text-[11.5px] font-semibold text-slate-400 ${collapsed ? "md:hidden" : ""}`}>
                 {section.title}
               </p>
             )}
-            <div className="space-y-0.5">
+            <div className="space-y-px">
               {section.items.map((item) => {
                 const active = isActive(item.route);
+                const badge = item.badge && item.badge > 0 ? (item.badge > 99 ? "99+" : String(item.badge)) : null;
                 return (
                   <Link
-                    key={item.label}
+                    key={item.route}
                     to={item.route}
-                    onClick={onClose}
-                    title={collapsed ? item.label : undefined}
-                    aria-label={item.label}
+                    onClick={() => {
+                      setTooltip(null);
+                      onClose();
+                    }}
                     aria-current={active ? "page" : undefined}
-                    className={navLinkClasses(active, collapsed)}
+                    {...tooltipHandlers(badge ? `${item.label} · ${badge}` : item.label)}
+                    className={`group relative flex h-9 items-center gap-3 rounded-[10px] px-2.5 text-[13.5px] transition-colors duration-150 ${
+                      collapsed ? "md:justify-center md:px-0" : ""
+                    } ${
+                      active
+                        ? "bg-white font-semibold text-slate-900 shadow-[0_1px_2px_rgb(0_0_0/0.06),0_0_0_0.5px_rgb(0_0_0/0.06)]"
+                        : "font-medium text-slate-600 hover:bg-black/[0.04] hover:text-slate-900"
+                    }`}
                   >
-                    <span className="shrink-0">{item.icon}</span>
-                    <span className={`truncate ${collapsed ? "md:hidden" : ""}`}>
-                      {item.label}
+                    <span
+                      className={`shrink-0 ${active ? "text-[#3f0ee3]" : "text-slate-400 group-hover:text-slate-600"}`}
+                    >
+                      {item.icon}
                     </span>
+                    <span className={`min-w-0 flex-1 truncate ${collapsed ? "md:hidden" : ""}`}>{item.label}</span>
+                    {badge && (
+                      <>
+                        <span
+                          className={`min-w-[20px] rounded-full bg-[#ff3b30] px-1.5 text-center text-[11px] font-semibold leading-5 text-white tabular-nums ${
+                            collapsed ? "md:hidden" : ""
+                          }`}
+                        >
+                          {badge}
+                        </span>
+                        {collapsed && (
+                          <span className="absolute right-2.5 top-1.5 hidden h-2 w-2 rounded-full bg-[#ff3b30] ring-2 ring-[#fbfbfd] md:block" />
+                        )}
+                      </>
+                    )}
                   </Link>
                 );
               })}
@@ -161,24 +149,21 @@ export default function Sidebar({
         ))}
       </nav>
 
-      {/* User Section */}
-      <div className="relative mt-4 border-t border-white/6 pt-4">
-        <div
-          className={`flex items-center gap-3 rounded-lg ${
-            collapsed ? "md:justify-center" : "px-1"
-          }`}
-        >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#3f0ee3] text-sm font-semibold text-white">
-            {(userFirstName?.[0] || "U").toUpperCase()}
-          </div>
-          <div className={`min-w-0 ${collapsed ? "md:hidden" : ""}`}>
-            <h3 className="truncate text-sm font-medium text-slate-200">
-              {userFirstName || "User"}
-            </h3>
-            <p className="truncate text-xs text-slate-500">{userEmail}</p>
-          </div>
-        </div>
+      <div className="border-t border-black/[0.06] pt-2">
+        <AccountMenu collapsed={collapsed} onNavigate={onClose} />
       </div>
+
+      {tooltip &&
+        createPortal(
+          <div
+            role="tooltip"
+            style={{ top: tooltip.top }}
+            className="pointer-events-none fixed left-[76px] z-[70] -translate-y-1/2 whitespace-pre rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg"
+          >
+            {tooltip.label}
+          </div>,
+          document.body,
+        )}
     </aside>
   );
 }

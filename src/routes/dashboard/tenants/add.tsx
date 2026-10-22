@@ -140,14 +140,14 @@ function AddTenantPage() {
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-lg border border-slate-200 p-8">
+      <div className="card p-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Personal Information */}
           <div>
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Personal Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -155,11 +155,11 @@ function AddTenantPage() {
                   value={formData.firstName}
                   onChange={(e) => handleInputChange("firstName", e.target.value)}
                   placeholder="John"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -167,11 +167,11 @@ function AddTenantPage() {
                   value={formData.lastName}
                   onChange={(e) => handleInputChange("lastName", e.target.value)}
                   placeholder="Doe"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Email <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -179,11 +179,11 @@ function AddTenantPage() {
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="john@example.com"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Phone Number <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -191,17 +191,17 @@ function AddTenantPage() {
                   value={formData.phoneNumber}
                   onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
                   placeholder="+256700000000"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Country <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.countryId}
                   onChange={(e) => handleInputChange("countryId", e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 >
                   <option value="">Select Country</option>
                   {countries.map((country) => (
@@ -219,7 +219,7 @@ function AddTenantPage() {
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Tenancy Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Unit Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -227,11 +227,11 @@ function AddTenantPage() {
                   value={formData.unitName}
                   onChange={(e) => handleInputChange("unitName", e.target.value)}
                   placeholder="Unit A, Floor 1"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Monthly Rent <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -241,11 +241,11 @@ function AddTenantPage() {
                   placeholder="500000"
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Security Deposit
                 </label>
                 <input
@@ -255,11 +255,11 @@ function AddTenantPage() {
                   placeholder="1000000"
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Waste Management <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -267,7 +267,7 @@ function AddTenantPage() {
                   onChange={(e) =>
                     handleInputChange("wasteHandledBy", e.target.value as "TENANT" | "LANDLORD")
                   }
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 >
                   <option value="TENANT">Tenant Handles</option>
                   <option value="LANDLORD">Landlord Handles</option>
@@ -281,13 +281,13 @@ function AddTenantPage() {
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Payment Terms</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Day of Rent Payment <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.dayOfRentPayment}
                   onChange={(e) => handleInputChange("dayOfRentPayment", e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 >
                   {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                     <option key={day} value={day.toString()}>
@@ -298,7 +298,7 @@ function AddTenantPage() {
                 <p className="text-xs text-slate-500 mt-1">The day each month when rent is due</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Days Before Late <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -308,12 +308,12 @@ function AddTenantPage() {
                   placeholder="3"
                   min="0"
                   max="31"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
                 <p className="text-xs text-slate-500 mt-1">Days after due date before payment is late</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Late Payment Penalty (%) <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -324,7 +324,7 @@ function AddTenantPage() {
                   step="0.1"
                   min="0"
                   max="100"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
                 <p className="text-xs text-slate-500 mt-1">Percentage of rent charged as penalty</p>
               </div>
@@ -336,7 +336,7 @@ function AddTenantPage() {
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Utilities</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Water Meter
                 </label>
                 <input
@@ -344,11 +344,11 @@ function AddTenantPage() {
                   value={formData.waterMeter}
                   onChange={(e) => handleInputChange("waterMeter", e.target.value)}
                   placeholder="Meter number or N/A"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   YAKA Meter
                 </label>
                 <input
@@ -356,7 +356,7 @@ function AddTenantPage() {
                   value={formData.yakaMeter}
                   onChange={(e) => handleInputChange("yakaMeter", e.target.value)}
                   placeholder="Meter number or N/A"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
             </div>
@@ -374,7 +374,7 @@ function AddTenantPage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating..." : "Create Tenant"}
             </button>

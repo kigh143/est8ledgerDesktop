@@ -15,16 +15,16 @@ export const Select = ({
     placeholder = "Select option",
 }: SelectProps) => {
     return (
-        <div className="w-full space-y-2">
+        <div className="w-full">
             {label && (
-                <label className="text-sm font-semibold text-slate-900">
+                <label className="label">
                     {label}
                 </label>
             )}
             <select
                 value={value ?? ''}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full mt-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-[#3f0ee3] focus:ring-2 focus:ring-[#3f0ee3]/20 cursor-pointer"
+                className="field h-12 cursor-pointer"
             >
                 <option value="">{placeholder}</option>
 

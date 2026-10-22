@@ -156,14 +156,14 @@ function EditTenantPage() {
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-lg border border-slate-200 p-8">
+      <div className="card p-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Personal Information */}
           <div>
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Personal Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -177,7 +177,7 @@ function EditTenantPage() {
                 <p className="text-xs text-slate-500 mt-1">Contact info cannot be changed here</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -191,7 +191,7 @@ function EditTenantPage() {
                 <p className="text-xs text-slate-500 mt-1">Contact info cannot be changed here</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">Email</label>
+                <label className="label">Email</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -201,7 +201,7 @@ function EditTenantPage() {
                 <p className="text-xs text-slate-500 mt-1">Contact info cannot be changed here</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Phone Number
                 </label>
                 <input
@@ -220,7 +220,7 @@ function EditTenantPage() {
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Tenancy Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Unit Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -228,11 +228,11 @@ function EditTenantPage() {
                   value={formData.unitName}
                   onChange={(e) => handleInputChange("unitName", e.target.value)}
                   placeholder="Unit A, Floor 1"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Monthly Rent <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -242,11 +242,11 @@ function EditTenantPage() {
                   placeholder="500000"
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Security Deposit
                 </label>
                 <input
@@ -256,11 +256,11 @@ function EditTenantPage() {
                   placeholder="1000000"
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Waste Management <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -268,7 +268,7 @@ function EditTenantPage() {
                   onChange={(e) =>
                     handleInputChange("wasteHandledBy", e.target.value as "TENANT" | "LANDLORD")
                   }
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 >
                   <option value="TENANT">Tenant Handles</option>
                   <option value="LANDLORD">Landlord Handles</option>
@@ -282,13 +282,13 @@ function EditTenantPage() {
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Payment Terms</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Day of Rent Payment <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.days_of_late_payment}
                   onChange={(e) => handleInputChange("days_of_late_payment", e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 >
                   {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                     <option key={day} value={day.toString()}>
@@ -299,7 +299,7 @@ function EditTenantPage() {
                 <p className="text-xs text-slate-500 mt-1">The day each month when rent is due</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Days Before Late <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -309,12 +309,12 @@ function EditTenantPage() {
                   placeholder="3"
                   min="0"
                   max="31"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
                 <p className="text-xs text-slate-500 mt-1">Days after due date before payment is late</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Late Payment Penalty (%) <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -325,7 +325,7 @@ function EditTenantPage() {
                   step="0.1"
                   min="0"
                   max="100"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
                 <p className="text-xs text-slate-500 mt-1">Percentage of rent charged as penalty</p>
               </div>
@@ -336,7 +336,7 @@ function EditTenantPage() {
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Utilities</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   Water Meter
                 </label>
                 <input
@@ -344,11 +344,11 @@ function EditTenantPage() {
                   value={formData.waterMeter}
                   onChange={(e) => handleInputChange("waterMeter", e.target.value)}
                   placeholder="Meter number or N/A"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="label">
                   YAKA Meter
                 </label>
                 <input
@@ -356,7 +356,7 @@ function EditTenantPage() {
                   value={formData.yakaMeter}
                   onChange={(e) => handleInputChange("yakaMeter", e.target.value)}
                   placeholder="Meter number or N/A"
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3f0ee3] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3]"
                 />
               </div>
             </div>
@@ -382,7 +382,7 @@ function EditTenantPage() {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3f0ee3]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-[#3f0ee3] text-white rounded-lg font-medium hover:bg-[#3409c4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? "Saving..." : "Save Changes"}
             </button>

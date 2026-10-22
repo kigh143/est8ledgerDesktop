@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { checkUserExisits } from '../../services/auth';
 import { getNetworkError, phoneNumberWithCountryCode } from '../../utils';
 import { toast } from 'react-toastify';
+import { Segmented } from '../../componennts/dashboard/ui';
 
 export const Route = createFileRoute('/(auth)/login')({
   component: RouteComponent,
@@ -19,7 +20,8 @@ export const Route = createFileRoute('/(auth)/login')({
     }
   },
   loader: async () => {
-    const countries = await configurationService.getCountries();
+    // Phone sign-in needs the country list; email sign-in still works if it fails to load.
+    const countries: Country[] = await configurationService.getCountries().catch(() => []);
     return {
       countries
     }
@@ -61,24 +63,25 @@ function RouteComponent() {
   return <AuthLayout>
     <div className="w-full max-w-md">
       <h2
-        className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 to-[#3f0ee3] bg-clip-text text-transparent leading-tight"
+        className="text-[32px] font-semibold leading-tight tracking-[-0.03em] text-slate-900"
       >
-        Welcome Back!
+        Welcome back
       </h2>
 
-      <p className="mt-3 text-slate-600 text-sm sm:text-base font-medium">
-        Sign in to your account to continue
+      <p className="mt-2 text-[15px] leading-relaxed text-slate-500">
+        Sign in with your email address or phone number.
       </p>
 
-      <form className="mt-10 space-y-6">
+      <form className="mt-8 space-y-5" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
 
-        <Select
-          label="Log in with"
-          options={[{ value: "email", label: "Email Address" }, { value: "phone", label: 'Phone Number' }]}
-          value={authData?.loginWith}
-          onChange={(value) => setAuthData({ ...authData, loginWith: value as LoginWith })}
-          placeholder="Select option"
-        />
+        <div className="flex">
+          <Segmented<LoginWith>
+            ariaLabel="Sign in with"
+            value={authData?.loginWith ?? 'email'}
+            onChange={(value) => setAuthData({ ...authData, loginWith: value })}
+            options={[{ value: 'email', label: 'Email' }, { value: 'phone', label: 'Phone' }]}
+          />
+        </div>
 
         {
           authData?.loginWith === 'email' ? (
@@ -86,7 +89,7 @@ function RouteComponent() {
               label='Email'
               onChange={(text: string) => setAuthData({ ...authData, email: text })}
               value={authData.email || ''}
-              placeholder='Enter Email Address'
+              placeholder='name@example.com'
             />
           ) : authData?.loginWith === 'phone' && (
             <>
@@ -94,7 +97,7 @@ function RouteComponent() {
                 label="Select Country"
                 options={countries.map((country: Country) => ({ label: `${country.flag} (+${country.dialingCode}) ${country.name}`, value: country.id }))}
                 value={authData?.country?.id || null}
-                onChange={(countryId) => setAuthData({ ...authData, country: countries.find((country: Country) => country.id === +countryId) })}
+                onChange={(countryId) => setAuthData({ ...authData, country: countries.find((country: Country) => country.id === +countryId) ?? null })}
                 placeholder="Select Country"
               />
 
@@ -110,19 +113,19 @@ function RouteComponent() {
         }
 
         <button
-          onClick={handleLogin}
+          type="submit"
           disabled={loading}
-          className="w-full h-14 bg-gradient-to-r from-[#3f0ee3] to-[#3f0ee3]/90 text-white rounded-xl text-base font-semibold shadow-lg shadow-[#3f0ee3]/40 hover:shadow-[#3f0ee3]/60 transition-all hover:from-[#3f0ee3] hover:to-[#3f0ee3] disabled:opacity-70 disabled:cursor-not-allowed"
+          className="btn btn-primary btn-lg w-full"
         >
-          {loading? 'Loading ... ' :'Login'}
+          {loading ? 'Checking…' : 'Continue'}
         </button>
       </form>
 
-      <p className="text-center text-slate-600 text-sm mt-12">
+      <p className="text-center text-slate-500 text-sm mt-10">
         Don't have an account?
         <Link to='/register'>
-          <span className="ml-1 text-[#3f0ee3] font-bold hover:text-[#3f0ee3]/80 transition-colors">
-            Register
+          <span className="ml-1 text-[#3f0ee3] font-semibold hover:underline">
+            Create an account
           </span>
         </Link>
       </p>
