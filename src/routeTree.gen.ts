@@ -12,12 +12,48 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as PropertiesIndexRouteImport } from './routes/properties/index'
 import { Route as authIndexRouteImport } from './routes/(auth)/index'
+import { Route as PropertiesWalletRouteImport } from './routes/properties/wallet'
+import { Route as PropertiesTaxComplianceRouteImport } from './routes/properties/tax-compliance'
+import { Route as PropertiesSubscriptionRouteImport } from './routes/properties/subscription'
+import { Route as PropertiesSettingsRouteImport } from './routes/properties/settings'
+import { Route as PropertiesReportsRouteImport } from './routes/properties/reports'
+import { Route as PropertiesImportAgreementRouteImport } from './routes/properties/import-agreement'
+import { Route as PropertiesImportRouteImport } from './routes/properties/import'
 import { Route as PropertiesAddRouteImport } from './routes/properties/add'
+import { Route as DashboardTaxRouteImport } from './routes/dashboard/tax'
+import { Route as DashboardSecuritydepositsRouteImport } from './routes/dashboard/securitydeposits'
+import { Route as DashboardReportsRouteImport } from './routes/dashboard/reports'
+import { Route as DashboardRepairsRouteImport } from './routes/dashboard/repairs'
+import { Route as DashboardPricingRouteImport } from './routes/dashboard/pricing'
+import { Route as DashboardNotificationsRouteImport } from './routes/dashboard/notifications'
 import { Route as DashboardHomeRouteImport } from './routes/dashboard/home'
+import { Route as DashboardDepositCollectionRouteImport } from './routes/dashboard/deposit-collection'
+import { Route as DashboardAgreementRouteImport } from './routes/dashboard/agreement'
+import { Route as DashboardAdvertiseRouteImport } from './routes/dashboard/advertise'
 import { Route as authVerifyRouteImport } from './routes/(auth)/verify'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
+import { Route as authPinRouteImport } from './routes/(auth)/pin'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
+import { Route as DashboardTenantsRouteRouteImport } from './routes/dashboard/tenants/route'
+import { Route as DashboardRenttrackingRouteRouteImport } from './routes/dashboard/renttracking/route'
+import { Route as DashboardExpensesRouteRouteImport } from './routes/dashboard/expenses/route'
+import { Route as DashboardAgreementsRouteRouteImport } from './routes/dashboard/agreements/route'
+import { Route as DashboardTenantsIndexRouteImport } from './routes/dashboard/tenants/index'
+import { Route as DashboardRenttrackingIndexRouteImport } from './routes/dashboard/renttracking/index'
+import { Route as DashboardInspectionsIndexRouteImport } from './routes/dashboard/inspections/index'
+import { Route as DashboardExpensesIndexRouteImport } from './routes/dashboard/expenses/index'
+import { Route as DashboardAgreementsIndexRouteImport } from './routes/dashboard/agreements/index'
 import { Route as PropertiesPropertyIdEditRouteImport } from './routes/properties/$propertyId.edit'
+import { Route as DashboardTenantsAddRouteImport } from './routes/dashboard/tenants/add'
+import { Route as DashboardTenantsTenantIdRouteImport } from './routes/dashboard/tenants/$tenantId'
+import { Route as DashboardRenttrackingRecordRouteImport } from './routes/dashboard/renttracking/record'
+import { Route as DashboardRenttrackingAccountsRouteImport } from './routes/dashboard/renttracking/accounts'
+import { Route as DashboardInspectionsInspectionIdRouteImport } from './routes/dashboard/inspections/$inspectionId'
+import { Route as DashboardExpensesAddRouteImport } from './routes/dashboard/expenses/add'
+import { Route as DashboardAgreementsEditRouteImport } from './routes/dashboard/agreements/edit'
+import { Route as DashboardTenantsEditRouteRouteImport } from './routes/dashboard/tenants/edit/route'
+import { Route as DashboardTenantsEditTenantIdRouteImport } from './routes/dashboard/tenants/edit/$tenantId'
+import { Route as DashboardExpensesExpenseIdEditRouteImport } from './routes/dashboard/expenses/$expenseId.edit'
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
@@ -34,14 +70,97 @@ const authIndexRoute = authIndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PropertiesWalletRoute = PropertiesWalletRouteImport.update({
+  id: '/properties/wallet',
+  path: '/properties/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesTaxComplianceRoute = PropertiesTaxComplianceRouteImport.update({
+  id: '/properties/tax-compliance',
+  path: '/properties/tax-compliance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesSubscriptionRoute = PropertiesSubscriptionRouteImport.update({
+  id: '/properties/subscription',
+  path: '/properties/subscription',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesSettingsRoute = PropertiesSettingsRouteImport.update({
+  id: '/properties/settings',
+  path: '/properties/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesReportsRoute = PropertiesReportsRouteImport.update({
+  id: '/properties/reports',
+  path: '/properties/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropertiesImportAgreementRoute =
+  PropertiesImportAgreementRouteImport.update({
+    id: '/properties/import-agreement',
+    path: '/properties/import-agreement',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const PropertiesImportRoute = PropertiesImportRouteImport.update({
+  id: '/properties/import',
+  path: '/properties/import',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PropertiesAddRoute = PropertiesAddRouteImport.update({
-  id: '/add',
-  path: '/add',
-  getParentRoute: () => PropertiesRouteRoute,
+  id: '/properties/add',
+  path: '/properties/add',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardTaxRoute = DashboardTaxRouteImport.update({
+  id: '/tax',
+  path: '/tax',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardSecuritydepositsRoute =
+  DashboardSecuritydepositsRouteImport.update({
+    id: '/securitydeposits',
+    path: '/securitydeposits',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardReportsRoute = DashboardReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardRepairsRoute = DashboardRepairsRouteImport.update({
+  id: '/repairs',
+  path: '/repairs',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardPricingRoute = DashboardPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardHomeRoute = DashboardHomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardDepositCollectionRoute =
+  DashboardDepositCollectionRouteImport.update({
+    id: '/deposit-collection',
+    path: '/deposit-collection',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardAgreementRoute = DashboardAgreementRouteImport.update({
+  id: '/agreement',
+  path: '/agreement',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardAdvertiseRoute = DashboardAdvertiseRouteImport.update({
+  id: '/advertise',
+  path: '/advertise',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 const authVerifyRoute = authVerifyRouteImport.update({
@@ -54,95 +173,425 @@ const authRegisterRoute = authRegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authPinRoute = authPinRouteImport.update({
+  id: '/(auth)/pin',
+  path: '/pin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const authLoginRoute = authLoginRouteImport.update({
   id: '/(auth)/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardTenantsRouteRoute = DashboardTenantsRouteRouteImport.update({
+  id: '/tenants',
+  path: '/tenants',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardRenttrackingRouteRoute =
+  DashboardRenttrackingRouteRouteImport.update({
+    id: '/renttracking',
+    path: '/renttracking',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardExpensesRouteRoute = DashboardExpensesRouteRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardAgreementsRouteRoute =
+  DashboardAgreementsRouteRouteImport.update({
+    id: '/agreements',
+    path: '/agreements',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardTenantsIndexRoute = DashboardTenantsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardTenantsRouteRoute,
+} as any)
+const DashboardRenttrackingIndexRoute =
+  DashboardRenttrackingIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardRenttrackingRouteRoute,
+  } as any)
+const DashboardInspectionsIndexRoute =
+  DashboardInspectionsIndexRouteImport.update({
+    id: '/inspections/',
+    path: '/inspections/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardExpensesIndexRoute = DashboardExpensesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardExpensesRouteRoute,
+} as any)
+const DashboardAgreementsIndexRoute =
+  DashboardAgreementsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAgreementsRouteRoute,
+  } as any)
 const PropertiesPropertyIdEditRoute =
   PropertiesPropertyIdEditRouteImport.update({
-    id: '/$propertyId/edit',
-    path: '/$propertyId/edit',
-    getParentRoute: () => PropertiesRouteRoute,
+    id: '/properties/$propertyId/edit',
+    path: '/properties/$propertyId/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DashboardTenantsAddRoute = DashboardTenantsAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => DashboardTenantsRouteRoute,
+} as any)
+const DashboardTenantsTenantIdRoute =
+  DashboardTenantsTenantIdRouteImport.update({
+    id: '/$tenantId',
+    path: '/$tenantId',
+    getParentRoute: () => DashboardTenantsRouteRoute,
+  } as any)
+const DashboardRenttrackingRecordRoute =
+  DashboardRenttrackingRecordRouteImport.update({
+    id: '/record',
+    path: '/record',
+    getParentRoute: () => DashboardRenttrackingRouteRoute,
+  } as any)
+const DashboardRenttrackingAccountsRoute =
+  DashboardRenttrackingAccountsRouteImport.update({
+    id: '/accounts',
+    path: '/accounts',
+    getParentRoute: () => DashboardRenttrackingRouteRoute,
+  } as any)
+const DashboardInspectionsInspectionIdRoute =
+  DashboardInspectionsInspectionIdRouteImport.update({
+    id: '/inspections/$inspectionId',
+    path: '/inspections/$inspectionId',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardExpensesAddRoute = DashboardExpensesAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => DashboardExpensesRouteRoute,
+} as any)
+const DashboardAgreementsEditRoute = DashboardAgreementsEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => DashboardAgreementsRouteRoute,
+} as any)
+const DashboardTenantsEditRouteRoute =
+  DashboardTenantsEditRouteRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => DashboardTenantsRouteRoute,
+  } as any)
+const DashboardTenantsEditTenantIdRoute =
+  DashboardTenantsEditTenantIdRouteImport.update({
+    id: '/$tenantId',
+    path: '/$tenantId',
+    getParentRoute: () => DashboardTenantsEditRouteRoute,
+  } as any)
+const DashboardExpensesExpenseIdEditRoute =
+  DashboardExpensesExpenseIdEditRouteImport.update({
+    id: '/$expenseId/edit',
+    path: '/$expenseId/edit',
+    getParentRoute: () => DashboardExpensesRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/dashboard/agreements': typeof DashboardAgreementsRouteRouteWithChildren
+  '/dashboard/expenses': typeof DashboardExpensesRouteRouteWithChildren
+  '/dashboard/renttracking': typeof DashboardRenttrackingRouteRouteWithChildren
+  '/dashboard/tenants': typeof DashboardTenantsRouteRouteWithChildren
   '/login': typeof authLoginRoute
+  '/pin': typeof authPinRoute
   '/register': typeof authRegisterRoute
   '/verify': typeof authVerifyRoute
+  '/dashboard/advertise': typeof DashboardAdvertiseRoute
+  '/dashboard/agreement': typeof DashboardAgreementRoute
+  '/dashboard/deposit-collection': typeof DashboardDepositCollectionRoute
   '/dashboard/home': typeof DashboardHomeRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/pricing': typeof DashboardPricingRoute
+  '/dashboard/repairs': typeof DashboardRepairsRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
+  '/dashboard/tax': typeof DashboardTaxRoute
   '/properties/add': typeof PropertiesAddRoute
+  '/properties/import': typeof PropertiesImportRoute
+  '/properties/import-agreement': typeof PropertiesImportAgreementRoute
+  '/properties/reports': typeof PropertiesReportsRoute
+  '/properties/settings': typeof PropertiesSettingsRoute
+  '/properties/subscription': typeof PropertiesSubscriptionRoute
+  '/properties/tax-compliance': typeof PropertiesTaxComplianceRoute
+  '/properties/wallet': typeof PropertiesWalletRoute
   '/': typeof authIndexRoute
   '/properties/': typeof PropertiesIndexRoute
+  '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
+  '/dashboard/agreements/edit': typeof DashboardAgreementsEditRoute
+  '/dashboard/expenses/add': typeof DashboardExpensesAddRoute
+  '/dashboard/inspections/$inspectionId': typeof DashboardInspectionsInspectionIdRoute
+  '/dashboard/renttracking/accounts': typeof DashboardRenttrackingAccountsRoute
+  '/dashboard/renttracking/record': typeof DashboardRenttrackingRecordRoute
+  '/dashboard/tenants/$tenantId': typeof DashboardTenantsTenantIdRoute
+  '/dashboard/tenants/add': typeof DashboardTenantsAddRoute
   '/properties/$propertyId/edit': typeof PropertiesPropertyIdEditRoute
+  '/dashboard/agreements/': typeof DashboardAgreementsIndexRoute
+  '/dashboard/expenses/': typeof DashboardExpensesIndexRoute
+  '/dashboard/inspections/': typeof DashboardInspectionsIndexRoute
+  '/dashboard/renttracking/': typeof DashboardRenttrackingIndexRoute
+  '/dashboard/tenants/': typeof DashboardTenantsIndexRoute
+  '/dashboard/expenses/$expenseId/edit': typeof DashboardExpensesExpenseIdEditRoute
+  '/dashboard/tenants/edit/$tenantId': typeof DashboardTenantsEditTenantIdRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof authLoginRoute
+  '/pin': typeof authPinRoute
   '/register': typeof authRegisterRoute
   '/verify': typeof authVerifyRoute
+  '/dashboard/advertise': typeof DashboardAdvertiseRoute
+  '/dashboard/agreement': typeof DashboardAgreementRoute
+  '/dashboard/deposit-collection': typeof DashboardDepositCollectionRoute
   '/dashboard/home': typeof DashboardHomeRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/pricing': typeof DashboardPricingRoute
+  '/dashboard/repairs': typeof DashboardRepairsRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
+  '/dashboard/tax': typeof DashboardTaxRoute
   '/properties/add': typeof PropertiesAddRoute
+  '/properties/import': typeof PropertiesImportRoute
+  '/properties/import-agreement': typeof PropertiesImportAgreementRoute
+  '/properties/reports': typeof PropertiesReportsRoute
+  '/properties/settings': typeof PropertiesSettingsRoute
+  '/properties/subscription': typeof PropertiesSubscriptionRoute
+  '/properties/tax-compliance': typeof PropertiesTaxComplianceRoute
+  '/properties/wallet': typeof PropertiesWalletRoute
   '/': typeof authIndexRoute
   '/properties': typeof PropertiesIndexRoute
+  '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
+  '/dashboard/agreements/edit': typeof DashboardAgreementsEditRoute
+  '/dashboard/expenses/add': typeof DashboardExpensesAddRoute
+  '/dashboard/inspections/$inspectionId': typeof DashboardInspectionsInspectionIdRoute
+  '/dashboard/renttracking/accounts': typeof DashboardRenttrackingAccountsRoute
+  '/dashboard/renttracking/record': typeof DashboardRenttrackingRecordRoute
+  '/dashboard/tenants/$tenantId': typeof DashboardTenantsTenantIdRoute
+  '/dashboard/tenants/add': typeof DashboardTenantsAddRoute
   '/properties/$propertyId/edit': typeof PropertiesPropertyIdEditRoute
+  '/dashboard/agreements': typeof DashboardAgreementsIndexRoute
+  '/dashboard/expenses': typeof DashboardExpensesIndexRoute
+  '/dashboard/inspections': typeof DashboardInspectionsIndexRoute
+  '/dashboard/renttracking': typeof DashboardRenttrackingIndexRoute
+  '/dashboard/tenants': typeof DashboardTenantsIndexRoute
+  '/dashboard/expenses/$expenseId/edit': typeof DashboardExpensesExpenseIdEditRoute
+  '/dashboard/tenants/edit/$tenantId': typeof DashboardTenantsEditTenantIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/dashboard': typeof DashboardRouteRouteWithChildren
+  '/dashboard/agreements': typeof DashboardAgreementsRouteRouteWithChildren
+  '/dashboard/expenses': typeof DashboardExpensesRouteRouteWithChildren
+  '/dashboard/renttracking': typeof DashboardRenttrackingRouteRouteWithChildren
+  '/dashboard/tenants': typeof DashboardTenantsRouteRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
+  '/(auth)/pin': typeof authPinRoute
   '/(auth)/register': typeof authRegisterRoute
   '/(auth)/verify': typeof authVerifyRoute
+  '/dashboard/advertise': typeof DashboardAdvertiseRoute
+  '/dashboard/agreement': typeof DashboardAgreementRoute
+  '/dashboard/deposit-collection': typeof DashboardDepositCollectionRoute
   '/dashboard/home': typeof DashboardHomeRoute
+  '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/pricing': typeof DashboardPricingRoute
+  '/dashboard/repairs': typeof DashboardRepairsRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
+  '/dashboard/tax': typeof DashboardTaxRoute
   '/properties/add': typeof PropertiesAddRoute
+  '/properties/import': typeof PropertiesImportRoute
+  '/properties/import-agreement': typeof PropertiesImportAgreementRoute
+  '/properties/reports': typeof PropertiesReportsRoute
+  '/properties/settings': typeof PropertiesSettingsRoute
+  '/properties/subscription': typeof PropertiesSubscriptionRoute
+  '/properties/tax-compliance': typeof PropertiesTaxComplianceRoute
+  '/properties/wallet': typeof PropertiesWalletRoute
   '/(auth)/': typeof authIndexRoute
   '/properties/': typeof PropertiesIndexRoute
+  '/dashboard/tenants/edit': typeof DashboardTenantsEditRouteRouteWithChildren
+  '/dashboard/agreements/edit': typeof DashboardAgreementsEditRoute
+  '/dashboard/expenses/add': typeof DashboardExpensesAddRoute
+  '/dashboard/inspections/$inspectionId': typeof DashboardInspectionsInspectionIdRoute
+  '/dashboard/renttracking/accounts': typeof DashboardRenttrackingAccountsRoute
+  '/dashboard/renttracking/record': typeof DashboardRenttrackingRecordRoute
+  '/dashboard/tenants/$tenantId': typeof DashboardTenantsTenantIdRoute
+  '/dashboard/tenants/add': typeof DashboardTenantsAddRoute
   '/properties/$propertyId/edit': typeof PropertiesPropertyIdEditRoute
+  '/dashboard/agreements/': typeof DashboardAgreementsIndexRoute
+  '/dashboard/expenses/': typeof DashboardExpensesIndexRoute
+  '/dashboard/inspections/': typeof DashboardInspectionsIndexRoute
+  '/dashboard/renttracking/': typeof DashboardRenttrackingIndexRoute
+  '/dashboard/tenants/': typeof DashboardTenantsIndexRoute
+  '/dashboard/expenses/$expenseId/edit': typeof DashboardExpensesExpenseIdEditRoute
+  '/dashboard/tenants/edit/$tenantId': typeof DashboardTenantsEditTenantIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/dashboard'
+    | '/dashboard/agreements'
+    | '/dashboard/expenses'
+    | '/dashboard/renttracking'
+    | '/dashboard/tenants'
     | '/login'
+    | '/pin'
     | '/register'
     | '/verify'
+    | '/dashboard/advertise'
+    | '/dashboard/agreement'
+    | '/dashboard/deposit-collection'
     | '/dashboard/home'
+    | '/dashboard/notifications'
+    | '/dashboard/pricing'
+    | '/dashboard/repairs'
+    | '/dashboard/reports'
+    | '/dashboard/securitydeposits'
+    | '/dashboard/tax'
     | '/properties/add'
+    | '/properties/import'
+    | '/properties/import-agreement'
+    | '/properties/reports'
+    | '/properties/settings'
+    | '/properties/subscription'
+    | '/properties/tax-compliance'
+    | '/properties/wallet'
     | '/'
     | '/properties/'
+    | '/dashboard/tenants/edit'
+    | '/dashboard/agreements/edit'
+    | '/dashboard/expenses/add'
+    | '/dashboard/inspections/$inspectionId'
+    | '/dashboard/renttracking/accounts'
+    | '/dashboard/renttracking/record'
+    | '/dashboard/tenants/$tenantId'
+    | '/dashboard/tenants/add'
     | '/properties/$propertyId/edit'
+    | '/dashboard/agreements/'
+    | '/dashboard/expenses/'
+    | '/dashboard/inspections/'
+    | '/dashboard/renttracking/'
+    | '/dashboard/tenants/'
+    | '/dashboard/expenses/$expenseId/edit'
+    | '/dashboard/tenants/edit/$tenantId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/dashboard'
     | '/login'
+    | '/pin'
     | '/register'
     | '/verify'
+    | '/dashboard/advertise'
+    | '/dashboard/agreement'
+    | '/dashboard/deposit-collection'
     | '/dashboard/home'
+    | '/dashboard/notifications'
+    | '/dashboard/pricing'
+    | '/dashboard/repairs'
+    | '/dashboard/reports'
+    | '/dashboard/securitydeposits'
+    | '/dashboard/tax'
     | '/properties/add'
+    | '/properties/import'
+    | '/properties/import-agreement'
+    | '/properties/reports'
+    | '/properties/settings'
+    | '/properties/subscription'
+    | '/properties/tax-compliance'
+    | '/properties/wallet'
     | '/'
     | '/properties'
+    | '/dashboard/tenants/edit'
+    | '/dashboard/agreements/edit'
+    | '/dashboard/expenses/add'
+    | '/dashboard/inspections/$inspectionId'
+    | '/dashboard/renttracking/accounts'
+    | '/dashboard/renttracking/record'
+    | '/dashboard/tenants/$tenantId'
+    | '/dashboard/tenants/add'
     | '/properties/$propertyId/edit'
+    | '/dashboard/agreements'
+    | '/dashboard/expenses'
+    | '/dashboard/inspections'
+    | '/dashboard/renttracking'
+    | '/dashboard/tenants'
+    | '/dashboard/expenses/$expenseId/edit'
+    | '/dashboard/tenants/edit/$tenantId'
   id:
     | '__root__'
     | '/dashboard'
+    | '/dashboard/agreements'
+    | '/dashboard/expenses'
+    | '/dashboard/renttracking'
+    | '/dashboard/tenants'
     | '/(auth)/login'
+    | '/(auth)/pin'
     | '/(auth)/register'
     | '/(auth)/verify'
+    | '/dashboard/advertise'
+    | '/dashboard/agreement'
+    | '/dashboard/deposit-collection'
     | '/dashboard/home'
+    | '/dashboard/notifications'
+    | '/dashboard/pricing'
+    | '/dashboard/repairs'
+    | '/dashboard/reports'
+    | '/dashboard/securitydeposits'
+    | '/dashboard/tax'
     | '/properties/add'
+    | '/properties/import'
+    | '/properties/import-agreement'
+    | '/properties/reports'
+    | '/properties/settings'
+    | '/properties/subscription'
+    | '/properties/tax-compliance'
+    | '/properties/wallet'
     | '/(auth)/'
     | '/properties/'
+    | '/dashboard/tenants/edit'
+    | '/dashboard/agreements/edit'
+    | '/dashboard/expenses/add'
+    | '/dashboard/inspections/$inspectionId'
+    | '/dashboard/renttracking/accounts'
+    | '/dashboard/renttracking/record'
+    | '/dashboard/tenants/$tenantId'
+    | '/dashboard/tenants/add'
     | '/properties/$propertyId/edit'
+    | '/dashboard/agreements/'
+    | '/dashboard/expenses/'
+    | '/dashboard/inspections/'
+    | '/dashboard/renttracking/'
+    | '/dashboard/tenants/'
+    | '/dashboard/expenses/$expenseId/edit'
+    | '/dashboard/tenants/edit/$tenantId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   authLoginRoute: typeof authLoginRoute
+  authPinRoute: typeof authPinRoute
   authRegisterRoute: typeof authRegisterRoute
   authVerifyRoute: typeof authVerifyRoute
+  PropertiesAddRoute: typeof PropertiesAddRoute
+  PropertiesImportRoute: typeof PropertiesImportRoute
+  PropertiesImportAgreementRoute: typeof PropertiesImportAgreementRoute
+  PropertiesReportsRoute: typeof PropertiesReportsRoute
+  PropertiesSettingsRoute: typeof PropertiesSettingsRoute
+  PropertiesSubscriptionRoute: typeof PropertiesSubscriptionRoute
+  PropertiesTaxComplianceRoute: typeof PropertiesTaxComplianceRoute
+  PropertiesWalletRoute: typeof PropertiesWalletRoute
   authIndexRoute: typeof authIndexRoute
   PropertiesIndexRoute: typeof PropertiesIndexRoute
+  PropertiesPropertyIdEditRoute: typeof PropertiesPropertyIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -168,18 +617,130 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/properties/wallet': {
+      id: '/properties/wallet'
+      path: '/properties/wallet'
+      fullPath: '/properties/wallet'
+      preLoaderRoute: typeof PropertiesWalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/tax-compliance': {
+      id: '/properties/tax-compliance'
+      path: '/properties/tax-compliance'
+      fullPath: '/properties/tax-compliance'
+      preLoaderRoute: typeof PropertiesTaxComplianceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/subscription': {
+      id: '/properties/subscription'
+      path: '/properties/subscription'
+      fullPath: '/properties/subscription'
+      preLoaderRoute: typeof PropertiesSubscriptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/settings': {
+      id: '/properties/settings'
+      path: '/properties/settings'
+      fullPath: '/properties/settings'
+      preLoaderRoute: typeof PropertiesSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/reports': {
+      id: '/properties/reports'
+      path: '/properties/reports'
+      fullPath: '/properties/reports'
+      preLoaderRoute: typeof PropertiesReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/import-agreement': {
+      id: '/properties/import-agreement'
+      path: '/properties/import-agreement'
+      fullPath: '/properties/import-agreement'
+      preLoaderRoute: typeof PropertiesImportAgreementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/properties/import': {
+      id: '/properties/import'
+      path: '/properties/import'
+      fullPath: '/properties/import'
+      preLoaderRoute: typeof PropertiesImportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/properties/add': {
       id: '/properties/add'
-      path: '/add'
+      path: '/properties/add'
       fullPath: '/properties/add'
       preLoaderRoute: typeof PropertiesAddRouteImport
-      parentRoute: typeof PropertiesRouteRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/tax': {
+      id: '/dashboard/tax'
+      path: '/tax'
+      fullPath: '/dashboard/tax'
+      preLoaderRoute: typeof DashboardTaxRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/securitydeposits': {
+      id: '/dashboard/securitydeposits'
+      path: '/securitydeposits'
+      fullPath: '/dashboard/securitydeposits'
+      preLoaderRoute: typeof DashboardSecuritydepositsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/reports': {
+      id: '/dashboard/reports'
+      path: '/reports'
+      fullPath: '/dashboard/reports'
+      preLoaderRoute: typeof DashboardReportsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/repairs': {
+      id: '/dashboard/repairs'
+      path: '/repairs'
+      fullPath: '/dashboard/repairs'
+      preLoaderRoute: typeof DashboardRepairsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/pricing': {
+      id: '/dashboard/pricing'
+      path: '/pricing'
+      fullPath: '/dashboard/pricing'
+      preLoaderRoute: typeof DashboardPricingRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/notifications': {
+      id: '/dashboard/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/notifications'
+      preLoaderRoute: typeof DashboardNotificationsRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/home': {
       id: '/dashboard/home'
       path: '/home'
       fullPath: '/dashboard/home'
       preLoaderRoute: typeof DashboardHomeRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/deposit-collection': {
+      id: '/dashboard/deposit-collection'
+      path: '/deposit-collection'
+      fullPath: '/dashboard/deposit-collection'
+      preLoaderRoute: typeof DashboardDepositCollectionRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/agreement': {
+      id: '/dashboard/agreement'
+      path: '/agreement'
+      fullPath: '/dashboard/agreement'
+      preLoaderRoute: typeof DashboardAgreementRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/advertise': {
+      id: '/dashboard/advertise'
+      path: '/advertise'
+      fullPath: '/dashboard/advertise'
+      preLoaderRoute: typeof DashboardAdvertiseRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
     '/(auth)/verify': {
@@ -196,6 +757,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authRegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/pin': {
+      id: '/(auth)/pin'
+      path: '/pin'
+      fullPath: '/pin'
+      preLoaderRoute: typeof authPinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(auth)/login': {
       id: '/(auth)/login'
       path: '/login'
@@ -203,22 +771,270 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/tenants': {
+      id: '/dashboard/tenants'
+      path: '/tenants'
+      fullPath: '/dashboard/tenants'
+      preLoaderRoute: typeof DashboardTenantsRouteRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/renttracking': {
+      id: '/dashboard/renttracking'
+      path: '/renttracking'
+      fullPath: '/dashboard/renttracking'
+      preLoaderRoute: typeof DashboardRenttrackingRouteRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/expenses': {
+      id: '/dashboard/expenses'
+      path: '/expenses'
+      fullPath: '/dashboard/expenses'
+      preLoaderRoute: typeof DashboardExpensesRouteRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/agreements': {
+      id: '/dashboard/agreements'
+      path: '/agreements'
+      fullPath: '/dashboard/agreements'
+      preLoaderRoute: typeof DashboardAgreementsRouteRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/tenants/': {
+      id: '/dashboard/tenants/'
+      path: '/'
+      fullPath: '/dashboard/tenants/'
+      preLoaderRoute: typeof DashboardTenantsIndexRouteImport
+      parentRoute: typeof DashboardTenantsRouteRoute
+    }
+    '/dashboard/renttracking/': {
+      id: '/dashboard/renttracking/'
+      path: '/'
+      fullPath: '/dashboard/renttracking/'
+      preLoaderRoute: typeof DashboardRenttrackingIndexRouteImport
+      parentRoute: typeof DashboardRenttrackingRouteRoute
+    }
+    '/dashboard/inspections/': {
+      id: '/dashboard/inspections/'
+      path: '/inspections'
+      fullPath: '/dashboard/inspections/'
+      preLoaderRoute: typeof DashboardInspectionsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/expenses/': {
+      id: '/dashboard/expenses/'
+      path: '/'
+      fullPath: '/dashboard/expenses/'
+      preLoaderRoute: typeof DashboardExpensesIndexRouteImport
+      parentRoute: typeof DashboardExpensesRouteRoute
+    }
+    '/dashboard/agreements/': {
+      id: '/dashboard/agreements/'
+      path: '/'
+      fullPath: '/dashboard/agreements/'
+      preLoaderRoute: typeof DashboardAgreementsIndexRouteImport
+      parentRoute: typeof DashboardAgreementsRouteRoute
+    }
     '/properties/$propertyId/edit': {
       id: '/properties/$propertyId/edit'
-      path: '/$propertyId/edit'
+      path: '/properties/$propertyId/edit'
       fullPath: '/properties/$propertyId/edit'
       preLoaderRoute: typeof PropertiesPropertyIdEditRouteImport
-      parentRoute: typeof PropertiesRouteRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/tenants/add': {
+      id: '/dashboard/tenants/add'
+      path: '/add'
+      fullPath: '/dashboard/tenants/add'
+      preLoaderRoute: typeof DashboardTenantsAddRouteImport
+      parentRoute: typeof DashboardTenantsRouteRoute
+    }
+    '/dashboard/tenants/$tenantId': {
+      id: '/dashboard/tenants/$tenantId'
+      path: '/$tenantId'
+      fullPath: '/dashboard/tenants/$tenantId'
+      preLoaderRoute: typeof DashboardTenantsTenantIdRouteImport
+      parentRoute: typeof DashboardTenantsRouteRoute
+    }
+    '/dashboard/renttracking/record': {
+      id: '/dashboard/renttracking/record'
+      path: '/record'
+      fullPath: '/dashboard/renttracking/record'
+      preLoaderRoute: typeof DashboardRenttrackingRecordRouteImport
+      parentRoute: typeof DashboardRenttrackingRouteRoute
+    }
+    '/dashboard/renttracking/accounts': {
+      id: '/dashboard/renttracking/accounts'
+      path: '/accounts'
+      fullPath: '/dashboard/renttracking/accounts'
+      preLoaderRoute: typeof DashboardRenttrackingAccountsRouteImport
+      parentRoute: typeof DashboardRenttrackingRouteRoute
+    }
+    '/dashboard/inspections/$inspectionId': {
+      id: '/dashboard/inspections/$inspectionId'
+      path: '/inspections/$inspectionId'
+      fullPath: '/dashboard/inspections/$inspectionId'
+      preLoaderRoute: typeof DashboardInspectionsInspectionIdRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/expenses/add': {
+      id: '/dashboard/expenses/add'
+      path: '/add'
+      fullPath: '/dashboard/expenses/add'
+      preLoaderRoute: typeof DashboardExpensesAddRouteImport
+      parentRoute: typeof DashboardExpensesRouteRoute
+    }
+    '/dashboard/agreements/edit': {
+      id: '/dashboard/agreements/edit'
+      path: '/edit'
+      fullPath: '/dashboard/agreements/edit'
+      preLoaderRoute: typeof DashboardAgreementsEditRouteImport
+      parentRoute: typeof DashboardAgreementsRouteRoute
+    }
+    '/dashboard/tenants/edit': {
+      id: '/dashboard/tenants/edit'
+      path: '/edit'
+      fullPath: '/dashboard/tenants/edit'
+      preLoaderRoute: typeof DashboardTenantsEditRouteRouteImport
+      parentRoute: typeof DashboardTenantsRouteRoute
+    }
+    '/dashboard/tenants/edit/$tenantId': {
+      id: '/dashboard/tenants/edit/$tenantId'
+      path: '/$tenantId'
+      fullPath: '/dashboard/tenants/edit/$tenantId'
+      preLoaderRoute: typeof DashboardTenantsEditTenantIdRouteImport
+      parentRoute: typeof DashboardTenantsEditRouteRoute
+    }
+    '/dashboard/expenses/$expenseId/edit': {
+      id: '/dashboard/expenses/$expenseId/edit'
+      path: '/$expenseId/edit'
+      fullPath: '/dashboard/expenses/$expenseId/edit'
+      preLoaderRoute: typeof DashboardExpensesExpenseIdEditRouteImport
+      parentRoute: typeof DashboardExpensesRouteRoute
     }
   }
 }
 
+interface DashboardAgreementsRouteRouteChildren {
+  DashboardAgreementsEditRoute: typeof DashboardAgreementsEditRoute
+  DashboardAgreementsIndexRoute: typeof DashboardAgreementsIndexRoute
+}
+
+const DashboardAgreementsRouteRouteChildren: DashboardAgreementsRouteRouteChildren =
+  {
+    DashboardAgreementsEditRoute: DashboardAgreementsEditRoute,
+    DashboardAgreementsIndexRoute: DashboardAgreementsIndexRoute,
+  }
+
+const DashboardAgreementsRouteRouteWithChildren =
+  DashboardAgreementsRouteRoute._addFileChildren(
+    DashboardAgreementsRouteRouteChildren,
+  )
+
+interface DashboardExpensesRouteRouteChildren {
+  DashboardExpensesAddRoute: typeof DashboardExpensesAddRoute
+  DashboardExpensesIndexRoute: typeof DashboardExpensesIndexRoute
+  DashboardExpensesExpenseIdEditRoute: typeof DashboardExpensesExpenseIdEditRoute
+}
+
+const DashboardExpensesRouteRouteChildren: DashboardExpensesRouteRouteChildren =
+  {
+    DashboardExpensesAddRoute: DashboardExpensesAddRoute,
+    DashboardExpensesIndexRoute: DashboardExpensesIndexRoute,
+    DashboardExpensesExpenseIdEditRoute: DashboardExpensesExpenseIdEditRoute,
+  }
+
+const DashboardExpensesRouteRouteWithChildren =
+  DashboardExpensesRouteRoute._addFileChildren(
+    DashboardExpensesRouteRouteChildren,
+  )
+
+interface DashboardRenttrackingRouteRouteChildren {
+  DashboardRenttrackingAccountsRoute: typeof DashboardRenttrackingAccountsRoute
+  DashboardRenttrackingRecordRoute: typeof DashboardRenttrackingRecordRoute
+  DashboardRenttrackingIndexRoute: typeof DashboardRenttrackingIndexRoute
+}
+
+const DashboardRenttrackingRouteRouteChildren: DashboardRenttrackingRouteRouteChildren =
+  {
+    DashboardRenttrackingAccountsRoute: DashboardRenttrackingAccountsRoute,
+    DashboardRenttrackingRecordRoute: DashboardRenttrackingRecordRoute,
+    DashboardRenttrackingIndexRoute: DashboardRenttrackingIndexRoute,
+  }
+
+const DashboardRenttrackingRouteRouteWithChildren =
+  DashboardRenttrackingRouteRoute._addFileChildren(
+    DashboardRenttrackingRouteRouteChildren,
+  )
+
+interface DashboardTenantsEditRouteRouteChildren {
+  DashboardTenantsEditTenantIdRoute: typeof DashboardTenantsEditTenantIdRoute
+}
+
+const DashboardTenantsEditRouteRouteChildren: DashboardTenantsEditRouteRouteChildren =
+  {
+    DashboardTenantsEditTenantIdRoute: DashboardTenantsEditTenantIdRoute,
+  }
+
+const DashboardTenantsEditRouteRouteWithChildren =
+  DashboardTenantsEditRouteRoute._addFileChildren(
+    DashboardTenantsEditRouteRouteChildren,
+  )
+
+interface DashboardTenantsRouteRouteChildren {
+  DashboardTenantsEditRouteRoute: typeof DashboardTenantsEditRouteRouteWithChildren
+  DashboardTenantsTenantIdRoute: typeof DashboardTenantsTenantIdRoute
+  DashboardTenantsAddRoute: typeof DashboardTenantsAddRoute
+  DashboardTenantsIndexRoute: typeof DashboardTenantsIndexRoute
+}
+
+const DashboardTenantsRouteRouteChildren: DashboardTenantsRouteRouteChildren = {
+  DashboardTenantsEditRouteRoute: DashboardTenantsEditRouteRouteWithChildren,
+  DashboardTenantsTenantIdRoute: DashboardTenantsTenantIdRoute,
+  DashboardTenantsAddRoute: DashboardTenantsAddRoute,
+  DashboardTenantsIndexRoute: DashboardTenantsIndexRoute,
+}
+
+const DashboardTenantsRouteRouteWithChildren =
+  DashboardTenantsRouteRoute._addFileChildren(
+    DashboardTenantsRouteRouteChildren,
+  )
+
 interface DashboardRouteRouteChildren {
+  DashboardAgreementsRouteRoute: typeof DashboardAgreementsRouteRouteWithChildren
+  DashboardExpensesRouteRoute: typeof DashboardExpensesRouteRouteWithChildren
+  DashboardRenttrackingRouteRoute: typeof DashboardRenttrackingRouteRouteWithChildren
+  DashboardTenantsRouteRoute: typeof DashboardTenantsRouteRouteWithChildren
+  DashboardAdvertiseRoute: typeof DashboardAdvertiseRoute
+  DashboardAgreementRoute: typeof DashboardAgreementRoute
+  DashboardDepositCollectionRoute: typeof DashboardDepositCollectionRoute
   DashboardHomeRoute: typeof DashboardHomeRoute
+  DashboardNotificationsRoute: typeof DashboardNotificationsRoute
+  DashboardPricingRoute: typeof DashboardPricingRoute
+  DashboardRepairsRoute: typeof DashboardRepairsRoute
+  DashboardReportsRoute: typeof DashboardReportsRoute
+  DashboardSecuritydepositsRoute: typeof DashboardSecuritydepositsRoute
+  DashboardTaxRoute: typeof DashboardTaxRoute
+  DashboardInspectionsInspectionIdRoute: typeof DashboardInspectionsInspectionIdRoute
+  DashboardInspectionsIndexRoute: typeof DashboardInspectionsIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardAgreementsRouteRoute: DashboardAgreementsRouteRouteWithChildren,
+  DashboardExpensesRouteRoute: DashboardExpensesRouteRouteWithChildren,
+  DashboardRenttrackingRouteRoute: DashboardRenttrackingRouteRouteWithChildren,
+  DashboardTenantsRouteRoute: DashboardTenantsRouteRouteWithChildren,
+  DashboardAdvertiseRoute: DashboardAdvertiseRoute,
+  DashboardAgreementRoute: DashboardAgreementRoute,
+  DashboardDepositCollectionRoute: DashboardDepositCollectionRoute,
   DashboardHomeRoute: DashboardHomeRoute,
+  DashboardNotificationsRoute: DashboardNotificationsRoute,
+  DashboardPricingRoute: DashboardPricingRoute,
+  DashboardRepairsRoute: DashboardRepairsRoute,
+  DashboardReportsRoute: DashboardReportsRoute,
+  DashboardSecuritydepositsRoute: DashboardSecuritydepositsRoute,
+  DashboardTaxRoute: DashboardTaxRoute,
+  DashboardInspectionsInspectionIdRoute: DashboardInspectionsInspectionIdRoute,
+  DashboardInspectionsIndexRoute: DashboardInspectionsIndexRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
@@ -228,10 +1044,20 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   authLoginRoute: authLoginRoute,
+  authPinRoute: authPinRoute,
   authRegisterRoute: authRegisterRoute,
   authVerifyRoute: authVerifyRoute,
+  PropertiesAddRoute: PropertiesAddRoute,
+  PropertiesImportRoute: PropertiesImportRoute,
+  PropertiesImportAgreementRoute: PropertiesImportAgreementRoute,
+  PropertiesReportsRoute: PropertiesReportsRoute,
+  PropertiesSettingsRoute: PropertiesSettingsRoute,
+  PropertiesSubscriptionRoute: PropertiesSubscriptionRoute,
+  PropertiesTaxComplianceRoute: PropertiesTaxComplianceRoute,
+  PropertiesWalletRoute: PropertiesWalletRoute,
   authIndexRoute: authIndexRoute,
   PropertiesIndexRoute: PropertiesIndexRoute,
+  PropertiesPropertyIdEditRoute: PropertiesPropertyIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

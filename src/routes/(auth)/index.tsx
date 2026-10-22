@@ -11,23 +11,28 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
 
   const checkLoggedIn = () => {
-    if (!state.user) {
+    if (!state.token) {
       state.logout();
       navigate({ to: '/login' })
     } else {
-      navigate({ to: '/properties' })
+      navigate({ to: '/pin' })
     }
   }
 
   useEffect(() => {
     const timer = setTimeout(() => {
       checkLoggedIn();
-    }, 3000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [])
 
-  return <div style={{ backgroundColor: '#3f0ee3' }} className='flex justify-center items-center  h-screen text-white'>
-    <h1 className='font-bold text-2xl'>Est8Legder</h1>
-  </div>
+  return (
+    <div className='flex h-screen w-full flex-col items-center justify-center bg-white'>
+      <img src="/long_logo.png" alt="est8Ledger" className="h-9 animate-fade-up" />
+      <span className="mt-8 h-1 w-24 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-label="Loading">
+        <span className="block h-full w-1/3 animate-pulse rounded-full bg-[#3f0ee3]" />
+      </span>
+    </div>
+  )
 }
