@@ -1,4 +1,5 @@
 import type { Workbook, Worksheet, CellValue } from "exceljs";
+import { saveBlob } from "./download";
 
 /**
  * One definition of the import workbook, used to build the downloadable
@@ -435,17 +436,6 @@ const addDataSheet = (workbook: Workbook, sheet: SheetDef) => {
   });
 };
 
-const download = (blob: Blob, filename: string) => {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-};
-
 export async function downloadExcelTemplate() {
   const { default: ExcelJS } = await import("exceljs");
   const workbook = new ExcelJS.Workbook();
@@ -453,7 +443,7 @@ export async function downloadExcelTemplate() {
   addInstructions(workbook);
   SHEETS.forEach((sheet) => addDataSheet(workbook, sheet));
   const buffer = await workbook.xlsx.writeBuffer();
-  download(
+  saveBlob(
     new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
     "est8ledger-import-template.xlsx"
   );
@@ -471,5 +461,5 @@ export function downloadCsvTemplate(key: SheetKey) {
     ...sheet.examples.map((ex) => sheet.columns.map((c) => csvCell(ex[c.key])).join(",")),
   ];
   // BOM so Excel opens UTF-8 names correctly.
-  download(new Blob(["\uFEFF" + lines.join("\r\n") + "\r\n"], { type: "text/csv;charset=utf-8" }), `est8ledger-${sheet.name.toLowerCase().replace(/\s+/g, "-")}.csv`);
+  saveBlob(new Blob(["\uFEFF" + lines.join("\r\n") + "\r\n"], { type: "text/csv;charset=utf-8" }), `est8ledger-${sheet.name.toLowerCase().replace(/\s+/g, "-")}.csv`);
 }

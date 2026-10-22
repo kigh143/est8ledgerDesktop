@@ -81,6 +81,12 @@ The dashboard sidebar header is `PropertySwitcher`; `AccountMenu` sits at its fo
 ### Image uploads
 Use `uploadImages(files, category, entityId)` from `src/utils/presignedUpload.ts`: it compresses to JPEG, asks the backend for presigned Bunny URLs (`POST /uploads/presigned-urls`) and PUTs each file directly. Never put Bunny credentials in the client.
 
+### Reports
+`/properties/reports` (portfolio, property picker) and `/dashboard/reports` (active property) both render `componennts/reports/ReportView.tsx` from `GET /reports?period=month|quarter|year&year&index&propertyId`. The backend does all the maths; rent counts in the month it covers, and combined figures are grouped per currency, never converted. PDF comes from `GET /reports/pdf`; Excel is built client-side in `utils/reportExcel.ts`. Chart colours live in `utils/reportFormat.ts` (validated colour-blind-safe pair) and match the PDF.
+
+### Tax & pricing insight
+`/dashboard/tax` and `/dashboard/pricing` (active property) call `GET /rental-tax/estimate` and `GET /rental-tax/pricing` via `services/rentalTaxService.ts`. The backend does the URA maths; tax is charged on all of a landlord's rent in a country together, so the tax page splits it per property by rent. When the API returns `needsTaxpayerType`, `componennts/tax/TaxpayerTypePrompt.tsx` asks solo landlord vs business; the choice goes in the URL (`?type=`) and localStorage, and the landlord's tax config wins over it.
+
 ## 🔐 Authentication Flow
 
 1. **Login** (`/login`) - Email or phone number entry

@@ -16,11 +16,15 @@ import { Route as PropertiesWalletRouteImport } from './routes/properties/wallet
 import { Route as PropertiesTaxComplianceRouteImport } from './routes/properties/tax-compliance'
 import { Route as PropertiesSubscriptionRouteImport } from './routes/properties/subscription'
 import { Route as PropertiesSettingsRouteImport } from './routes/properties/settings'
+import { Route as PropertiesReportsRouteImport } from './routes/properties/reports'
 import { Route as PropertiesImportAgreementRouteImport } from './routes/properties/import-agreement'
 import { Route as PropertiesImportRouteImport } from './routes/properties/import'
 import { Route as PropertiesAddRouteImport } from './routes/properties/add'
+import { Route as DashboardTaxRouteImport } from './routes/dashboard/tax'
 import { Route as DashboardSecuritydepositsRouteImport } from './routes/dashboard/securitydeposits'
+import { Route as DashboardReportsRouteImport } from './routes/dashboard/reports'
 import { Route as DashboardRepairsRouteImport } from './routes/dashboard/repairs'
+import { Route as DashboardPricingRouteImport } from './routes/dashboard/pricing'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard/notifications'
 import { Route as DashboardHomeRouteImport } from './routes/dashboard/home'
 import { Route as DashboardDepositCollectionRouteImport } from './routes/dashboard/deposit-collection'
@@ -86,6 +90,11 @@ const PropertiesSettingsRoute = PropertiesSettingsRouteImport.update({
   path: '/properties/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PropertiesReportsRoute = PropertiesReportsRouteImport.update({
+  id: '/properties/reports',
+  path: '/properties/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PropertiesImportAgreementRoute =
   PropertiesImportAgreementRouteImport.update({
     id: '/properties/import-agreement',
@@ -102,15 +111,30 @@ const PropertiesAddRoute = PropertiesAddRouteImport.update({
   path: '/properties/add',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardTaxRoute = DashboardTaxRouteImport.update({
+  id: '/tax',
+  path: '/tax',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const DashboardSecuritydepositsRoute =
   DashboardSecuritydepositsRouteImport.update({
     id: '/securitydeposits',
     path: '/securitydeposits',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
+const DashboardReportsRoute = DashboardReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const DashboardRepairsRoute = DashboardRepairsRouteImport.update({
   id: '/repairs',
   path: '/repairs',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardPricingRoute = DashboardPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
@@ -288,11 +312,15 @@ export interface FileRoutesByFullPath {
   '/dashboard/deposit-collection': typeof DashboardDepositCollectionRoute
   '/dashboard/home': typeof DashboardHomeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/pricing': typeof DashboardPricingRoute
   '/dashboard/repairs': typeof DashboardRepairsRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
   '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
+  '/dashboard/tax': typeof DashboardTaxRoute
   '/properties/add': typeof PropertiesAddRoute
   '/properties/import': typeof PropertiesImportRoute
   '/properties/import-agreement': typeof PropertiesImportAgreementRoute
+  '/properties/reports': typeof PropertiesReportsRoute
   '/properties/settings': typeof PropertiesSettingsRoute
   '/properties/subscription': typeof PropertiesSubscriptionRoute
   '/properties/tax-compliance': typeof PropertiesTaxComplianceRoute
@@ -327,11 +355,15 @@ export interface FileRoutesByTo {
   '/dashboard/deposit-collection': typeof DashboardDepositCollectionRoute
   '/dashboard/home': typeof DashboardHomeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/pricing': typeof DashboardPricingRoute
   '/dashboard/repairs': typeof DashboardRepairsRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
   '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
+  '/dashboard/tax': typeof DashboardTaxRoute
   '/properties/add': typeof PropertiesAddRoute
   '/properties/import': typeof PropertiesImportRoute
   '/properties/import-agreement': typeof PropertiesImportAgreementRoute
+  '/properties/reports': typeof PropertiesReportsRoute
   '/properties/settings': typeof PropertiesSettingsRoute
   '/properties/subscription': typeof PropertiesSubscriptionRoute
   '/properties/tax-compliance': typeof PropertiesTaxComplianceRoute
@@ -371,11 +403,15 @@ export interface FileRoutesById {
   '/dashboard/deposit-collection': typeof DashboardDepositCollectionRoute
   '/dashboard/home': typeof DashboardHomeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/pricing': typeof DashboardPricingRoute
   '/dashboard/repairs': typeof DashboardRepairsRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
   '/dashboard/securitydeposits': typeof DashboardSecuritydepositsRoute
+  '/dashboard/tax': typeof DashboardTaxRoute
   '/properties/add': typeof PropertiesAddRoute
   '/properties/import': typeof PropertiesImportRoute
   '/properties/import-agreement': typeof PropertiesImportAgreementRoute
+  '/properties/reports': typeof PropertiesReportsRoute
   '/properties/settings': typeof PropertiesSettingsRoute
   '/properties/subscription': typeof PropertiesSubscriptionRoute
   '/properties/tax-compliance': typeof PropertiesTaxComplianceRoute
@@ -416,11 +452,15 @@ export interface FileRouteTypes {
     | '/dashboard/deposit-collection'
     | '/dashboard/home'
     | '/dashboard/notifications'
+    | '/dashboard/pricing'
     | '/dashboard/repairs'
+    | '/dashboard/reports'
     | '/dashboard/securitydeposits'
+    | '/dashboard/tax'
     | '/properties/add'
     | '/properties/import'
     | '/properties/import-agreement'
+    | '/properties/reports'
     | '/properties/settings'
     | '/properties/subscription'
     | '/properties/tax-compliance'
@@ -455,11 +495,15 @@ export interface FileRouteTypes {
     | '/dashboard/deposit-collection'
     | '/dashboard/home'
     | '/dashboard/notifications'
+    | '/dashboard/pricing'
     | '/dashboard/repairs'
+    | '/dashboard/reports'
     | '/dashboard/securitydeposits'
+    | '/dashboard/tax'
     | '/properties/add'
     | '/properties/import'
     | '/properties/import-agreement'
+    | '/properties/reports'
     | '/properties/settings'
     | '/properties/subscription'
     | '/properties/tax-compliance'
@@ -498,11 +542,15 @@ export interface FileRouteTypes {
     | '/dashboard/deposit-collection'
     | '/dashboard/home'
     | '/dashboard/notifications'
+    | '/dashboard/pricing'
     | '/dashboard/repairs'
+    | '/dashboard/reports'
     | '/dashboard/securitydeposits'
+    | '/dashboard/tax'
     | '/properties/add'
     | '/properties/import'
     | '/properties/import-agreement'
+    | '/properties/reports'
     | '/properties/settings'
     | '/properties/subscription'
     | '/properties/tax-compliance'
@@ -536,6 +584,7 @@ export interface RootRouteChildren {
   PropertiesAddRoute: typeof PropertiesAddRoute
   PropertiesImportRoute: typeof PropertiesImportRoute
   PropertiesImportAgreementRoute: typeof PropertiesImportAgreementRoute
+  PropertiesReportsRoute: typeof PropertiesReportsRoute
   PropertiesSettingsRoute: typeof PropertiesSettingsRoute
   PropertiesSubscriptionRoute: typeof PropertiesSubscriptionRoute
   PropertiesTaxComplianceRoute: typeof PropertiesTaxComplianceRoute
@@ -596,6 +645,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PropertiesSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/properties/reports': {
+      id: '/properties/reports'
+      path: '/properties/reports'
+      fullPath: '/properties/reports'
+      preLoaderRoute: typeof PropertiesReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/properties/import-agreement': {
       id: '/properties/import-agreement'
       path: '/properties/import-agreement'
@@ -617,6 +673,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PropertiesAddRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/tax': {
+      id: '/dashboard/tax'
+      path: '/tax'
+      fullPath: '/dashboard/tax'
+      preLoaderRoute: typeof DashboardTaxRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/dashboard/securitydeposits': {
       id: '/dashboard/securitydeposits'
       path: '/securitydeposits'
@@ -624,11 +687,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSecuritydepositsRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/dashboard/reports': {
+      id: '/dashboard/reports'
+      path: '/reports'
+      fullPath: '/dashboard/reports'
+      preLoaderRoute: typeof DashboardReportsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/dashboard/repairs': {
       id: '/dashboard/repairs'
       path: '/repairs'
       fullPath: '/dashboard/repairs'
       preLoaderRoute: typeof DashboardRepairsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/pricing': {
+      id: '/dashboard/pricing'
+      path: '/pricing'
+      fullPath: '/dashboard/pricing'
+      preLoaderRoute: typeof DashboardPricingRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/notifications': {
@@ -932,8 +1009,11 @@ interface DashboardRouteRouteChildren {
   DashboardDepositCollectionRoute: typeof DashboardDepositCollectionRoute
   DashboardHomeRoute: typeof DashboardHomeRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
+  DashboardPricingRoute: typeof DashboardPricingRoute
   DashboardRepairsRoute: typeof DashboardRepairsRoute
+  DashboardReportsRoute: typeof DashboardReportsRoute
   DashboardSecuritydepositsRoute: typeof DashboardSecuritydepositsRoute
+  DashboardTaxRoute: typeof DashboardTaxRoute
   DashboardInspectionsInspectionIdRoute: typeof DashboardInspectionsInspectionIdRoute
   DashboardInspectionsIndexRoute: typeof DashboardInspectionsIndexRoute
 }
@@ -948,8 +1028,11 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardDepositCollectionRoute: DashboardDepositCollectionRoute,
   DashboardHomeRoute: DashboardHomeRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
+  DashboardPricingRoute: DashboardPricingRoute,
   DashboardRepairsRoute: DashboardRepairsRoute,
+  DashboardReportsRoute: DashboardReportsRoute,
   DashboardSecuritydepositsRoute: DashboardSecuritydepositsRoute,
+  DashboardTaxRoute: DashboardTaxRoute,
   DashboardInspectionsInspectionIdRoute: DashboardInspectionsInspectionIdRoute,
   DashboardInspectionsIndexRoute: DashboardInspectionsIndexRoute,
 }
@@ -967,6 +1050,7 @@ const rootRouteChildren: RootRouteChildren = {
   PropertiesAddRoute: PropertiesAddRoute,
   PropertiesImportRoute: PropertiesImportRoute,
   PropertiesImportAgreementRoute: PropertiesImportAgreementRoute,
+  PropertiesReportsRoute: PropertiesReportsRoute,
   PropertiesSettingsRoute: PropertiesSettingsRoute,
   PropertiesSubscriptionRoute: PropertiesSubscriptionRoute,
   PropertiesTaxComplianceRoute: PropertiesTaxComplianceRoute,
