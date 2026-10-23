@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, CircleDollarSign, ExternalLink, Landmark, PiggyBank, ReceiptText, TrendingUp } from "lucide-react";
+import { Building2, ChevronLeft, ChevronRight, CircleDollarSign, ExternalLink, Landmark, PiggyBank, ReceiptText, Tags, TrendingUp } from "lucide-react";
 import { DetailRow, EmptyState, LoadingState, PageHeader, Segmented, StatCard } from "../../componennts/dashboard/ui";
 import TaxpayerTypePrompt from "../../componennts/tax/TaxpayerTypePrompt";
 import rentalTaxService, {
@@ -166,6 +166,8 @@ function TaxDetails({ group, propertyId, disclaimer, onYear }: {
         <StatCard icon={PiggyBank} tone="emerald" label="Set aside each month" value={money(Math.round(projectedShare / 12))} hint="Spreads this property's tax over the year" />
       </div>
 
+      <FullOccupancy group={group} propertyId={propertyId} />
+
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <section className="card p-6">
           <p className="eyebrow">How it's worked out</p>
@@ -242,5 +244,73 @@ function TaxDetails({ group, propertyId, disclaimer, onYear }: {
 
       <p className="text-xs text-slate-400">{disclaimer}</p>
     </>
+  );
+}
+
+/** Tax if every priced unit were let for the whole year, from the unit prices on the property. */
+function FullOccupancy({ group, propertyId }: { group: TaxEstimateGroup; propertyId: number }) {
+  const property = group.properties.find((p) => p.id === propertyId)!;
+  const money = (n: number) => formatMoney(group.currency, n);
+  const full = group.fullOccupancy;
+  const editLink = (label: string) => (
+    <Link to="/properties/$propertyId/edit" params={{ propertyId: String(propertyId) }} className="btn btn-tinted">
+      <Tags size={16} />
+      {label}
+    </Link>
+  );
+
+  if (property.fullOccupancyAnnual == null || !full?.tax)
+    return (
+      <section className="card flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="eyebrow">If fully let all year</p>
+          <p className="mt-1 text-[15px] text-slate-700">
+            Add what each unit lets for to see the tax if every unit is let for the whole year.
+          </p>
+        </div>
+        {editLink("Add unit prices")}
+      </section>
+    );
+
+  const share = shareOf(full.tax.tax, property.fullOccupancyAnnual, full.annualRent);
+  const vacancyGap = property.fullOccupancyAnnual - property.projectedAnnual;
+  const totalUnits = property.totalUnits ?? property.pricedUnits;
+
+  return (
+    <section className="card p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="eyebrow">If fully let all year</p>
+          <h2 className="mt-1 text-[17px] font-semibold text-slate-900">
+            Every priced unit let for the whole of {group.taxYear.label}
+          </h2>
+          <p className="mt-1 text-[13px] text-slate-500">
+            From your unit prices: {property.pricedUnits} of {totalUnits} units priced
+            {property.pricedUnits < totalUnits ? "; unpriced units aren't counted" : ""}.
+          </p>
+        </div>
+        {editLink("Edit unit prices")}
+      </div>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard icon={Building2} tone="violet" label="Full-year rent" value={money(property.fullOccupancyAnnual)} hint={`${money(Math.round(property.fullOccupancyAnnual / 12))} a month`} />
+        <StatCard
+          icon={TrendingUp}
+          tone={vacancyGap > 0 ? "amber" : "emerald"}
+          label="Compared with projected"
+          value={vacancyGap > 0 ? `− ${money(vacancyGap)}` : money(0)}
+          hint={vacancyGap > 0 ? "Rent lost to empty units this year" : "On track for full occupancy"}
+        />
+        <StatCard icon={ReceiptText} tone="orange" label="Estimated tax for this property" value={money(share)} hint={`${money(full.tax.tax)} across all your ${group.country.name} rent`} />
+        <StatCard icon={PiggyBank} tone="emerald" label="Set aside each month" value={money(Math.round(share / 12))} hint="If fully let" />
+      </div>
+
+      {full.unpricedProperties > 0 && (
+        <p className="mt-4 text-xs text-slate-500">
+          Your {full.unpricedProperties} other {full.unpricedProperties === 1 ? "property" : "properties"} in {group.country.name} without unit prices
+          {full.unpricedProperties === 1 ? " is" : " are"} counted at current rent.
+        </p>
+      )}
+    </section>
   );
 }

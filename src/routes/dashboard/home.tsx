@@ -14,6 +14,7 @@ import {
   TrendingDown,
   Users,
   Megaphone,
+  Pencil,
 } from 'lucide-react'
 import { useAppStore } from '../../store'
 import { PageHeader } from '../../componennts/dashboard/ui'
@@ -302,7 +303,23 @@ function DashboardHome() {
 
   return (
     <div className="space-y-6">
-      <PageHeader icon={LayoutDashboard} title="Dashboard" subtitle={activeProperty?.propertyName} />
+      <PageHeader
+        icon={LayoutDashboard}
+        title="Dashboard"
+        subtitle={activeProperty?.propertyName}
+        actions={
+          activeProperty && (
+            <Link
+              to="/properties/$propertyId/edit"
+              params={{ propertyId: String(activeProperty.id) }}
+              className="btn btn-secondary"
+            >
+              <Pencil size={16} />
+              Edit property
+            </Link>
+          )
+        }
+      />
 
       {/* Needs Your Attention */}
       <div className="card overflow-hidden">

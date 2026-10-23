@@ -14,6 +14,7 @@ import {
 import { toast } from "react-toastify";
 import { useAppStore } from "../../store";
 import notificationService from "../../services/notificationService";
+import { getNetworkError } from "../../utils";
 import { EmptyState, PageHeader, Segmented } from "../../componennts/dashboard/ui";
 import type { AppNotification } from "../../types";
 
@@ -55,6 +56,7 @@ type Filter = "all" | "unread";
 function NotificationsPage() {
   const { notifications } = Route.useLoaderData();
   const router = useRouter();
+  const activeProperty = useAppStore((s) => s.activeProperty);
   const [filter, setFilter] = useState<Filter>("all");
   // Read state is applied locally first so the list responds instantly.
   const [readIds, setReadIds] = useState<Set<AppNotification["id"]>>(new Set());
@@ -71,7 +73,8 @@ function NotificationsPage() {
     setReadIds((prev) => new Set(prev).add(n.id));
     try {
       await notificationService.markAsReadNotification(n.id.toString());
-    } catch {
+    } catch (error) {
+      toast.error(getNetworkError(error));
       setReadIds((prev) => {
         const next = new Set(prev);
         next.delete(n.id);
@@ -81,13 +84,14 @@ function NotificationsPage() {
   };
 
   const markAllRead = async () => {
+    if (!activeProperty) return;
     setMarkingAll(true);
     try {
-      await Promise.all(unread.map((n) => notificationService.markAsReadNotification(n.id.toString())));
+      await notificationService.markAllPropertyNotificationsRead(activeProperty.id.toString());
       toast.success("All notifications marked as read");
       await router.invalidate();
-    } catch {
-      toast.error("Some notifications couldn't be marked as read. Try again.");
+    } catch (error) {
+      toast.error(getNetworkError(error));
     } finally {
       setMarkingAll(false);
     }

@@ -38,7 +38,25 @@ export type TaxEstimateGroup = {
   taxSoFar: TaxBreakdown | null;
   projectedTax: TaxBreakdown | null;
   monthlySetAside: number | null;
-  properties: { id: number; name: string; collectedToDate: number; projectedAnnual: number; paidExpensesToDate: number }[];
+  /** Every priced unit let all year; unpriced properties count at their current rent. null when nothing is priced */
+  fullOccupancy: {
+    annualRent: number;
+    pricedUnits: number;
+    totalUnits: number;
+    unpricedProperties: number;
+    tax: TaxBreakdown | null;
+    monthlySetAside: number | null;
+  } | null;
+  properties: {
+    id: number;
+    name: string;
+    collectedToDate: number;
+    projectedAnnual: number;
+    paidExpensesToDate: number;
+    fullOccupancyAnnual: number | null;
+    pricedUnits: number;
+    totalUnits: number | null;
+  }[];
 };
 
 export type TaxEstimate = {

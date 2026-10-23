@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
-import { Building2, Search, MapPin, ArrowRight, HousePlus, FileUp } from 'lucide-react'
+import { Building2, Search, MapPin, ArrowRight, HousePlus, FileUp, Pencil } from 'lucide-react'
 import { useAppStore } from '../../store';
 import PropertiesLayout from '../../componennts/PropertiesLayout';
 import type { PropertyAgreement } from '../../types';
@@ -142,11 +142,14 @@ function RouteComponent() {
               {filtered.map((property: PropertyAgreement, i: number) => {
                 const occupancy = occupancyOf(property);
                 return (
-                  <button
+                  <div
                     key={property.id}
-                    onClick={() => handlePropertyClicked(property)}
-                    className="group text-left animate-fade-up"
+                    className="relative animate-fade-up"
                     style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}
+                  >
+                  <button
+                    onClick={() => handlePropertyClicked(property)}
+                    className="group w-full text-left"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-100">
                       <img
@@ -187,6 +190,17 @@ function RouteComponent() {
                       <span className="text-slate-500">/ month</span>
                     </p>
                   </button>
+                  {/* Sibling of the card button: a link can't sit inside a button */}
+                  <Link
+                    to="/properties/$propertyId/edit"
+                    params={{ propertyId: String(property.id) }}
+                    aria-label={`Edit ${property.propertyName}`}
+                    className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-slate-900 shadow-sm backdrop-blur transition-colors hover:bg-white"
+                  >
+                    <Pencil size={12} />
+                    Edit
+                  </Link>
+                  </div>
                 );
               })}
             </div>
