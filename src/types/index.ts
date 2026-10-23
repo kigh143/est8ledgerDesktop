@@ -265,6 +265,13 @@ export interface SecurityDeposit {
   blockchainStatus: string;
 }
 
+/** A set of identical units, e.g. 3 one-bedrooms at 400,000 a month */
+export interface UnitPriceGroup {
+  count: number;
+  monthlyRent: number;
+  label?: string;
+}
+
 export interface PropertyAgreement {
   id: number;
   propertyName: string;
@@ -277,6 +284,8 @@ export interface PropertyAgreement {
   propertyImage: string | null;
   propertyType: PropertyType;
   numberOfUnits: number;
+  /** What the units let for; need not cover every unit */
+  unitPricing?: UnitPriceGroup[] | null;
 
   evictionProcess: EvictionProcess;
   terminationNoticeDays: number;

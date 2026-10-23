@@ -23,6 +23,8 @@ import SlideOver from "../../componennts/SlideOver";
 import { agreementService } from "../../services/agreementService";
 import { configurationService } from "../../services/config";
 import { toast } from "react-toastify";
+import UnitPricingEditor from "../../componennts/property/UnitPricingEditor";
+import { unitPricingError, unitPricingFromRows, type UnitPriceRow } from "../../utils/unitPricing";
 
 export const Route = createFileRoute("/properties/add")({
   component: AddPropertyPage,
@@ -68,6 +70,7 @@ function AddPropertyPage() {
   const [clauses, setClauses] = useState<any[]>([]);
   const [countryConfig, setCountryConfig] = useState<any>(null);
   const [showCustomClauseModal, setShowCustomClauseModal] = useState(false);
+  const [unitRows, setUnitRows] = useState<UnitPriceRow[]>([]);
   const [customClauseForm, setCustomClauseForm] = useState({
     title: "",
     description: "",
@@ -221,6 +224,11 @@ function AddPropertyPage() {
       toast.error("Please fill in all required fields");
       return false;
     }
+    const pricingError = unitPricingError(unitRows, parseInt(formData.numberOfUnits) || 0);
+    if (pricingError) {
+      toast.error(pricingError);
+      return false;
+    }
     return true;
   };
 
@@ -280,6 +288,7 @@ function AddPropertyPage() {
         ownerId: user.id,
         selectedClauseIds: formData.selectedClauseIds,
         customClauses: formData.customClauses,
+        unitPricing: unitPricingFromRows(unitRows),
         countryId: user.countryId
       };
 
@@ -490,6 +499,21 @@ function AddPropertyPage() {
                       handleInputChange("numberOfUnits", e.target.value)
                     }
                     className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-[#3f0ee3]/12 focus:border-[#3f0ee3] outline-none transition-colors hover:border-slate-400"
+                  />
+                </div>
+
+                {/* Unit Prices */}
+                <div>
+                  <label className="label">Unit Prices</label>
+                  <p className="-mt-1 mb-3 text-sm text-slate-500">
+                    What each unit lets for, e.g. 3 units at 400,000 and 2 at 500,000. Used to estimate
+                    tax if the property is fully let all year.
+                  </p>
+                  <UnitPricingEditor
+                    rows={unitRows}
+                    onChange={setUnitRows}
+                    totalUnits={parseInt(formData.numberOfUnits) || 0}
+                    currency={formData.currency}
                   />
                 </div>
               </div>

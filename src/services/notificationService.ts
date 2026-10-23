@@ -17,6 +17,12 @@ export const notificationService = {
     );
     return response.data;
   },
+
+  /** Marks the property-wide notifications and the landlord's own as read in one request */
+  markAllPropertyNotificationsRead: async (propertyId: string) => {
+    const response = await apiClient.put(`/notifications/property/${propertyId}/mark-all-read`);
+    return response.data;
+  },
 };
 
 export default notificationService;
